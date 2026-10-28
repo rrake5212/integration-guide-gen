@@ -715,7 +715,8 @@ Not verified at this point: `docker build` / `compose up` (no daemon here), and 
 Run as designed: `deploy/bootstrap.sh` (docker engine 29.9.2 + compose v5.6.1, swap already present,
 `import /etc/caddy/sites/*.caddy` added once) -> `.env` copied to `/home/ubuntu/guidegen/.env` (mode 600,
 key never printed) -> `deploy/deploy.sh` (rsync, image build on the box, compose up, vhost install +
-full-config validate, caddy reload, smoke twice).
+full-config validate, caddy reload, smoke twice). First served as `guides.<ip>.sslip.io`; renamed later
+the same day to `integration-guide.<ip>.sslip.io` with a permanent redirect left on the old name.
 
 Verified on the box, real output:
 - image `guidegen:local` built on the box; container `guidegen` up and **healthy**,

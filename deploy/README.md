@@ -57,8 +57,11 @@ Test suite inside the built image, with no volume and no network:
     ssh ... "cd ~/guidegen && sudo docker run --rm guidegen:local python -m unittest discover -s tests"
     ssh ... "cd ~/guidegen && sudo docker run --rm guidegen:local python -m guidegen.verify --golden data/golden"
 
-(`python -m guidegen.verify` on the host against `data/golden` will fail: the bind mount
-replaces `/app/data`, so the golden specs live only in the image.)
+`python -m guidegen.verify --golden data/golden` also works **on the host** (verified 2026-10-28:
+`VALID github 75/78`, `VALID google 12/14`) — the verifier has no fastapi dependency, and `data/`
+is synced, so the golden specs exist on the box as well as in the image. What does not work is
+reaching the golden set from inside the *running* container: the `./runtime:/app/data` mount
+replaces `/app/data`, so use `docker run --rm` (above) for in-container verification.
 
 ## Operate
 
@@ -85,6 +88,44 @@ source. There is no registry — keep a copy of the last-good tree (`rsync` it a
 | cert not issued on first request | Let's Encrypt needs :80 reachable; check `sudo journalctl -u caddy -n 50`, and that sslip.io resolves to 100.31.120.181 |
 | `caddy validate` fails on reload | the site block and the existing journey-builder block are both in the validated config — a parse error anywhere takes reload down, so fix before `reload` |
 | box goes unresponsive during build | 1 GB RAM: the swapfile from `bootstrap.sh` is what keeps journey-builder alive; build with `--no-cache` off a quiet box if needed |
+
+## What the first deploy actually did (2026-10-28)
+
+    https://integration-guide.100.31.120.181.sslip.io      (was guides.<ip>.sslip.io; 301s here)
+
+1. `bootstrap.sh` on the box — docker engine **29.9.2** + compose **v5.6.1** installed,
+   rsync present, **swap already configured** (swapon showed one device already, so the
+   swapfile branch was skipped), `import /etc/caddy/sites/*.caddy` appended to
+   `/etc/caddy/Caddyfile` and validated. It logs `No files matching import glob pattern`
+   at that moment — harmless, `sites/` is still empty.
+2. `.env` copied from the laptop with `ssh "cat > ~/guidegen/.env" < .env`, then `chmod 600`.
+   The key was never printed and is never synced on later deploys.
+3. `deploy.sh` — rsync, image built **on the box** (`guidegen:local`, 243 MB), compose up,
+   vhost installed, full config validated (journey-builder's block included), caddy reloaded,
+   smoke run twice.
+
+Timings measured: engine install ~2 min, image build ~2 min, whole deploy under 5 min.
+State after: container `guidegen` `Up (healthy)` on `127.0.0.1:8765`; RAM 513 MB / 911 MB used;
+disk 5.8 G / 38 G. `apt` printed "expected kernel version … Restarting the system will not be
+handled automatically" — it does not reboot the box; ignore it.
+
+Verification actually observed:
+
+    compose ps                     guidegen | Up (healthy) | 127.0.0.1:8765->8765/tcp
+    smoke (loopback)               6/6 PASS
+    smoke (public https)           6/6 PASS
+    smoke --with-job               job_8de05c666f done; guide.md 15,318 B; agent.json 24,190 B;
+                                   text/event-stream frames flowed, no Content-Encoding
+    TLS                            Let's Encrypt, CN = the hostname, auto-renewed
+    other site on the box          journey-builder-mcp still answering (401, its own auth)
+
+## Renaming the public hostname
+
+sslip.io resolves any label prefix in front of the IP, so a rename needs no DNS record —
+change the site address in `deploy/Caddyfile` and the `DOMAIN` default in `deploy.sh`, then
+`deploy.sh`. Keep the old address as a one-line `redir … permanent` block so shared links
+survive; Caddy then holds a certificate for both names. A name without the IP in it needs a
+real domain and one A record to the instance.
 
 ## Security posture
 

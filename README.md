@@ -243,7 +243,21 @@ Local, without Docker (same CMD the image runs):
 ## Next (from PLAN.md)
 
 P6 delivered: verifier + golden set, cross-format/secret checks, forced error paths, job timeout, and
-`debug`/`replay` (108 tests). P7 deploy stack built 2026-10-28 and verified locally (Caddyfile validated with
-caddy v2.11.4, image content simulated in a clean venv, smoke green); **the box itself was deployed 2026-10-28** — image built there, container healthy, Caddy + Let's Encrypt live, smoke 6/6 loopback and 6/6 public, one real GitHub guide end to end.
-Remaining in P7: run `deploy.sh` against Lightsail, private `/admin/jobs/<id>`, 7-day cache table + badge.
-P8 optional MCP wrapper + calibration.
+`debug`/`replay` (108 tests). P7 **deployed 2026-10-28** — image built on the box, container healthy, Caddy +
+Let's Encrypt live at `integration-guide.100.31.120.181.sslip.io`, smoke 6/6 loopback and 6/6 public, one
+real GitHub guide end to end.
+
+## Known issues / open items
+
+- `tests/test_web.py` writes its `job_timeout` fixture into the **live** `data/jobs/`, not a temp dir —
+  running the suite rewrites `data/jobs/job_timeout/{job.json,events.jsonl}`. Harmless, pollutes the
+  job store; should use a tmp path.
+- Job retention: nothing prunes `data/jobs` (23 jobs / 11 MB locally; the box grows under `runtime/`).
+- Chunk/prompt request-response artifacts and failed-job docs are not persisted yet (a failed job dir
+  holds only `job.json` + `events.jsonl`).
+- No rate limiting or token budget — deliberate for a testing-only site; add before widening access.
+- Three human reads (OAuth provider, API-key provider, review-heavy provider) still pending; the golden
+  GitHub and Google guides are the stand-ins.
+
+Remaining in P7: private `/admin/jobs/<id>`, 7-day page-hash cache table + badge.
+P8 optional: MCP wrapper + the calibration run that replaces the `low` time confidence.
