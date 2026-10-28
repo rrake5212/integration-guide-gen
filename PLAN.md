@@ -532,7 +532,7 @@ are the two resolution regression tests that must never regress.
 | P4 | Time + blockers | bands, friction detector, class rules, steps extraction | 4 h — **done** |
 | P5 | Dual renderers + web UI | `guide.md`, `agent.json`, `agent.md`, FastAPI pages, SSE progress, error/warning banners | 9 h — **done** |
 | P6 | Verifier + golden set | schema/provenance/consistency + the forced error paths (§6.3) | 6 h — **done** |
-| P7 | Deploy + smoke test | Docker, Caddy vhost, `/api/health` — **deploy stack built 2026-10-28**; box deploy + private `/admin/jobs/<id>` + cache remain | 4 h |
+| P7 | Deploy + smoke test | Docker, Caddy vhost, `/api/health` — **DEPLOYED 2026-10-28**, smoke green on loopback + public HTTPS; **remaining: private `/admin/jobs/<id>` + 7-day page-hash cache** | 4 h (deploy done) |
 | P8 | Optional | MCP wrapper, calibration run | 3–5 h |
 
 ### Delivered in P1 (2026-10-27)
