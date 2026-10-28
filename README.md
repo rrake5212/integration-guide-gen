@@ -3,7 +3,8 @@
 Status: **LIVE since 2026-10-28 — https://guides.100.31.120.181.sslip.io** (P1–P6 built 2026-10-27;
 P7 deployed 2026-10-28) — resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard,
 DeepInfra client, research + quoted extraction + assembly, time/steps/blockers, dual renderers, FastAPI
-web UI, verifier + golden set + error paths + debug/replay; 108 tests. Deploy: `Dockerfile` +
+web UI, verifier + golden set + error paths + debug/replay; 108 tests. Repo: private,
+`github.com/rrake5212/integration-guide-gen`. Deploy: `Dockerfile` +
 `docker-compose.yml` + `deploy/Caddyfile` + one-command `deploy/deploy.sh` (see `deploy/README.md`);
 running as the `guidegen` container behind Caddy on the Lightsail box. Remaining P7: private
 `/admin/jobs/<id>`, 7-day cache table + badge.

@@ -1,7 +1,7 @@
 # OAuth / API-key setup guide generator — plan
 
 **Status: DEPLOYED 2026-10-28 — https://guides.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started.**
-Date: 2026-10-28 (rev 18). Home: `~/AgentWork/integration-guide-gen/`
+Date: 2026-10-28 (rev 18). Home: `~/AgentWork/integration-guide-gen/` · private repo `rrake5212/integration-guide-gen`
 
 One-line product: a developer submits **an app name or a website/domain** they want OAuth with
 ("Google", "tally.so", "Notion", "acme.com"), and the agent resolves it to the real provider, then generates
@@ -24,7 +24,7 @@ Scope notes carried from the corrections:
 | G4 | Role of the model | LLM extracts and writes prose, every fact quoted · LLM generates freely | extractor/writer only. Unsourced fields become `unknown` |
 | G5 | Interface | CLI · MCP tool · web app | **RESOLVED 2026-10-27 — a live website is the product.** The CLI stays as the internal dev/probe surface; MCP is optional |
 | G6 | Credentials | never store provider secrets · allow a test with supplied credentials | never store; stop at "paste these into .env". A token test is opt-in, in memory only |
-| G7 | Distribution | private local · public repo | private until you say otherwise; provider docs are quoted, so attribution is required either way |
+| G7 | Distribution | private local · public repo | **RESOLVED 2026-10-28 — private GitHub repo `rrake5212/integration-guide-gen`.** Provider docs are quoted, so attribution is required either way |
 | G8 | Extraction model + key | which LLM the standalone tool calls, and whose key | **RESOLVED 2026-10-27 — pluggable provider.** DeepInfra primary (`https://api.deepinfra.com/v1/openai`, `DEEPINFRA_API_KEY`, documented strict `json_schema` — probe 2026-10-27: schema-valid twice); OpenCode Go fallback (`/inference/go`, `x-opencode-session` required, structured output undocumented). One OpenAI-compatible client, probe per provider + model (§3.1, §6.2) |
 | G9 | Hosting | existing Lightsail box + Caddy · Fly/Render · Vercel + queue | **RESOLVED 2026-10-28 — Docker container + Caddy on the existing Lightsail instance.** Long jobs, persistent SQLite, no cold starts; Vercel only for a static front-end |
 | G10 | Plan for deployed traffic | DeepInfra · OpenCode Go · own key | **Not a gate on DeepInfra** — general-purpose pay-per-token inference, inside its intended use; a guide costs ≈$0.01. OpenCode Go stays a fallback but is scoped to coding-agent traffic |
