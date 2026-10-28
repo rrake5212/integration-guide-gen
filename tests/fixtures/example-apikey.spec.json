@@ -1,0 +1,153 @@
+{
+  "schema_version": "1.0",
+  "generator": {
+    "name": "guidegen",
+    "version": "0.1.0",
+    "model": null,
+    "prompt_version": "p1"
+  },
+  "generated_at": "2026-10-27T22:30:00Z",
+  "status": "partial",
+  "provider": {
+    "id": "acme-keys",
+    "name": "Acme Keys",
+    "domains": [
+      "acme-keys.example"
+    ],
+    "docs": [
+      "https://example.com/docs/api"
+    ],
+    "console": "https://example.com/keys",
+    "discovery": null,
+    "note": "Synthetic fixture for schema tests."
+  },
+  "resolution": {
+    "input": "acme-keys.example",
+    "normalized": "acme-keys.example",
+    "kind": "domain",
+    "decision": "resolved",
+    "matched_by": "domain",
+    "confidence": "high",
+    "availability": "api_key_only",
+    "alternatives": [],
+    "notes": []
+  },
+  "auth": {
+    "methods": [
+      "api_key"
+    ],
+    "primary": "api_key",
+    "oauth": null,
+    "api_key": {
+      "where_to_create_url": {
+        "value": "https://example.com/keys",
+        "quote": "Create keys at https://example.com/keys.",
+        "source_url": "https://example.com/docs/api"
+      },
+      "header_name": {
+        "value": "Authorization",
+        "quote": "Send the key in the Authorization header.",
+        "source_url": "https://example.com/docs/api"
+      },
+      "prefix": {
+        "value": "Bearer",
+        "quote": "Prefix the key with Bearer.",
+        "source_url": "https://example.com/docs/api"
+      },
+      "env_var": "ACME_API_KEY",
+      "rotation": {
+        "value": null,
+        "quote": null,
+        "source_url": null
+      }
+    }
+  },
+  "setup": {
+    "time": {
+      "likely_minutes": null,
+      "range_min_minutes": null,
+      "range_max_minutes": null,
+      "review_wait_days": null,
+      "drivers": [],
+      "confidence": "none"
+    },
+    "prerequisites": [
+      {
+        "value": "An Acme Keys account",
+        "quote": "You need an Acme Keys account.",
+        "source_url": "https://example.com/docs/api"
+      }
+    ],
+    "steps": [
+      {
+        "order": 1,
+        "title": "Create a key",
+        "detail": "Open the keys page and choose Create key.",
+        "url": "https://example.com/keys"
+      },
+      {
+        "order": 2,
+        "title": "Store the key",
+        "detail": "Put the key in ACME_API_KEY on the server.",
+        "url": null
+      }
+    ],
+    "verification": [
+      {
+        "order": 1,
+        "method": "curl",
+        "command": "curl -s https://api.example.com/whoami -H \"Authorization: Bearer $ACME_API_KEY\"",
+        "expected": "A JSON body with your account id."
+      }
+    ],
+    "blockers": [
+      {
+        "id": "key_revoked",
+        "symptom": "401 on every call",
+        "cause": "The key was revoked or rotated.",
+        "fix": "Create a new key and update the environment.",
+        "severity": "blocker",
+        "likelihood": "occasional"
+      }
+    ]
+  },
+  "env": [
+    {
+      "name": "ACME_API_KEY",
+      "description": "API key",
+      "required": true,
+      "secret": true
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://example.com/docs/api",
+      "title": "Acme Keys API",
+      "fetched_at": "2026-10-27T22:30:00Z",
+      "http_status": 200,
+      "doc_hash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    }
+  ],
+  "quality": {
+    "facts_total": 5,
+    "facts_verified": 4,
+    "unknown_count": 1,
+    "confidence": "low"
+  },
+  "unknown_fields": [
+    "auth.api_key.rotation"
+  ],
+  "warnings": [
+    {
+      "code": "TIME_UNKNOWN",
+      "message": "Setup time is an estimate: the docs don't state review timelines."
+    },
+    {
+      "code": "FIELD_UNVERIFIED",
+      "message": "Some details weren't stated in the docs and are marked as such."
+    }
+  ],
+  "notes": [
+    "Synthetic fixture for schema tests; not a real provider."
+  ]
+}

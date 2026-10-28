@@ -1,0 +1,18 @@
+{
+  "github": {
+    "provider": "github",
+    "status": "complete",
+    "min_verified": 70,
+    "steps": 7,
+    "blockers": 8,
+    "warnings": ["FIELD_UNVERIFIED"]
+  },
+  "google": {
+    "provider": "google",
+    "status": "complete",
+    "min_verified": 10,
+    "steps": 11,
+    "blockers": 8,
+    "warnings": ["FIELD_UNVERIFIED"]
+  }
+}

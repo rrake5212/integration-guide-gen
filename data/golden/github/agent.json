@@ -1,0 +1,483 @@
+{
+  "schema_version": "1.0",
+  "generator": {
+    "name": "guidegen",
+    "version": "0.2.0",
+    "model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+    "prompt_version": "p2"
+  },
+  "generated_at": "2026-10-28T00:16:43+00:00",
+  "status": "complete",
+  "provider": {
+    "id": "github",
+    "name": "GitHub",
+    "domains": [
+      "github.com"
+    ],
+    "console": "https://github.com/settings/developers",
+    "docs": [
+      "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+      "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+      "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps"
+    ]
+  },
+  "availability": "self_serve_oauth",
+  "auth": {
+    "methods": [
+      "oauth2"
+    ],
+    "primary": "oauth2",
+    "oauth": {
+      "authorization_url": "https://github.com/login/oauth/authorize",
+      "token_url": "https://github.com/login/oauth/access_token",
+      "discovery_url": null,
+      "pkce": null,
+      "client_secret_required": true,
+      "refresh_token": true,
+      "redirect_uri_rules": "When wildcard matching is enabled, the redirect URL's host (excluding subdomains) and port must exactly match the callback URL, and the redirect URL's path must reference a subdirectory of the callback URL.",
+      "consent_screen": null,
+      "scopes": [
+        {
+          "name": "offline_access",
+          "description": "Requesting this scope opts in to expiring tokens and refresh tokens for an individual sign-in.",
+          "sensitivity": "unknown"
+        },
+        {
+          "name": "(no scope)",
+          "description": "Grants read-only access to public information (including user profile info, repository info, and gists)",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "repo",
+          "description": "Grants full access to public and private repositories including read and write access to code, commit statuses, repository invitations, collaborators, deployment statuses, and repository webhooks. Note: In addition to repository related resources, the `repo` scope also grants access to manage org...",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "repo:status",
+          "description": "Grants read/write access to commit statuses in public and private repositories. This scope is only necessary to grant other users or services access to private repository commit statuses without granting access to the code.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "repo_deployment",
+          "description": "Grants access to deployment statuses for public and private repositories. This scope is only necessary to grant other users or services access to deployment statuses, without granting access to the code.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "public_repo",
+          "description": "Limits access to public repositories. That includes read/write access to code, commit statuses, repository projects, collaborators, and deployment statuses for public repositories and organizations. Also required for starring public repositories.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "repo:invite",
+          "description": "Grants accept/decline abilities for invitations to collaborate on a repository. This scope is only necessary to grant other users or services access to invites without granting access to the code.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "security_events",
+          "description": "Grants: read and write access to security events in the code scanning API. This scope is only necessary to grant other users or services access to security events without granting access to the code.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "admin:repo_hook",
+          "description": "Grants read, write, ping, and delete access to repository hooks in public or private repositories. The `repo` and `public_repo` scopes grant full access to repositories, including repository hooks. Use the `admin:repo_hook` scope to limit access to only repository hooks.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "write:repo_hook",
+          "description": "Grants read, write, and ping access to hooks in public or private repositories.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "read:repo_hook",
+          "description": "Grants read and ping access to hooks in public or private repositories.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "admin:org",
+          "description": "Fully manage the organization and its teams, projects, and memberships.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "write:org",
+          "description": "Read and write access to organization membership and organization projects.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "read:org",
+          "description": "Read-only access to organization membership, organization projects, and team membership.",
+          "sensitivity": "normal"
+        },
+        {
+          "name": "admin:public_key",
+          "description": "Fully manage public keys.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "write:public_key",
+          "description": "Create, list, and view details for public keys.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "read:public_key",
+          "description": "List and view details for public keys.",
+          "sensitivity": "normal"
+        },
+        {
+          "name": "admin:org_hook",
+          "description": "Grants read, write, ping, and delete access to organization hooks. Note: OAuth tokens will only be able to perform these actions on organization hooks which were created by the OAuth app. Personal access tokens will only be able to perform these actions on organization hooks created by a user.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "gist",
+          "description": "Grants write access to gists.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "user",
+          "description": "Grants read/write access to profile info only. Note that this scope includes `user:email` and `user:follow`.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "read:user",
+          "description": "Grants access to read a user's profile data.",
+          "sensitivity": "normal"
+        },
+        {
+          "name": "user:email",
+          "description": "Grants read access to a user's email addresses.",
+          "sensitivity": "normal"
+        },
+        {
+          "name": "user:follow",
+          "description": "Grants access to follow or unfollow other users.",
+          "sensitivity": "unknown"
+        },
+        {
+          "name": "project",
+          "description": "Grants read/write access to user and organization projects.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "read:project",
+          "description": "Grants read only access to user and organization projects.",
+          "sensitivity": "normal"
+        },
+        {
+          "name": "delete_repo",
+          "description": "Grants access to delete adminable repositories.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "write:packages",
+          "description": "Grants access to upload or publish a package in GitHub Packages. For more information, see Publishing a package.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "read:packages",
+          "description": "Grants access to download or install packages from GitHub Packages. For more information, see Installing a package.",
+          "sensitivity": "normal"
+        },
+        {
+          "name": "delete:packages",
+          "description": "Grants access to delete packages from GitHub Packages. For more information, see Deleting and restoring a package.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "admin:gpg_key",
+          "description": "Fully manage GPG keys.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "write:gpg_key",
+          "description": "Create, list, and view details for GPG keys.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "read:gpg_key",
+          "description": "List and view details for GPG keys.",
+          "sensitivity": "normal"
+        },
+        {
+          "name": "codespace",
+          "description": "Grants the ability to create and manage codespaces. Codespaces can expose a GITHUB_TOKEN which may have a different set of scopes. For more information, see Security in GitHub Codespaces.",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "workflow",
+          "description": "Grants the ability to add and update GitHub Actions workflow files. Workflow files can be committed without this scope if the same file (with both the same path and contents) exists on another branch in the same repository. Workflow files can expose `GITHUB_TOKEN` which may have a different set of s",
+          "sensitivity": "sensitive"
+        },
+        {
+          "name": "read:audit_log",
+          "description": "Read audit log data.",
+          "sensitivity": "normal"
+        }
+      ]
+    },
+    "api_key": null
+  },
+  "env": [
+    {
+      "name": "GITHUB_CLIENT_ID",
+      "description": "OAuth client id",
+      "required": true,
+      "secret": false
+    },
+    {
+      "name": "GITHUB_CLIENT_SECRET",
+      "description": "OAuth client secret",
+      "required": true,
+      "secret": true
+    }
+  ],
+  "setup": {
+    "time": {
+      "likely_minutes": 15,
+      "range_min_minutes": 10,
+      "range_max_minutes": 25,
+      "review_wait_days": 0,
+      "drivers": [
+        "consent screen"
+      ],
+      "confidence": "low"
+    },
+    "steps": [
+      {
+        "order": 1,
+        "title": "Navigate to Settings",
+        "detail": "In the upper-right corner of any page on GitHub, click your profile picture, then click Settings.",
+        "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app"
+      },
+      {
+        "order": 2,
+        "title": "Open Developer settings",
+        "detail": "In the left sidebar, click Developer settings.",
+        "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app"
+      },
+      {
+        "order": 3,
+        "title": "Open OAuth apps",
+        "detail": "In the left sidebar, click OAuth apps.",
+        "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app"
+      },
+      {
+        "order": 4,
+        "title": "Start creating a new OAuth app",
+        "detail": "Click New OAuth App. If you haven't created an app before, this button will say, Register a new application.",
+        "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app"
+      },
+      {
+        "order": 5,
+        "title": "Enable device flow (optional)",
+        "detail": "If your OAuth app will use the device flow to identify and authorize users, click Enable Device Flow.",
+        "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app"
+      },
+      {
+        "order": 6,
+        "title": "Adjust token expiration setting",
+        "detail": "Expire user access tokens is enabled by default. If your app's authentication code hasn't been updated to support short-lived tokens, uncheck the box until support is added.",
+        "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app"
+      },
+      {
+        "order": 7,
+        "title": "Register the application",
+        "detail": "Click Register application.",
+        "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app"
+      }
+    ],
+    "verification": [
+      {
+        "order": 1,
+        "method": "browser",
+        "command": "open \"https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=offline_access%20%28no%20scope%29%20repo%20repo%3Astatus%20repo_deployment%20public_repo\"",
+        "expected": "The provider shows its consent screen; after approval the browser lands on your redirect URI with a ?code= parameter."
+      },
+      {
+        "order": 2,
+        "method": "curl",
+        "command": "curl -sS -X POST \"https://github.com/login/oauth/access_token\" -H \"Accept: application/json\" -d \"client_id=${GITHUB_CLIENT_ID}\" -d \"client_secret=${GITHUB_CLIENT_SECRET}\" -d \"code=$CODE\" -d \"redirect_uri=$REDIRECT_URI\" -d \"grant_type=authorization_code\"",
+        "expected": "A JSON response containing access_token (and refresh_token if you requested offline access)."
+      }
+    ],
+    "blockers": [
+      {
+        "id": "github_bad_verification_code",
+        "symptom": "bad_verification_code from the token endpoint",
+        "cause": "The code expired (10 minutes), was already exchanged, or belongs to another client.",
+        "fix": "Restart the authorization redirect and exchange the new code once, immediately. Check the client ID matches the app that issued the code.",
+        "severity": "blocker",
+        "likelihood": "common"
+      },
+      {
+        "id": "github_incorrect_client_credentials",
+        "symptom": "incorrect_client_credentials",
+        "cause": "Client ID or secret does not match the GitHub OAuth app.",
+        "fix": "Copy the client ID and generate a new client secret in the same OAuth app; update both server-side values together.",
+        "severity": "blocker",
+        "likelihood": "common"
+      },
+      {
+        "id": "redirect_uri_mismatch",
+        "symptom": "redirect_uri_mismatch, or the provider says the redirect URI is not registered",
+        "cause": "The callback URL sent in the request does not exactly match a registered redirect URI.",
+        "fix": "Register the exact scheme, host, port and path in the provider console. No wildcards. Match the trailing slash. Use 127.0.0.1 rather than localhost if the provider is strict.",
+        "severity": "blocker",
+        "likelihood": "common"
+      },
+      {
+        "id": "invalid_scope",
+        "symptom": "invalid_scope, or the consent screen omits a scope you requested",
+        "cause": "The scope is not enabled for this app, is spelled differently, or was not granted by the user.",
+        "fix": "Enable the scope in the provider console, request only configured scopes, then re-run consent. Check for read vs write variants.",
+        "severity": "blocker",
+        "likelihood": "common"
+      },
+      {
+        "id": "invalid_client",
+        "symptom": "invalid_client, 401 unauthorized_client, or 'client authentication failed'",
+        "cause": "Client ID/secret pair is wrong, the secret was rotated, or a public client is sending a secret.",
+        "fix": "Copy both values from the same app. Rotate the secret and redeploy. Public/native clients should use PKCE and no client secret.",
+        "severity": "blocker",
+        "likelihood": "common"
+      },
+      {
+        "id": "access_denied",
+        "symptom": "access_denied after the consent screen",
+        "cause": "The user declined, is not an allowed test user, or the app is blocked by policy.",
+        "fix": "Add the account as a test user, use the correct workspace, or complete the provider's app verification. Try an incognito window to avoid a stale session.",
+        "severity": "blocker",
+        "likelihood": "common"
+      },
+      {
+        "id": "missing_refresh_token",
+        "symptom": "The token response has access_token but no refresh_token",
+        "cause": "Offline access was not requested, consent was previously granted, or the provider only issues refresh tokens to certain client types.",
+        "fix": "Request offline access (and a consent prompt if needed), revoke the app grant, then retry. Store the refresh token server-side.",
+        "severity": "warning",
+        "likelihood": "common"
+      },
+      {
+        "id": "pkce_verifier_mismatch",
+        "symptom": "invalid_grant with a PKCE verification error",
+        "cause": "The code_verifier does not match the code_challenge, or the challenge was reused.",
+        "fix": "Generate a fresh verifier per authorization request, use S256, keep it until the token exchange, and never reuse an authorization code.",
+        "severity": "blocker",
+        "likelihood": "occasional"
+      }
+    ]
+  },
+  "unknown_fields": [
+    "auth.oauth.consent_screen",
+    "auth.oauth.discovery_url",
+    "auth.oauth.pkce"
+  ],
+  "warnings": [
+    {
+      "code": "FIELD_UNVERIFIED",
+      "message": "Some details weren't stated in the docs and are marked as such."
+    }
+  ],
+  "notes": [
+    "Steps and time are generated from the provider's docs; time is a heuristic."
+  ],
+  "sources": [
+    {
+      "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+      "title": "Creating an OAuth app - GitHub Docs",
+      "fetched_at": "2026-10-28T00:15:33+00:00",
+      "http_status": 200,
+      "doc_hash": "sha256:bcc41b09c338b7000dc620e383543b297ce47af66187f44d9c0187ced292c3bb"
+    },
+    {
+      "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+      "title": "Authorizing OAuth apps - GitHub Docs",
+      "fetched_at": "2026-10-28T00:15:33+00:00",
+      "http_status": 200,
+      "doc_hash": "sha256:2829d59ff399044da43a2187490a6b7e6564d1605fa5d4ccad28c8260678d4a1"
+    },
+    {
+      "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+      "title": "Scopes for OAuth apps - GitHub Docs",
+      "fetched_at": "2026-10-28T00:15:33+00:00",
+      "http_status": 200,
+      "doc_hash": "sha256:57048bf9c745d66b15125a92e3c86589476b2c06b49858cdbebb47f209fbc8c4"
+    }
+  ],
+  "provenance": {
+    "auth.oauth.authorization_url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "auth.oauth.token_url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "auth.oauth.scopes[0].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "auth.oauth.scopes[0].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "auth.oauth.scopes[1].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[1].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[2].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[2].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[3].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[3].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[4].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[4].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[5].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[5].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[6].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[6].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[7].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[7].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[8].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[8].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[9].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[9].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[10].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[10].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[11].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[11].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[12].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[12].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[13].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[13].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[14].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[14].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[15].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[15].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[16].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[16].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[17].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[17].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[18].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[18].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[19].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[19].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[20].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[20].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[21].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[21].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[22].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[22].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[23].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[23].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[24].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[24].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[25].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[25].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[26].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[26].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[27].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[27].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[28].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[28].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[29].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[29].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[30].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[30].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[31].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[31].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[32].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[32].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[33].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[33].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[34].name": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.scopes[34].description": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+    "auth.oauth.client_secret_required": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "auth.oauth.refresh_token": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+    "auth.oauth.redirect_uri_rules": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps"
+  }
+}

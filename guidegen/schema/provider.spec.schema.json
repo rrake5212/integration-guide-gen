@@ -1,0 +1,338 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://guidegen.local/schemas/provider.spec.schema.json",
+  "title": "Provider setup spec",
+  "description": "The canonical fact model. guide.md and agent.json are projections of this document; the verifier fails if they diverge.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generator",
+    "generated_at",
+    "status",
+    "provider",
+    "resolution",
+    "auth",
+    "setup",
+    "env",
+    "sources",
+    "quality",
+    "unknown_fields",
+    "warnings",
+    "notes"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "generator": { "$ref": "#/$defs/Generator" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "status": { "type": "string", "enum": ["complete", "partial", "failed"] },
+    "provider": { "$ref": "#/$defs/ProviderRef" },
+    "resolution": { "$ref": "#/$defs/Resolution" },
+    "auth": { "$ref": "#/$defs/Auth" },
+    "setup": { "$ref": "#/$defs/Setup" },
+    "env": { "type": "array", "items": { "$ref": "#/$defs/EnvVar" } },
+    "sources": { "type": "array", "items": { "$ref": "#/$defs/Source" } },
+    "quality": { "$ref": "#/$defs/Quality" },
+    "unknown_fields": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[A-Za-z0-9_]+(\\[[0-9]+\\])?(\\.[A-Za-z0-9_]+(\\[[0-9]+\\])?)*$" },
+      "uniqueItems": true
+    },
+    "warnings": { "type": "array", "items": { "$ref": "#/$defs/Warning" } },
+    "notes": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+  },
+  "$defs": {
+    "Generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "model", "prompt_version"],
+      "properties": {
+        "name": { "const": "guidegen" },
+        "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+        "model": { "type": ["string", "null"], "minLength": 1 },
+        "prompt_version": { "type": "string", "minLength": 1 }
+      }
+    },
+    "ProviderRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "domains", "docs", "console", "discovery", "note"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "name": { "type": "string", "minLength": 1 },
+        "domains": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]*\\.[a-z]{2,}$" }
+        },
+        "docs": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^https://" }
+        },
+        "console": { "type": ["string", "null"], "pattern": "^https://" },
+        "discovery": { "type": ["string", "null"], "pattern": "^https://" },
+        "note": { "type": ["string", "null"] }
+      }
+    },
+    "Resolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["input", "normalized", "kind", "decision", "matched_by", "confidence", "availability", "alternatives", "notes"],
+      "properties": {
+        "input": { "type": "string", "minLength": 1 },
+        "normalized": { "type": "string", "minLength": 1 },
+        "kind": { "type": "string", "enum": ["domain", "text"] },
+        "decision": { "type": "string", "enum": ["resolved", "ask", "unknown"] },
+        "matched_by": { "type": "string", "enum": ["domain", "alias", "toolkit", "fuzzy", "discovery", "pick"] },
+        "confidence": { "type": "string", "enum": ["high", "medium", "low", "none"] },
+        "availability": { "type": "string", "enum": ["self_serve_oauth", "approval_gated", "api_key_only", "oidc_only", "no_public_api", "unknown"] },
+        "alternatives": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "name", "domain", "availability", "score", "matched_by"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "name": { "type": "string", "minLength": 1 },
+              "domain": { "type": ["string", "null"] },
+              "availability": { "type": "string", "enum": ["self_serve_oauth", "approval_gated", "api_key_only", "oidc_only", "no_public_api", "unknown"] },
+              "score": { "type": "number", "minimum": 0, "maximum": 1 },
+              "matched_by": { "type": "string", "enum": ["domain", "alias", "toolkit", "fuzzy", "discovery", "pick"] }
+            }
+          }
+        },
+        "notes": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "Auth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["methods", "primary", "oauth", "api_key"],
+      "properties": {
+        "methods": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "enum": ["oauth2", "oidc", "api_key", "basic", "none"] }
+        },
+        "primary": { "type": ["string", "null"], "enum": ["oauth2", "oidc", "api_key", "basic", "none", null] },
+        "oauth": {
+          "anyOf": [{ "$ref": "#/$defs/OAuth" }, { "type": "null" }]
+        },
+        "api_key": {
+          "anyOf": [{ "$ref": "#/$defs/ApiKey" }, { "type": "null" }]
+        }
+      }
+    },
+    "OAuth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authorization_url", "token_url", "discovery_url", "scopes", "pkce", "client_secret_required", "refresh_token", "redirect_uri_rules", "consent_screen"],
+      "properties": {
+        "authorization_url": { "$ref": "#/$defs/FactUrl" },
+        "token_url": { "$ref": "#/$defs/FactUrl" },
+        "discovery_url": { "$ref": "#/$defs/FactUrl" },
+        "scopes": { "type": "array", "items": { "$ref": "#/$defs/Scope" } },
+        "pkce": { "$ref": "#/$defs/FactBool" },
+        "client_secret_required": { "$ref": "#/$defs/FactBool" },
+        "refresh_token": { "$ref": "#/$defs/FactBool" },
+        "redirect_uri_rules": { "$ref": "#/$defs/FactString" },
+        "consent_screen": { "$ref": "#/$defs/FactString" }
+      }
+    },
+    "Scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "description", "sensitivity"],
+      "properties": {
+        "name": { "$ref": "#/$defs/FactString" },
+        "description": { "$ref": "#/$defs/FactString" },
+        "sensitivity": { "type": "string", "enum": ["normal", "sensitive", "restricted", "unknown"] }
+      }
+    },
+    "ApiKey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["where_to_create_url", "header_name", "prefix", "env_var", "rotation"],
+      "properties": {
+        "where_to_create_url": { "$ref": "#/$defs/FactUrl" },
+        "header_name": { "$ref": "#/$defs/FactString" },
+        "prefix": { "$ref": "#/$defs/FactString" },
+        "env_var": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+        "rotation": { "$ref": "#/$defs/FactString" }
+      }
+    },
+    "Setup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["time", "prerequisites", "steps", "verification", "blockers"],
+      "properties": {
+        "time": { "$ref": "#/$defs/Time" },
+        "prerequisites": { "type": "array", "items": { "$ref": "#/$defs/FactString" } },
+        "steps": { "type": "array", "items": { "$ref": "#/$defs/Step" } },
+        "verification": { "type": "array", "items": { "$ref": "#/$defs/Verification" } },
+        "blockers": { "type": "array", "items": { "$ref": "#/$defs/Blocker" } }
+      }
+    },
+    "Time": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["likely_minutes", "range_min_minutes", "range_max_minutes", "review_wait_days", "drivers", "confidence"],
+      "properties": {
+        "likely_minutes": { "type": ["integer", "null"], "minimum": 0 },
+        "range_min_minutes": { "type": ["integer", "null"], "minimum": 0 },
+        "range_max_minutes": { "type": ["integer", "null"], "minimum": 0 },
+        "review_wait_days": { "type": ["integer", "null"], "minimum": 0 },
+        "drivers": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "confidence": { "type": "string", "enum": ["high", "medium", "low", "none"] }
+      }
+    },
+    "Step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["order", "title", "detail", "url"],
+      "properties": {
+        "order": { "type": "integer", "minimum": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "detail": { "type": "string", "minLength": 1 },
+        "url": { "type": ["string", "null"], "pattern": "^https://" }
+      }
+    },
+    "Verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["order", "method", "command", "expected"],
+      "properties": {
+        "order": { "type": "integer", "minimum": 1 },
+        "method": { "type": "string", "enum": ["curl", "browser", "cli", "sdk"] },
+        "command": { "type": ["string", "null"] },
+        "expected": { "type": "string", "minLength": 1 }
+      }
+    },
+    "Blocker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "symptom", "cause", "fix", "severity", "likelihood"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_]*$" },
+        "symptom": { "type": "string", "minLength": 1 },
+        "cause": { "type": "string", "minLength": 1 },
+        "fix": { "type": "string", "minLength": 1 },
+        "severity": { "type": "string", "enum": ["blocker", "friction", "warning"] },
+        "likelihood": { "type": "string", "enum": ["common", "occasional", "rare"] }
+      }
+    },
+    "EnvVar": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "description", "required", "secret"],
+      "properties": {
+        "name": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+        "description": { "type": "string", "minLength": 1 },
+        "required": { "type": "boolean" },
+        "secret": { "type": "boolean" }
+      }
+    },
+    "Source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url", "title", "fetched_at", "http_status", "doc_hash"],
+      "properties": {
+        "url": { "type": "string", "pattern": "^https://" },
+        "title": { "type": "string", "minLength": 1 },
+        "fetched_at": { "type": "string", "format": "date-time" },
+        "http_status": { "type": "integer", "minimum": 100, "maximum": 599 },
+        "doc_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      }
+    },
+    "Quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["facts_total", "facts_verified", "unknown_count", "confidence"],
+      "properties": {
+        "facts_total": { "type": "integer", "minimum": 0 },
+        "facts_verified": { "type": "integer", "minimum": 0 },
+        "unknown_count": { "type": "integer", "minimum": 0 },
+        "confidence": { "type": "string", "enum": ["high", "medium", "low", "none"] }
+      }
+    },
+    "Warning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message"],
+      "properties": {
+        "code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+        "message": { "type": "string", "minLength": 1 }
+      }
+    },
+    "FactBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "quote", "source_url"],
+      "properties": {
+        "value": {},
+        "quote": { "type": ["string", "null"], "minLength": 1 },
+        "source_url": { "type": ["string", "null"], "pattern": "^https://" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "value": { "type": "null" } }, "required": ["value"] },
+          "then": {
+            "properties": {
+              "quote": { "type": "null" },
+              "source_url": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "value": { "not": { "type": "null" } } }, "required": ["value"] },
+          "then": {
+            "properties": {
+              "quote": { "type": "string", "minLength": 1 },
+              "source_url": { "type": "string", "pattern": "^https://" }
+            }
+          }
+        }
+      ]
+    },
+    "FactString": {
+      "allOf": [
+        { "$ref": "#/$defs/FactBase" },
+        { "properties": { "value": { "type": ["string", "null"] } } }
+      ]
+    },
+    "FactStringList": {
+      "allOf": [
+        { "$ref": "#/$defs/FactBase" },
+        {
+          "properties": {
+            "value": {
+              "type": ["array", "null"],
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true
+            }
+          }
+        }
+      ]
+    },
+    "FactUrl": {
+      "allOf": [
+        { "$ref": "#/$defs/FactBase" },
+        { "properties": { "value": { "type": ["string", "null"], "pattern": "^https://[^\\s]+$" } } }
+      ]
+    },
+    "FactBool": {
+      "allOf": [
+        { "$ref": "#/$defs/FactBase" },
+        { "properties": { "value": { "type": ["boolean", "null"] } } }
+      ]
+    },
+    "FactInt": {
+      "allOf": [
+        { "$ref": "#/$defs/FactBase" },
+        { "properties": { "value": { "type": ["integer", "null"], "minimum": 0 } } }
+      ]
+    }
+  }
+}

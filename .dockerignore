@@ -1,0 +1,21 @@
+# Never bake secrets or local state into the image.
+.env
+.env.*
+!.env.example
+
+# Local dev environment
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Runtime state — mounted as a volume instead
+data/jobs/
+data/cache/
+data/guidegen.db
+data/guidegen.db-*
+
+# VCS / tooling
+.git/
+.gitignore
+.pytest_cache/

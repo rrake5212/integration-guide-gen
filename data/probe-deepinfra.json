@@ -1,0 +1,102 @@
+{
+  "provider": "deepinfra",
+  "base_url": "https://api.deepinfra.com/v1/openai",
+  "model": "deepseek-ai/DeepSeek-V4.1-Flash-1017",
+  "probed_at": "2026-10-27T22:22:59+00:00",
+  "attempts": [
+    {
+      "name": "models",
+      "http": 200,
+      "ok": true,
+      "ms": 1808,
+      "usage": null,
+      "error": null,
+      "model": "deepseek-ai/DeepSeek-V4.1-Flash-1017",
+      "model_found": true,
+      "context_length": 1048576,
+      "pricing": {
+        "input_tokens": 0.2,
+        "output_tokens": 0.6,
+        "cache_read_tokens": 0.006
+      }
+    },
+    {
+      "name": "no_key",
+      "http": 401,
+      "ok": false,
+      "ms": 819,
+      "usage": null,
+      "error": "{\"error\":{\"message\":\"missing API key\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":\"invalid_api_key\"}}"
+    },
+    {
+      "name": "plain",
+      "http": 200,
+      "ok": true,
+      "ms": 1323,
+      "usage": {
+        "prompt_tokens": 12,
+        "total_tokens": 15,
+        "completion_tokens": 3,
+        "estimated_cost": 2.058e-06,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": null
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "error": null,
+      "content": "pong"
+    },
+    {
+      "name": "json_schema",
+      "http": 200,
+      "ok": true,
+      "ms": 2928,
+      "usage": {
+        "prompt_tokens": 40,
+        "total_tokens": 75,
+        "completion_tokens": 35,
+        "estimated_cost": 1.421e-05,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": null
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "error": null,
+      "rung": 1,
+      "schema_valid": true,
+      "validation_error": null
+    },
+    {
+      "name": "json_schema_repeat",
+      "http": 200,
+      "ok": true,
+      "ms": 2995,
+      "usage": {
+        "prompt_tokens": 40,
+        "total_tokens": 75,
+        "completion_tokens": 35,
+        "estimated_cost": 1.421e-05,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": null
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "error": null,
+      "rung": 1,
+      "schema_valid": true,
+      "validation_error": null
+    }
+  ],
+  "winning_rung": "json_schema",
+  "success": true,
+  "deterministic": true
+}

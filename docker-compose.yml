@@ -1,0 +1,60 @@
+# GuideGen — the deployment unit.
+#
+#   docker compose up -d --build     build + start
+#   docker compose ps                health / uptime
+#   docker compose logs -f app       job + stage logs
+#   docker compose down              stop
+#
+# Loopback-only binding: Caddy on the host terminates TLS and proxies
+# https://<host>/ -> 127.0.0.1:8765. The app is never directly reachable.
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: guidegen:local
+    container_name: guidegen
+    restart: unless-stopped
+
+    # .env must exist (cp .env.example .env, then fill DEEPINFRA_API_KEY).
+    # Values here are explicit so a missing .env key cannot silently fall back
+    # to a model the operator did not choose.
+    env_file:
+      - .env
+    environment:
+      LLM_PROVIDER: "${LLM_PROVIDER:-deepinfra}"
+      LLM_MODEL: "${LLM_MODEL:-deepseek-ai/DeepSeek-V4.1-Flash-1017}"
+      GUIDEGEN_JOB_TIMEOUT_SECONDS: "${GUIDEGEN_JOB_TIMEOUT_SECONDS:-180}"
+
+    ports:
+      - "127.0.0.1:8765:8765"
+
+    volumes:
+      # SQLite + every job artifact. Bind mount on purpose: guidegen.debug /
+      # replay can then read job dirs from the host without docker exec.
+      # `runtime/` (not `data/`) so `data/golden` stays in the build context —
+      # the image bakes it in, and the mount would otherwise mask it.
+      - ./runtime:/app/data
+
+    # The Lightsail box also runs journey-builder-mcp in 1 GB of RAM. Cap this
+    # container so a runaway job OOMs here instead of taking the box down.
+    mem_limit: 512m
+
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8765/api/health', timeout=4).read()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

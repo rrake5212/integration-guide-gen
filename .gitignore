@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.pyc
+data/jobs/
+data/cache/
+data/guidegen.db*
+# container runtime state (bind-mounted at /app/data)
+runtime/

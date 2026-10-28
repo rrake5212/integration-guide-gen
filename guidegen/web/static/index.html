@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GuideGen — integration field notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body class="landing">
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <a class="wordmark" href="/">GUIDE<span>/</span>GEN</a>
+    <p class="masthead-note">Integration field notes · Vol. 01</p>
+    <p class="masthead-status"><span class="dot"></span> private testing build</p>
+  </header>
+
+  <main class="landing-grid">
+    <section class="hero">
+      <p class="kicker">OAuth &amp; API setup, sourced from the docs</p>
+      <h1>Make your agent<br><em>understand</em>&nbsp;the app.</h1>
+      <p class="lede">Name an app or paste its website. We resolve the provider, read its own documentation,
+        and write a setup guide you can follow — and an agent brief it can read.</p>
+
+      <form id="resolve-form" class="resolve-form" autocomplete="off">
+        <label class="sr-only" for="query">App name or website</label>
+        <input id="query" name="query" type="text" placeholder="google, github, tally.so…" maxlength="200" required>
+        <button type="submit" id="resolve-button">Resolve <span aria-hidden="true">↗</span></button>
+      </form>
+      <div class="examples" aria-label="Examples">
+        <span>Try</span>
+        <button type="button" data-example="google">google</button>
+        <button type="button" data-example="github">github</button>
+        <button type="button" data-example="tally.so">tally.so</button>
+      </div>
+
+      <div id="resolution" class="resolution" hidden aria-live="polite"></div>
+      <div id="error" class="error-box" hidden role="alert"></div>
+
+      <div class="how">
+        <div class="how-item"><span>01</span><h2>Resolve, don't guess</h2><p>Ambiguous names stop and ask. Every provider is traced to the company that owns the app registration.</p></div>
+        <div class="how-item"><span>02</span><h2>Quote, then write</h2><p>Every fact is anchored to a verbatim line in the provider's docs. Missing facts stay missing, not invented.</p></div>
+        <div class="how-item"><span>03</span><h2>Two readers</h2><p>The same source produces a human guide and a machine brief. One model, two projections.</p></div>
+      </div>
+    </section>
+
+    <aside class="side-notes">
+      <div class="note-card">
+        <p class="note-label">What you get</p>
+        <ol>
+          <li>Console steps, in order</li>
+          <li>Time range + review waits</li>
+          <li>Exact endpoints, scopes, env vars</li>
+          <li>Blocker playbook</li>
+          <li>agent.json + agent.md</li>
+        </ol>
+      </div>
+      <div class="note-card note-card--dark">
+        <p class="note-label">The rule</p>
+        <p class="big-quote">“No quote,<br>no fact.”</p>
+        <p class="note-small">A guide can be partial. It cannot be plausible.</p>
+      </div>
+      <div class="note-card note-card--plain">
+        <p class="note-label">Built for</p>
+        <p>Developers wiring an agent into a tool that was designed for humans. Friends-only testing; unlisted job links.</p>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="colophon">
+    <span>GUIDEGEN / 0.2</span>
+    <span>docs in · setup out</span>
+    <span>no key material in the browser</span>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

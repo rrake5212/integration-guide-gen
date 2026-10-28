@@ -1,0 +1,43 @@
+# GuideGen — public HTTPS edge.
+#
+# Installed to /etc/caddy/sites/guidegen.caddy on the Lightsail instance, pulled in
+# by `import /etc/caddy/sites/*.caddy` in /etc/caddy/Caddyfile (bootstrap.sh adds
+# that line once). sslip.io resolves the hostname to the instance IP, so no DNS
+# record is needed; Caddy issues and renews the Let's Encrypt certificate itself.
+#
+#   browser -> Caddy :443 -> 127.0.0.1:8765 -> guidegen container
+
+guides.100.31.120.181.sslip.io {
+	# The progress stream must not be buffered by anything, or the browser shows
+	# nothing until the job has already finished. flush_interval -1 disables
+	# Caddy's response buffering for this branch, and compression is deliberately
+	# NOT applied here (a compressing writer is another buffer).
+	@sse path /api/guides/*/events
+	handle @sse {
+		reverse_proxy 127.0.0.1:8765 {
+			flush_interval -1
+		}
+	}
+
+	# Everything else: markdown, JSON, HTML — compressible and small.
+	handle {
+		encode zstd gzip
+		reverse_proxy 127.0.0.1:8765
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "no-referrer"
+		-Server
+	}
+
+	# Access log to stderr -> journald. Deliberately not a file: the Debian/Ubuntu
+	# caddy service runs sandboxed as the `caddy` user and cannot create /var/log/caddy,
+	# which turns a log config into a startup failure. Read with:
+	#   sudo journalctl -u caddy -f
+	log {
+		output stderr
+		format console
+	}
+}

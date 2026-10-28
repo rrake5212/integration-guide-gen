@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>%%TITLE%% — GuideGen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body class="result">
+  <div class="grain" aria-hidden="true"></div>
+  <header class="masthead">
+    <a class="wordmark" href="/">GUIDE<span>/</span>GEN</a>
+    <p class="masthead-note">Integration field notes · Vol. 01</p>
+    <p class="masthead-status"><span class="dot"></span> unlisted result</p>
+  </header>
+
+  <div class="result-shell">
+    <div class="result-bar">
+      <a href="/">← New guide</a>
+      <span>%%JOB_ID%%</span>
+      <span class="badge badge--%%STATUS%%">%%STATUS_LABEL%%</span>
+    </div>
+
+    <section class="result-hero">
+      <div>
+        <p class="kicker">Setup guide</p>
+        <h1>%%PROVIDER%%</h1>
+        <p class="lede">%%META%%</p>
+      </div>
+      <div class="result-metrics">%%METRICS%%</div>
+    </section>
+
+    %%WARNINGS%%
+    %%PROGRESS%%
+
+    <div id="guide-tabs" class="guide-tabs" %%TABS_HIDDEN%%>
+      <button class="tab" type="button" data-tab="human" aria-selected="true">Human guide</button>
+      <button class="tab" type="button" data-tab="json" aria-selected="false">agent.json</button>
+      <button class="tab" type="button" data-tab="md" aria-selected="false">agent.md</button>
+      <div class="tab-actions">
+        <button class="btn btn--ghost" type="button" id="copy-button">Copy</button>
+        <a class="btn" id="download-link" href="%%DOWNLOAD%%" download>Download</a>
+      </div>
+    </div>
+
+    <div id="panel-human" class="panel" data-panel="human" %%PANELS_HIDDEN%%>
+      <article class="prose">%%HUMAN%%</article>
+    </div>
+    <div id="panel-json" class="panel" data-panel="json" hidden>
+      <pre class="agent-view">%%AGENT_JSON%%</pre>
+    </div>
+    <div id="panel-md" class="panel" data-panel="md" hidden>
+      <pre class="agent-view">%%AGENT_MD%%</pre>
+    </div>
+  </div>
+
+  <footer class="colophon">
+    <span>GUIDEGEN / 0.2</span>
+    <span>quote-verified · unlisted</span>
+    <span>generated from provider docs</span>
+  </footer>
+
+  <script>
+    window.GUIDEGEN = { jobId: "%%JOB_ID%%", status: "%%STATUS%%" };
+  </script>
+  <script src="/static/result.js"></script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+{
+  "schema": 1,
+  "generated": "2026-10-27",
+  "providers": [
+    {
+      "id": "google",
+      "name": "Google",
+      "domains": [
+        "google.com",
+        "google.co.in",
+        "youtube.com"
+      ],
+      "aliases": [
+        "google",
+        "google workspace",
+        "google cloud",
+        "gmail",
+        "google sheets",
+        "google drive",
+        "google calendar",
+        "google docs",
+        "youtube"
+      ],
+      "slug_prefixes": [
+        "GOOGLE",
+        "GMAIL",
+        "YOUTUBE"
+      ],
+      "availability": "self_serve_oauth",
+      "docs": [
+        "https://developers.google.com/identity/protocols/oauth2/web-server",
+        "https://developers.google.com/identity/protocols/oauth2"
+      ],
+      "console": "https://console.cloud.google.com/apis/credentials",
+      "discovery": "https://accounts.google.com/.well-known/openid-configuration"
+    },
+    {
+      "id": "github",
+      "name": "GitHub",
+      "domains": [
+        "github.com"
+      ],
+      "aliases": [
+        "github",
+        "github mcp"
+      ],
+      "slug_prefixes": [
+        "GITHUB"
+      ],
+      "availability": "self_serve_oauth",
+      "docs": [
+        "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+        "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps",
+        "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps"
+      ],
+      "console": "https://github.com/settings/developers",
+      "discovery": null
+    },
+    {
+      "id": "slack",
+      "name": "Slack",
+      "domains": [
+        "slack.com"
+      ],
+      "aliases": [
+        "slack",
+        "slackbot"
+      ],
+      "slug_prefixes": [
+        "SLACK"
+      ],
+      "availability": "self_serve_oauth",
+      "docs": [
+        "https://api.slack.com/authentication/oauth-v2"
+      ],
+      "console": "https://api.slack.com/apps",
+      "discovery": null
+    },
+    {
+      "id": "meta",
+      "name": "Meta",
+      "domains": [
+        "meta.com",
+        "facebook.com",
+        "whatsapp.com",
+        "instagram.com"
+      ],
+      "aliases": [
+        "meta",
+        "facebook",
+        "whatsapp",
+        "whatsapp business",
+        "instagram"
+      ],
+      "slug_prefixes": [
+        "WHATSAPP",
+        "FACEBOOK",
+        "INSTAGRAM"
+      ],
+      "availability": "approval_gated",
+      "docs": [
+        "https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow"
+      ],
+      "console": "https://developers.facebook.com/apps",
+      "discovery": null
+    },
+    {
+      "id": "tally",
+      "name": "Tally",
+      "domains": [
+        "tally.so"
+      ],
+      "aliases": [
+        "tally",
+        "tally forms",
+        "tally.so"
+      ],
+      "slug_prefixes": [
+        "TALLY"
+      ],
+      "availability": "api_key_only",
+      "docs": [
+        "https://developers.tally.so/api-reference/introduction",
+        "https://tally.so/help/api"
+      ],
+      "console": "https://tally.so/settings/api",
+      "discovery": null
+    },
+    {
+      "id": "tally-erp",
+      "name": "Tally ERP / TallyPrime",
+      "domains": [
+        "tallysolutions.com"
+      ],
+      "aliases": [
+        "tally erp",
+        "tallyerp",
+        "tally prime",
+        "tallyprime",
+        "tally solutions",
+        "tally"
+      ],
+      "slug_prefixes": [],
+      "availability": "unknown",
+      "docs": [
+        "https://tallysolutions.com/"
+      ],
+      "console": null,
+      "discovery": null,
+      "note": "Desktop accounting product; no public OAuth app registration found. Present only to disambiguate bare 'tally'."
+    },
+    {
+      "id": "notion",
+      "name": "Notion",
+      "domains": [
+        "notion.so",
+        "notion.com"
+      ],
+      "aliases": [
+        "notion",
+        "notion mcp"
+      ],
+      "slug_prefixes": [
+        "NOTION"
+      ],
+      "availability": "self_serve_oauth",
+      "docs": [
+        "https://developers.notion.com/guides/get-started/authorization"
+      ],
+      "console": "https://www.notion.so/my-integrations",
+      "discovery": null
+    }
+  ]
+}

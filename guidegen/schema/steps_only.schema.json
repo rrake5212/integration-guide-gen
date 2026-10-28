@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://guidegen.local/schemas/steps_only.schema.json",
+  "title": "Setup steps",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["steps"],
+  "properties": {
+    "steps": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "detail", "quote"],
+        "properties": {
+          "title": {"type": "string", "minLength": 1, "maxLength": 120},
+          "detail": {"type": "string", "minLength": 1, "maxLength": 500},
+          "quote": {"type": "string", "minLength": 8, "maxLength": 500}
+        }
+      }
+    }
+  }
+}

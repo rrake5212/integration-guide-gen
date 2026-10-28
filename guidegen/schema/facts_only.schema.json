@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://guidegen.local/schemas/facts_only.schema.json",
+  "title": "Chunk facts",
+  "description": "One object keyed by fact path. Every path is required; value/quote are null when the docs do not state the fact. The runtime schema uses only the paths relevant to the provider.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "auth.oauth.authorization_url",
+    "auth.oauth.token_url",
+    "auth.oauth.pkce",
+    "auth.oauth.client_secret_required",
+    "auth.oauth.refresh_token",
+    "auth.oauth.redirect_uri_rules",
+    "auth.oauth.consent_screen",
+    "auth.api_key.where_to_create_url",
+    "auth.api_key.header_name",
+    "auth.api_key.prefix",
+    "auth.api_key.rotation"
+  ],
+  "properties": {
+    "auth.oauth.authorization_url": { "$ref": "#/$defs/MaybeFact" },
+    "auth.oauth.token_url": { "$ref": "#/$defs/MaybeFact" },
+    "auth.oauth.pkce": { "$ref": "#/$defs/MaybeFact" },
+    "auth.oauth.client_secret_required": { "$ref": "#/$defs/MaybeFact" },
+    "auth.oauth.refresh_token": { "$ref": "#/$defs/MaybeFact" },
+    "auth.oauth.redirect_uri_rules": { "$ref": "#/$defs/MaybeFact" },
+    "auth.oauth.consent_screen": { "$ref": "#/$defs/MaybeFact" },
+    "auth.api_key.where_to_create_url": { "$ref": "#/$defs/MaybeFact" },
+    "auth.api_key.header_name": { "$ref": "#/$defs/MaybeFact" },
+    "auth.api_key.prefix": { "$ref": "#/$defs/MaybeFact" },
+    "auth.api_key.rotation": { "$ref": "#/$defs/MaybeFact" }
+  },
+  "$defs": {
+    "MaybeFact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "quote"],
+      "properties": {
+        "value": { "type": ["string", "null"], "maxLength": 500 },
+        "quote": { "type": ["string", "null"], "maxLength": 500 }
+      }
+    }
+  }
+}

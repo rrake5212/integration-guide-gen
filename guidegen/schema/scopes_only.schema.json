@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://guidegen.local/schemas/scopes_only.schema.json",
+  "title": "Scope table",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["scopes"],
+  "properties": {
+    "scopes": {
+      "type": "array",
+      "maxItems": 40,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "description", "quote"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+          "description": { "type": "string", "minLength": 1, "maxLength": 300 },
+          "quote": { "type": "string", "minLength": 8, "maxLength": 500 }
+        }
+      }
+    }
+  }
+}

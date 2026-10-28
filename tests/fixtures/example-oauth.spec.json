@@ -1,0 +1,244 @@
+{
+  "schema_version": "1.0",
+  "generator": {
+    "name": "guidegen",
+    "version": "0.1.0",
+    "model": "deepseek-ai/DeepSeek-V4.1-Flash-1017",
+    "prompt_version": "p1"
+  },
+  "generated_at": "2026-10-27T22:30:00Z",
+  "status": "complete",
+  "provider": {
+    "id": "acme-notes",
+    "name": "Acme Notes",
+    "domains": [
+      "acme-notes.example"
+    ],
+    "docs": [
+      "https://example.com/docs/oauth",
+      "https://example.com/docs/scopes"
+    ],
+    "console": "https://example.com/console",
+    "discovery": null,
+    "note": "Synthetic fixture for schema tests."
+  },
+  "resolution": {
+    "input": "acme-notes.example",
+    "normalized": "acme-notes.example",
+    "kind": "domain",
+    "decision": "resolved",
+    "matched_by": "domain",
+    "confidence": "high",
+    "availability": "self_serve_oauth",
+    "alternatives": [],
+    "notes": []
+  },
+  "auth": {
+    "methods": [
+      "oauth2"
+    ],
+    "primary": "oauth2",
+    "oauth": {
+      "authorization_url": {
+        "value": "https://example.com/oauth/authorize",
+        "quote": "Send users to https://example.com/oauth/authorize.",
+        "source_url": "https://example.com/docs/oauth"
+      },
+      "token_url": {
+        "value": "https://example.com/oauth/token",
+        "quote": "Exchange the code at https://example.com/oauth/token.",
+        "source_url": "https://example.com/docs/oauth"
+      },
+      "discovery_url": {
+        "value": null,
+        "quote": null,
+        "source_url": null
+      },
+      "scopes": [
+        {
+          "name": {
+            "value": "read",
+            "quote": "The read scope grants read-only access to notes.",
+            "source_url": "https://example.com/docs/scopes"
+          },
+          "description": {
+            "value": "Read your notes.",
+            "quote": "Read your notes.",
+            "source_url": "https://example.com/docs/scopes"
+          },
+          "sensitivity": "normal"
+        },
+        {
+          "name": {
+            "value": "write",
+            "quote": "The write scope lets the app create and edit notes.",
+            "source_url": "https://example.com/docs/scopes"
+          },
+          "description": {
+            "value": "Create and edit notes.",
+            "quote": "Create and edit notes.",
+            "source_url": "https://example.com/docs/scopes"
+          },
+          "sensitivity": "sensitive"
+        }
+      ],
+      "pkce": {
+        "value": true,
+        "quote": "PKCE is required for every authorization request.",
+        "source_url": "https://example.com/docs/oauth"
+      },
+      "client_secret_required": {
+        "value": true,
+        "quote": "Every app must present a client secret at the token endpoint.",
+        "source_url": "https://example.com/docs/oauth"
+      },
+      "refresh_token": {
+        "value": true,
+        "quote": "Refresh tokens are issued with the authorization code.",
+        "source_url": "https://example.com/docs/oauth"
+      },
+      "redirect_uri_rules": {
+        "value": "Must be https and match the registered URI exactly.",
+        "quote": "The redirect URI must be https and match the registered URI exactly.",
+        "source_url": "https://example.com/docs/oauth"
+      },
+      "consent_screen": {
+        "value": "Users see a consent screen listing the requested scopes.",
+        "quote": "Users see a consent screen listing the requested scopes.",
+        "source_url": "https://example.com/docs/oauth"
+      }
+    },
+    "api_key": null
+  },
+  "setup": {
+    "time": {
+      "likely_minutes": 20,
+      "range_min_minutes": 10,
+      "range_max_minutes": 30,
+      "review_wait_days": 0,
+      "drivers": [
+        "create the app",
+        "copy the credentials"
+      ],
+      "confidence": "high"
+    },
+    "prerequisites": [
+      {
+        "value": "An Acme Notes account",
+        "quote": "You need an Acme Notes account.",
+        "source_url": "https://example.com/docs/oauth"
+      },
+      {
+        "value": "A verified workspace",
+        "quote": "Only verified workspaces can create apps.",
+        "source_url": "https://example.com/docs/oauth"
+      }
+    ],
+    "steps": [
+      {
+        "order": 1,
+        "title": "Open the developer console",
+        "detail": "Go to the Acme Notes developer console and sign in.",
+        "url": "https://example.com/console"
+      },
+      {
+        "order": 2,
+        "title": "Create an app",
+        "detail": "Choose Create app, name it, and set the redirect URI.",
+        "url": "https://example.com/console"
+      },
+      {
+        "order": 3,
+        "title": "Copy the credentials",
+        "detail": "Copy the client id and client secret into your environment.",
+        "url": null
+      },
+      {
+        "order": 4,
+        "title": "Authorize a test user",
+        "detail": "Send a test user through the authorization URL and exchange the code.",
+        "url": null
+      }
+    ],
+    "verification": [
+      {
+        "order": 1,
+        "method": "curl",
+        "command": "curl -s -X POST https://example.com/oauth/token -d grant_type=authorization_code",
+        "expected": "A JSON body with access_token and refresh_token."
+      },
+      {
+        "order": 2,
+        "method": "browser",
+        "command": null,
+        "expected": "The consent screen lists read and write."
+      }
+    ],
+    "blockers": [
+      {
+        "id": "redirect_uri_mismatch",
+        "symptom": "invalid_redirect_uri on authorize",
+        "cause": "The URI differs from the registered one.",
+        "fix": "Register the exact https URI, including the path.",
+        "severity": "blocker",
+        "likelihood": "common"
+      },
+      {
+        "id": "missing_secret",
+        "symptom": "invalid_client at the token endpoint",
+        "cause": "The client secret was not sent.",
+        "fix": "Send the secret in the request body.",
+        "severity": "blocker",
+        "likelihood": "occasional"
+      }
+    ]
+  },
+  "env": [
+    {
+      "name": "ACME_CLIENT_ID",
+      "description": "OAuth client id",
+      "required": true,
+      "secret": false
+    },
+    {
+      "name": "ACME_CLIENT_SECRET",
+      "description": "OAuth client secret",
+      "required": true,
+      "secret": true
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://example.com/docs/oauth",
+      "title": "Acme Notes OAuth",
+      "fetched_at": "2026-10-27T22:30:00Z",
+      "http_status": 200,
+      "doc_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "url": "https://example.com/docs/scopes",
+      "title": "Acme Notes scopes",
+      "fetched_at": "2026-10-27T22:30:00Z",
+      "http_status": 200,
+      "doc_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  ],
+  "quality": {
+    "facts_total": 14,
+    "facts_verified": 13,
+    "unknown_count": 1,
+    "confidence": "high"
+  },
+  "unknown_fields": [
+    "auth.oauth.discovery_url"
+  ],
+  "warnings": [
+    {
+      "code": "FIELD_UNVERIFIED",
+      "message": "Some details weren't stated in the docs and are marked as such."
+    }
+  ],
+  "notes": [
+    "Synthetic fixture for schema tests; not a real provider."
+  ]
+}

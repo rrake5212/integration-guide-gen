@@ -1,0 +1,350 @@
+{
+  "schema_version": "1.0",
+  "generator": {
+    "name": "guidegen",
+    "version": "0.2.0",
+    "model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+    "prompt_version": "p2"
+  },
+  "generated_at": "2026-10-27T23:45:38+00:00",
+  "status": "complete",
+  "provider": {
+    "id": "google",
+    "name": "Google",
+    "domains": [
+      "google.com",
+      "google.co.in",
+      "youtube.com"
+    ],
+    "docs": [
+      "https://developers.google.com/identity/protocols/oauth2/web-server",
+      "https://developers.google.com/identity/protocols/oauth2"
+    ],
+    "console": "https://console.cloud.google.com/apis/credentials",
+    "discovery": "https://accounts.google.com/.well-known/openid-configuration",
+    "note": null
+  },
+  "resolution": {
+    "input": "google",
+    "normalized": "google",
+    "kind": "text",
+    "decision": "resolved",
+    "matched_by": "alias",
+    "confidence": "high",
+    "availability": "self_serve_oauth",
+    "alternatives": [],
+    "notes": []
+  },
+  "auth": {
+    "methods": [
+      "oauth2"
+    ],
+    "primary": "oauth2",
+    "oauth": {
+      "authorization_url": {
+        "value": "https://accounts.google.com/o/oauth2/v2/auth",
+        "quote": "https://accounts.google.com/o/oauth2/v2/auth",
+        "source_url": "https://accounts.google.com/.well-known/openid-configuration"
+      },
+      "token_url": {
+        "value": "https://oauth2.googleapis.com/token",
+        "quote": "https://oauth2.googleapis.com/token",
+        "source_url": "https://accounts.google.com/.well-known/openid-configuration"
+      },
+      "discovery_url": {
+        "value": "https://accounts.google.com/.well-known/openid-configuration",
+        "quote": "https://accounts.google.com/.well-known/openid-configuration",
+        "source_url": "https://accounts.google.com/.well-known/openid-configuration"
+      },
+      "scopes": [
+        {
+          "name": {
+            "value": "openid",
+            "quote": "openid",
+            "source_url": "https://accounts.google.com/.well-known/openid-configuration"
+          },
+          "description": {
+            "value": "Supported scope listed in the OIDC discovery document.",
+            "quote": "openid",
+            "source_url": "https://accounts.google.com/.well-known/openid-configuration"
+          },
+          "sensitivity": "normal"
+        },
+        {
+          "name": {
+            "value": "email",
+            "quote": "email",
+            "source_url": "https://accounts.google.com/.well-known/openid-configuration"
+          },
+          "description": {
+            "value": "Supported scope listed in the OIDC discovery document.",
+            "quote": "email",
+            "source_url": "https://accounts.google.com/.well-known/openid-configuration"
+          },
+          "sensitivity": "normal"
+        },
+        {
+          "name": {
+            "value": "profile",
+            "quote": "profile",
+            "source_url": "https://accounts.google.com/.well-known/openid-configuration"
+          },
+          "description": {
+            "value": "Supported scope listed in the OIDC discovery document.",
+            "quote": "profile",
+            "source_url": "https://accounts.google.com/.well-known/openid-configuration"
+          },
+          "sensitivity": "normal"
+        }
+      ],
+      "pkce": {
+        "value": null,
+        "quote": null,
+        "source_url": null
+      },
+      "client_secret_required": {
+        "value": true,
+        "quote": "# Required, call the from_client_secrets_file method to retrieve the client ID from a",
+        "source_url": "https://developers.google.com/identity/protocols/oauth2/web-server"
+      },
+      "refresh_token": {
+        "value": null,
+        "quote": null,
+        "source_url": null
+      },
+      "redirect_uri_rules": {
+        "value": "These endpoints must adhere to Google's validation rules. For testing, you can specify URIs that refer to the local machine, such as http://localhost:8080.",
+        "quote": "These endpoints must adhere to Google's validation rules. For testing, you can specify URIs that refer to the local machine, such as `http://localhost:8080`.",
+        "source_url": "https://developers.google.com/identity/protocols/oauth2/web-server"
+      },
+      "consent_screen": {
+        "value": "If your public application uses scopes that permit access to certain user data, it must complete a verification process. If you see unverified app on the screen when testing your application, you must submit a verification request to remove it.",
+        "quote": "If your public application uses scopes that permit access to certain user data, it must complete a verification process. If you see unverified app on the screen when testing your application, you must submit a verification request to remove it.",
+        "source_url": "https://developers.google.com/identity/protocols/oauth2/web-server"
+      }
+    },
+    "api_key": null
+  },
+  "setup": {
+    "time": {
+      "likely_minutes": 35,
+      "range_min_minutes": 20,
+      "range_max_minutes": 50,
+      "review_wait_days": 0,
+      "drivers": [
+        "consent screen",
+        "workspace admin may be involved"
+      ],
+      "confidence": "low"
+    },
+    "prerequisites": [],
+    "steps": [
+      {
+        "order": 1,
+        "title": "Open the API Library in the Google API Console",
+        "detail": "Navigate to the API Library in the Google API Console.",
+        "url": "https://developers.google.com/identity/protocols/oauth2/web-server"
+      },
+      {
+        "order": 2,
+        "title": "Select or create a project",
+        "detail": "If prompted, select a project, or create a new one.",
+        "url": "https://developers.google.com/identity/protocols/oauth2/web-server"
+      },
+      {
+        "order": 3,
+        "title": "Enable the desired API",
+        "detail": "Find the API you want to enable, select it, and click the Enable button.",
+        "url": "https://developers.google.com/identity/protocols/oauth2/web-server"
+      },
+      {
+        "order": 4,
+        "title": "Enable billing if prompted",
+        "detail": "If prompted, enable billing for the project.",
+        "url": "https://developers.google.com/identity/protocols/oauth2/web-server"
+      },
+      {
+        "order": 5,
+        "title": "Accept the API's Terms of Service",
+        "detail": "If prompted, read and accept the API's Terms of Service.",
+        "url": "https://developers.google.com/identity/protocols/oauth2/web-server"
+      },
+      {
+        "order": 6,
+        "title": "Go to the Clients page",
+        "detail": "Navigate to the Clients page in the API Console to manage OAuth clients.",
+        "url": "https://developers.google.com/identity/protocols/oauth2/web-server"
+      },
+      {
+        "order": 7,
+        "title": "Click Create Client",
+        "detail": "Click the Create Client button to start creating new credentials.",
+        "url": "https://developers.google.com/identity/protocols/oauth2/web-server"
+      },
+      {
+        "order": 8,
+        "title": "Select Web application application type",
+        "detail": "Choose the Web application application type for the client.",
+        "url": "https://developers.google.com/identity/protocols/oauth2/web-server"
+      },
+      {
+        "order": 9,
+        "title": "Fill in the form and click Create",
+        "detail": "Fill in the form, including authorized redirect URIs, and click Create.",
+        "url": "https://developers.google.com/identity/protocols/oauth2/web-server"
+      },
+      {
+        "order": 10,
+        "title": "Download the client_secret.json file",
+        "detail": "After creating the credentials, download the client_secret.json file from the API Console.",
+        "url": "https://developers.google.com/identity/protocols/oauth2/web-server"
+      },
+      {
+        "order": 11,
+        "title": "Open the Google API Console",
+        "detail": "Visit the Google API Console to obtain OAuth 2.0 credentials such as a client ID and client secret that are known to both Google and your application.",
+        "url": "https://developers.google.com/identity/protocols/oauth2"
+      }
+    ],
+    "verification": [
+      {
+        "order": 1,
+        "method": "browser",
+        "command": "open \"https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=openid%20email%20profile\"",
+        "expected": "The provider shows its consent screen; after approval the browser lands on your redirect URI with a ?code= parameter."
+      },
+      {
+        "order": 2,
+        "method": "curl",
+        "command": "curl -sS -X POST \"https://oauth2.googleapis.com/token\" -H \"Accept: application/json\" -d \"client_id=${GOOGLE_CLIENT_ID}\" -d \"client_secret=${GOOGLE_CLIENT_SECRET}\" -d \"code=$CODE\" -d \"redirect_uri=$REDIRECT_URI\" -d \"grant_type=authorization_code\"",
+        "expected": "A JSON response containing access_token (and refresh_token if you requested offline access)."
+      }
+    ],
+    "blockers": [
+      {
+        "id": "google_unverified_app",
+        "symptom": "Google shows 'This app isn't verified' or blocks a sensitive scope",
+        "cause": "The consent screen is in testing, or sensitive/restricted scopes need verification.",
+        "fix": "Add the account under test users while testing. For production, publish the consent screen and submit for verification; restricted scopes may need a security assessment.",
+        "severity": "blocker",
+        "likelihood": "common"
+      },
+      {
+        "id": "google_test_user_missing",
+        "symptom": "access_denied while the OAuth consent screen is in Testing",
+        "cause": "The signed-in account is not on the test-user list.",
+        "fix": "Add the exact Google account under APIs & Services \u2192 OAuth consent screen \u2192 Test users, then retry in an incognito window.",
+        "severity": "blocker",
+        "likelihood": "common"
+      },
+      {
+        "id": "redirect_uri_mismatch",
+        "symptom": "redirect_uri_mismatch, or the provider says the redirect URI is not registered",
+        "cause": "The callback URL sent in the request does not exactly match a registered redirect URI.",
+        "fix": "Register the exact scheme, host, port and path in the provider console. No wildcards. Match the trailing slash. Use 127.0.0.1 rather than localhost if the provider is strict.",
+        "severity": "blocker",
+        "likelihood": "common"
+      },
+      {
+        "id": "invalid_scope",
+        "symptom": "invalid_scope, or the consent screen omits a scope you requested",
+        "cause": "The scope is not enabled for this app, is spelled differently, or was not granted by the user.",
+        "fix": "Enable the scope in the provider console, request only configured scopes, then re-run consent. Check for read vs write variants.",
+        "severity": "blocker",
+        "likelihood": "common"
+      },
+      {
+        "id": "invalid_client",
+        "symptom": "invalid_client, 401 unauthorized_client, or 'client authentication failed'",
+        "cause": "Client ID/secret pair is wrong, the secret was rotated, or a public client is sending a secret.",
+        "fix": "Copy both values from the same app. Rotate the secret and redeploy. Public/native clients should use PKCE and no client secret.",
+        "severity": "blocker",
+        "likelihood": "common"
+      },
+      {
+        "id": "access_denied",
+        "symptom": "access_denied after the consent screen",
+        "cause": "The user declined, is not an allowed test user, or the app is blocked by policy.",
+        "fix": "Add the account as a test user, use the correct workspace, or complete the provider's app verification. Try an incognito window to avoid a stale session.",
+        "severity": "blocker",
+        "likelihood": "common"
+      },
+      {
+        "id": "admin_consent_blocked",
+        "symptom": "admin_approval_required / consent_required",
+        "cause": "The workspace or tenant requires an administrator to grant consent.",
+        "fix": "Ask a workspace admin to approve the app, or test in a personal workspace you control.",
+        "severity": "blocker",
+        "likelihood": "occasional"
+      },
+      {
+        "id": "missing_refresh_token",
+        "symptom": "The token response has access_token but no refresh_token",
+        "cause": "Offline access was not requested, consent was previously granted, or the provider only issues refresh tokens to certain client types.",
+        "fix": "Request offline access (and a consent prompt if needed), revoke the app grant, then retry. Store the refresh token server-side.",
+        "severity": "warning",
+        "likelihood": "common"
+      }
+    ]
+  },
+  "env": [
+    {
+      "name": "GOOGLE_CLIENT_ID",
+      "description": "OAuth client id",
+      "required": true,
+      "secret": false
+    },
+    {
+      "name": "GOOGLE_CLIENT_SECRET",
+      "description": "OAuth client secret",
+      "required": true,
+      "secret": true
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://developers.google.com/identity/protocols/oauth2/web-server",
+      "title": "Using OAuth 2.0 for Web Server Applications \u00a0|\u00a0 Authorization \u00a0|\u00a0 Google for Developers",
+      "fetched_at": "2026-10-27T23:44:32+00:00",
+      "http_status": 200,
+      "doc_hash": "sha256:91ab02758e368e85f2c2a3403b17f63824dafc3948945a5fdbfbd2b0630351b6"
+    },
+    {
+      "url": "https://developers.google.com/identity/protocols/oauth2",
+      "title": "Using OAuth 2.0 to Access Google APIs \u00a0|\u00a0 Authorization \u00a0|\u00a0 Google for Developers",
+      "fetched_at": "2026-10-27T23:44:33+00:00",
+      "http_status": 200,
+      "doc_hash": "sha256:5bbecb348842053081e62302de1c2a692b0722f31978d9739fce1af3dab4a9dd"
+    },
+    {
+      "url": "https://accounts.google.com/.well-known/openid-configuration",
+      "title": "OIDC discovery document",
+      "fetched_at": "2026-10-27T23:44:33+00:00",
+      "http_status": 200,
+      "doc_hash": "sha256:f86b185fd428f81d7efaa83ec256693b3abedb57ddfcc6a826f5f396b4827f02"
+    }
+  ],
+  "quality": {
+    "facts_total": 14,
+    "facts_verified": 12,
+    "unknown_count": 2,
+    "confidence": "medium"
+  },
+  "unknown_fields": [
+    "auth.oauth.pkce",
+    "auth.oauth.refresh_token"
+  ],
+  "warnings": [
+    {
+      "code": "FIELD_UNVERIFIED",
+      "message": "Some details weren't stated in the docs and are marked as such."
+    }
+  ],
+  "notes": [
+    "Steps and time are generated from the provider's docs; time is a heuristic.",
+    "auth.oauth.consent_screen: 'If your public application uses scopes that permit access to certain user data, it must complete a verification process. If you see unverified app on the screen when testing your application, you must submit a verification request to remove it.' vs 'Scopes inform the consent screen that Google displays to the user. Scopes enable your application to only request access to the resources that it needs while also enabling users to control the amount of access that they grant to your application. Thus, there is an inverse relationship between the number of scopes requested and the likelihood of obtaining user consent.' (kept first)",
+    "auth.oauth.consent_screen: 'If your public application uses scopes that permit access to certain user data, it must complete a verification process. If you see unverified app on the screen when testing your application, you must submit a verification request to remove it.' vs \"Google displays a consent window that shows the name of your application and the Google API services that it is requesting permission to access with the user's authorization credentials and a summary of the scopes of access to be granted.\" (kept first)",
+    "auth.oauth.consent_screen: 'If your public application uses scopes that permit access to certain user data, it must complete a verification process. If you see unverified app on the screen when testing your application, you must submit a verification request to remove it.' vs \"Users may not grant all scopes; granular permissions consent screen shown unless app is Google Workspace Enterprise with domain-wide delegation or Trusted, then users won't see granular consent screen and app receives all or none.\" (kept first)",
+    "auth.oauth.consent_screen: 'If your public application uses scopes that permit access to certain user data, it must complete a verification process. If you see unverified app on the screen when testing your application, you must submit a verification request to remove it.' vs 'After logging in, the user is asked whether they are willing to grant one or more permissions that your application is requesting. This process is called user consent.' (kept first)"
+  ]
+}
