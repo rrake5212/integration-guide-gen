@@ -2,7 +2,7 @@
 # Smoke test for a running GuideGen instance.
 #
 #   deploy/smoke.sh                                   http://127.0.0.1:8765
-#   deploy/smoke.sh https://guides.100.31.120.181.sslip.io
+#   deploy/smoke.sh https://integration-guide.100.31.120.181.sslip.io
 #   deploy/smoke.sh https://... --with-job             also generate one real guide
 #
 # Default checks cost nothing (no model call). --with-job runs the full pipeline

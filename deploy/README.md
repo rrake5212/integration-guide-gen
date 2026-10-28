@@ -14,7 +14,7 @@ on `100.31.120.181.sslip.io`); GuideGen is a second site block, not a replacemen
 |---|---|
 | Instance | Lightsail `journey-builder-mcp`, us-east-1a, Ubuntu 24.04, micro_3_0 (1 GB RAM) |
 | IP | 100.31.120.181 (public IPv4 included in the Lightsail flat rate) |
-| Hostname | `guides.100.31.120.181.sslip.io` — sslip.io resolves it to the IP, so no DNS record |
+| Hostname | `integration-guide.100.31.120.181.sslip.io` — sslip.io resolves it to the IP, so no DNS record |
 | Ports | 443 open (Lightsail firewall + ufw). 8765 is **not** opened publicly |
 | RAM | shared with journey-builder-mcp (~60 MB) — the container is capped at 512 MB |
 | Key material | `.env` stays on the box, never synced from the laptop |
@@ -45,7 +45,7 @@ the public `https://` URL.
 
 ## Verify
 
-    deploy/smoke.sh https://guides.100.31.120.181.sslip.io --with-job
+    deploy/smoke.sh https://integration-guide.100.31.120.181.sslip.io --with-job
 
 Free checks (default) prove: health, UI shell, resolver happy path, the ambiguity STOP,
 the 409 refusal on `/api/guides`, and clean `JOB_NOT_FOUND`. `--with-job` additionally

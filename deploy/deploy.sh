@@ -9,13 +9,13 @@
 #   GUIDEGEN_HOST=ubuntu@100.31.120.181
 #   GUIDEGEN_SSH_KEY=~/.ssh/LightsailDefaultKey-us-east-1.pem
 #   GUIDEGEN_REMOTE_DIR=/home/ubuntu/guidegen
-#   GUIDEGEN_DOMAIN=guides.100.31.120.181.sslip.io
+#   GUIDEGEN_DOMAIN=integration-guide.100.31.120.181.sslip.io
 set -euo pipefail
 
 HOST="${GUIDEGEN_HOST:-ubuntu@100.31.120.181}"
 KEY="${GUIDEGEN_SSH_KEY:-$HOME/.ssh/lightsail-default.pem}"
 REMOTE_DIR="${GUIDEGEN_REMOTE_DIR:-/home/ubuntu/guidegen}"
-DOMAIN="${GUIDEGEN_DOMAIN:-guides.100.31.120.181.sslip.io}"
+DOMAIN="${GUIDEGEN_DOMAIN:-integration-guide.100.31.120.181.sslip.io}"
 SRC="$(cd "$(dirname "$0")/.." && pwd)"
 
 DO_BOOTSTRAP=0

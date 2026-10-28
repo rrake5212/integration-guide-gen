@@ -1,6 +1,6 @@
 # Integration setup guide generator
 
-Status: **LIVE since 2026-10-28 — https://guides.100.31.120.181.sslip.io** (P1–P6 built 2026-10-27;
+Status: **LIVE since 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io** (P1–P6 built 2026-10-27;
 P7 deployed 2026-10-28) — resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard,
 DeepInfra client, research + quoted extraction + assembly, time/steps/blockers, dual renderers, FastAPI
 web UI, verifier + golden set + error paths + debug/replay; 108 tests. Repo: private,
@@ -18,7 +18,7 @@ time estimates yet.
 **Product surface:** a live website, not the CLI. The CLI here is the internal development/probe entry point;
 the site (planned, `PLAN.md` §6.1) wraps the same pipeline with a resolve box, async generation jobs, SSE
 progress, and three result tabs — human guide, `agent.json`, `agent.md`. Hosting: the existing Lightsail
-box behind Caddy on `guides.100.31.120.181.sslip.io` (container on loopback, TLS at the edge).
+box behind Caddy on `integration-guide.100.31.120.181.sslip.io` (container on loopback, TLS at the edge).
 Testing-only: shared with a few friends, no accounts or rate-limit machinery.
 
 ## Run
@@ -229,7 +229,7 @@ term.
     deploy/deploy.sh --bootstrap          # once: docker, swap, caddy import line
     deploy/deploy.sh                      # every deploy: sync, build, restart, reload caddy, smoke
 
-    deploy/smoke.sh https://guides.100.31.120.181.sslip.io --with-job   # verify incl. one real guide
+    deploy/smoke.sh https://integration-guide.100.31.120.181.sslip.io --with-job   # verify incl. one real guide
 
 Topology: `internet -> Caddy :443 -> 127.0.0.1:8765 -> container (uid 10001)`, artifacts in a bind mount at
 `runtime/`. `.env` never enters the image and is never synced from the laptop. Full runbook, operate commands

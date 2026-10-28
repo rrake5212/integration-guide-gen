@@ -1,6 +1,6 @@
 # OAuth / API-key setup guide generator — plan
 
-**Status: DEPLOYED 2026-10-28 — https://guides.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started.**
+**Status: DEPLOYED 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started.**
 Date: 2026-10-28 (rev 18). Home: `~/AgentWork/integration-guide-gen/` · private repo `rrake5212/integration-guide-gen`
 
 One-line product: a developer submits **an app name or a website/domain** they want OAuth with
@@ -301,7 +301,7 @@ One worker process with a bounded queue, two worker threads (concurrency 2),
 results are unlisted (no public index) unless you ask for one.
 
 **Hosting.** Decided 2026-10-28: a Docker container on the existing Lightsail instance (100.31.120.181),
-Caddy vhost on `guides.100.31.120.181.sslip.io`, TLS automatic, persistent SQLite on a bind mount, no cold
+Caddy vhost on `integration-guide.100.31.120.181.sslip.io`, TLS automatic, persistent SQLite on a bind mount, no cold
 starts. Built as `Dockerfile` + `docker-compose.yml` + `deploy/Caddyfile` + `deploy/deploy.sh` (P7 below).
 Fly.io/Render remains the isolation alternative. Vercel/Netlify only for a static front-end: serverless
 60 s limits and no persistent worker make the generation step a bad fit there.
@@ -679,7 +679,7 @@ Decision: Docker container + Caddy on the existing Lightsail instance (G9).
 - `docker-compose.yml` — `127.0.0.1:8765` only (Caddy is the sole public entry), `env_file: .env`,
   `./runtime:/app/data` bind mount, `restart: unless-stopped`, `mem_limit: 512m` (the box also runs
   journey-builder-mcp in 1 GB), `cap_drop: ALL`, `no-new-privileges`, rotated json-file logs, healthcheck.
-- `deploy/Caddyfile` — `guides.100.31.120.181.sslip.io`, automatic Let's Encrypt, `/api/guides/*/events` on a
+- `deploy/Caddyfile` — `integration-guide.100.31.120.181.sslip.io`, automatic Let's Encrypt, `/api/guides/*/events` on a
   dedicated branch with `flush_interval -1` and **no compression** (a compressing writer buffers SSE), the rest
   gzip/zstd, HSTS + nosniff + no-referrer, `-Server`, access log to stderr so the sandboxed `caddy` user never
   needs to create `/var/log/caddy`.
@@ -710,7 +710,7 @@ Not verified at this point: `docker build` / `compose up` (no daemon here), and 
 
 ### Deployed 2026-10-28 — live on the Lightsail box
 
-    https://guides.100.31.120.181.sslip.io
+    https://integration-guide.100.31.120.181.sslip.io
 
 Run as designed: `deploy/bootstrap.sh` (docker engine 29.9.2 + compose v5.6.1, swap already present,
 `import /etc/caddy/sites/*.caddy` added once) -> `.env` copied to `/home/ubuntu/guidegen/.env` (mode 600,
@@ -783,7 +783,7 @@ Verified on the box, real output:
 ## 12. Open questions (yours to answer)
 
 1. ~~Hosting + domain (G9)~~ — **answered 2026-10-28: Docker + Caddy on the existing Lightsail box,
-   `guides.100.31.120.181.sslip.io`.** Still open inside it: is a custom domain wanted later, or is sslip.io
+   `integration-guide.100.31.120.181.sslip.io`.** Still open inside it: is a custom domain wanted later, or is sslip.io
    enough for the friends-testing phase?
 2. **Result visibility.** Unlisted job URLs only, or a small "recent guides" index for the friends group?
 3. **Agent format.** `agent.json` + `agent.md`, or is the prompt-style `agent.md` alone enough?

@@ -6,8 +6,11 @@
 # record is needed; Caddy issues and renews the Let's Encrypt certificate itself.
 #
 #   browser -> Caddy :443 -> 127.0.0.1:8765 -> guidegen container
+#
+# The old `guides.<ip>.sslip.io` name redirects here permanently, so any link
+# already shared keeps working.
 
-guides.100.31.120.181.sslip.io {
+integration-guide.100.31.120.181.sslip.io {
 	# The progress stream must not be buffered by anything, or the browser shows
 	# nothing until the job has already finished. flush_interval -1 disables
 	# Caddy's response buffering for this branch, and compression is deliberately
@@ -40,4 +43,9 @@ guides.100.31.120.181.sslip.io {
 		output stderr
 		format console
 	}
+}
+
+# Former hostname — keep any already-shared link alive.
+guides.100.31.120.181.sslip.io {
+	redir https://integration-guide.100.31.120.181.sslip.io{uri} permanent
 }
