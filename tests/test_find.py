@@ -55,6 +55,17 @@ class RankerTests(unittest.TestCase):
                    "OAuth is an authorization framework. Read the overview to learn more.")
         self.assertLess(len(setup_hits(weak.text)), 3)
 
+    def test_the_oauth_page_beats_a_credentials_page_at_equal_vocabulary(self) -> None:
+        # the Discord case: both pages carry setup vocabulary, only one is the OAuth documentation
+        right = score_candidate("https://docs.discord.com/developers/topics/oauth2.md",
+                                title="OAuth2 | Discord", text=SETUP, brand="Discord")
+        wrong = score_candidate(
+            "https://docs.discord.com/developers/discord-social-sdk/development-guides/"
+            "provisional-accounts/external-credentials-exchange.md",
+            title="External Credentials Exchange", text=SETUP, brand="Discord")
+        self.assertGreater(right[0], wrong[0])
+        self.assertTrue(wrong[0] < 7 or any("different product surface" in r for r in wrong[2]))
+
     def test_kinds(self) -> None:
         self.assertEqual(surface_kind("https://docs.example.com/connect/oauth"), "connect_oauth")
         self.assertEqual(surface_kind("https://example.com/app-marketplace/oauth"), "app_marketplace")

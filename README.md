@@ -3,7 +3,7 @@
 Status: **LIVE since 2026-10-28, redeployed 2026-10-29 with the FIND layer — https://integration-guide.100.31.120.181.sslip.io** (P1–P6 built 2026-10-27;
 P7 deployed 2026-10-28; §13 redeployed 2026-10-29) — resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard,
 DeepInfra client, research + quoted extraction + assembly, time/steps/blockers, dual renderers, FastAPI
-web UI, verifier + golden set + error paths + debug/replay; 200 tests. Repo: private,
+web UI, verifier + golden set + error paths + debug/replay; 201 tests. Repo: private,
 `github.com/rrake5212/integration-guide-gen`. Deploy: `Dockerfile` +
 `docker-compose.yml` + `deploy/Caddyfile` + one-command `deploy/deploy.sh` (see `deploy/README.md`);
 running as the `guidegen` container behind Caddy on the Lightsail box. Remaining P7: private
@@ -142,7 +142,7 @@ request, a human-confirmed entry is never replaced, and a catalogue name queues 
 being refused. **196 total.**
 Then the writable-surface work (3 tests): the runtime store starts from the packaged seed and writes
 to the data volume, an explicit path never inherits the seed, and a read-only store degrades to a note
-instead of killing the job. **200 total.**
+instead of killing the job. **201 total.**
 
 ## Verified 2026-10-27
 
@@ -183,8 +183,8 @@ Web end-to-end (2026-10-27): `POST /api/guides {"input":"github"}` → `job_1f3d
 Verifier: `python3 -m guidegen.verify --golden data/golden` → VALID for both golden specs; mutation tests
 catch missing values, missing steps, duplicate sources, bad hashes, fabricated quotes and secret leakage.
 
-Test run: `python3 -m unittest discover -s tests -v` → **200 tests, OK** (7 web tests skip without the venv;
-`.venv/bin/python -m unittest discover -s tests` runs all 200).
+Test run: `python3 -m unittest discover -s tests -v` → **201 tests, OK** (7 web tests skip without the venv;
+`.venv/bin/python -m unittest discover -s tests` runs all 201).
 
 ## Layout
 
@@ -297,7 +297,7 @@ Local, without Docker (same CMD the image runs):
 ## Next (from PLAN.md)
 
 P6 delivered: verifier + golden set, cross-format/secret checks, forced error paths, job timeout, and
-`debug`/`replay` (108 tests at P6, 200 now). P7 **deployed 2026-10-28** — image built on the box, container healthy, Caddy +
+`debug`/`replay` (108 tests at P6, 201 now). P7 **deployed 2026-10-28** — image built on the box, container healthy, Caddy +
 Let's Encrypt live at `integration-guide.100.31.120.181.sslip.io`, smoke 6/6 loopback and 6/6 public, one
 real GitHub guide end to end.
 

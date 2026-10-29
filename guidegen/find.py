@@ -42,7 +42,7 @@ BAD_PATH = re.compile(r"(blog|pricing|careers|release|changelog|status|legal|pri
 AUTH_PATH = re.compile(r"(oauth|api[-_]?key|authenticat|authoriz|credential|app[-_]?registration|access[-_]?token|connect|scopes?)", re.I)
 AUTH_WORD = re.compile(r"(oauth|api[\s_-]?key|authenticat|authoriz|credential|access token|app registration|scopes?)", re.I)
 GENERIC_PATH = re.compile(r"(/overview|/getting-started/?$|/get-started/?$|/introduction|/index(\.html)?$|/guides/?$)", re.I)
-OTHER_SURFACE = re.compile(r"(agentic|wallet|authy|push[-_]authentication|data[-_]connector|3-d secure|3ds)", re.I)
+OTHER_SURFACE = re.compile(r"(agentic|wallet|authy|push[-_]authentication|data[-_]connector|3-d secure|3ds|provisional|external[-_]credentials|social[-_]sdk)", re.I)
 NAV_LABEL = re.compile(r"\b(docs?|documentation|developers?|api|build|get started|guides?|integrat|platform)\b", re.I)
 
 SETUP_PHRASES = (
@@ -179,6 +179,12 @@ def score_candidate(url: str, *, label: str = "", title: str = "", text: str = "
     if AUTH_WORD.search(label):
         score += 2
         reasons.append("+2 auth link label")
+    # A page whose own path says "oauth" is the OAuth page, not merely one that mentions credentials
+    # (measured on Discord: .../topics/oauth2 and .../provisional-accounts/external-credentials-
+    # exchange both scored 14, and the wrong one won the tie).
+    if re.search(r"(^|[/_-])oauth", path, re.I):
+        score += 3
+        reasons.append("+3 oauth path")
     if OTHER_SURFACE.search(url + " " + title):
         score -= 6
         reasons.append("-6 different product surface")

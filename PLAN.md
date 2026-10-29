@@ -1,6 +1,6 @@
 # OAuth / API-key setup guide generator — plan
 
-**Status: DEPLOYED 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests at P6 / 200 now). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started. **2026-10-29: §13 approved (gates A–E) and its FIND layer built — catalogue routing, the ranked discovery ladder, the provider-entry store with human confirm, and a swappable search fallback.** Evening 2026-10-29: the Serper key verified live and the search rung rewritten (site: query, first-party only, reserved pages); a 30-provider audit puts the FIND stage at 9/30 canonical pages (24/30 usable) against 6/30 (14/30) on the free rungs alone — §13.7, `tools/find_audit.py`. **REDEPLOYED 2026-10-29** with that build (smoke 6/6 loopback and 6/6 public; `linear` now routes from the catalogue on the live site) — §13.8.
+**Status: DEPLOYED 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests at P6 / 201 now). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started. **2026-10-29: §13 approved (gates A–E) and its FIND layer built — catalogue routing, the ranked discovery ladder, the provider-entry store with human confirm, and a swappable search fallback.** Evening 2026-10-29: the Serper key verified live and the search rung rewritten (site: query, first-party only, reserved pages); a 30-provider audit puts the FIND stage at 9/30 canonical pages (24/30 usable) against 6/30 (14/30) on the free rungs alone — §13.7, `tools/find_audit.py`. **REDEPLOYED 2026-10-29** with that build (smoke 6/6 loopback and 6/6 public; `linear` now routes from the catalogue on the live site) — §13.8.
 Date: 2026-10-29 (rev 22). Home: `~/AgentWork/integration-guide-gen/` · private repo `rrake5212/integration-guide-gen`
 
 One-line product: a developer submits **an app name or a website/domain** they want OAuth with
@@ -989,7 +989,7 @@ links because their portals are JS apps. A single web search on the 12 hardest p
 right host with a valid auth page in 8/12 and the exact canonical page in 3/12. So no signal is
 reliable per call; the entry has to be.
 
-Code (`guidegen/`, 200 tests green, golden set VALID):
+Code (`guidegen/`, 201 tests green, golden set VALID):
 
 | module | job |
 |---|---|
@@ -1139,3 +1139,16 @@ as a read-only SEED the runtime store loads on first run, `save()` failures degr
 the provider instead of killing the job, and the job log now records `type(exc): message` on
 INTERNAL. Lesson: a persistence path inside the build context is read-only at runtime, and an
 `except Exception: INTERNAL` with no detail turns a one-line cause into a deploy cycle.
+
+Then `discord` "succeeded" with an empty guide and the wrong source: both
+`docs.discord.com/developers/topics/oauth2.md` and a Social-SDK
+`provisional-accounts/external-credentials-exchange.md` scored 14, and the tie went to the wrong one.
+Two ranker rules fixed it: `+3` when the path itself says `oauth`, and `blocked` for
+`provisional | external-credentials | social-sdk` as another product surface. A re-find then picks
+`topics/oauth2.md`.
+
+Operational gap this exposed: a **stored auto-accepted surface is never refreshed**, so a ranker fix
+does not reach entries the finder already recorded — the discord entry had to be deleted by hand
+(`surfaces.json` is diffable, so it is a one-line change, but it should be a command:
+`review --refresh-auto`, and auto entries older than N days should re-find after a ranker change).
+Entries marked `accepted_by: human` keep the current freeze semantics.
