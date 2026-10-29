@@ -24,6 +24,7 @@ from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse, Str
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+from ..bridge import availability_for
 from ..env import ROOT, load_env
 from ..errors import GuideError, spec as error_spec, user_payload
 from ..pipeline import build_spec, forced_resolution, render_bundle
@@ -37,6 +38,7 @@ JOBS_DIR = ROOT / "data" / "jobs"
 STAGE_LABELS = {
     "queued": "Queued",
     "resolve": "Resolving provider",
+    "find": "Locating the setup docs",
     "docs": "Reading provider docs",
     "extract": "Extracting quoted facts",
     "assemble": "Checking the fact model",
@@ -44,7 +46,9 @@ STAGE_LABELS = {
     "done": "Guide ready",
 }
 STATUS_LABELS = {"queued": "Queued", "running": "Building", "done": "Complete", "failed": "Failed"}
-JOB_TIMEOUT_SECONDS = int(os.environ.get("GUIDEGEN_JOB_TIMEOUT_SECONDS", "180"))
+# FIND (ladder + up to two search queries, 28-32 pages) can take ~70 s before research starts, so
+# the job budget has to cover both stages.
+JOB_TIMEOUT_SECONDS = int(os.environ.get("GUIDEGEN_JOB_TIMEOUT_SECONDS", "300"))
 
 
 def _now() -> str:
@@ -170,6 +174,21 @@ def _resolution_payload(res: Resolution) -> dict:
         }
         out["can_build"] = (res.provider.availability not in ("unknown", "no_public_api")
                             and bool(res.provider.docs))
+    elif res.decision == "catalogue" and res.catalogue is not None:
+        # Routable but not curated: FIND locates the docs inside the job, so the docs list is
+        # empty here and can_build only rules out a provider with no known auth at all.
+        entry = res.catalogue
+        availability = availability_for(entry)
+        out["catalogue"] = {
+            "slug": entry.slug.lower(),
+            "name": entry.name,
+            "auth_families": list(entry.auth_families),
+            "availability": availability,
+        }
+        out["availability"] = availability
+        out["provider"] = {"id": entry.slug.lower(), "name": entry.name, "domains": [],
+                           "console": None, "docs": []}
+        out["can_build"] = availability not in ("unknown", "no_public_api")
     return out
 
 
@@ -410,6 +429,19 @@ def create_app(db_path: str | Path | None = None, start_workers: bool = True) ->
             payload = user_payload("AMBIGUOUS_PROVIDER")
             payload["candidates"] = _resolution_payload(res)["candidates"]
             return JSONResponse(payload, status_code=409)
+        if res.decision == "catalogue" and res.catalogue is not None:
+            # Routed from the toolkit index with no curated row: the job's first stage locates the
+            # setup docs (FIND + search) and builds the provider from what it finds.
+            entry = res.catalogue
+            availability = availability_for(entry)
+            if availability in ("unknown", "no_public_api"):
+                payload = user_payload("PROVIDER_UNKNOWN")
+                payload["error"]["message"] = "We found the provider, but its setup docs are not available yet."
+                return JSONResponse(payload, status_code=422)
+            job_id = "job_" + uuid.uuid4().hex[:10]
+            store.create(job_id, body.input, body.pick, entry.slug.lower(), entry.name, availability)
+            app.state.queue.put(job_id)
+            return JSONResponse({"job_id": job_id, "status": "queued"}, status_code=202)
         if res.decision != "resolved" or res.provider is None:
             return _error_json(GuideError("PROVIDER_UNKNOWN"))
         if res.provider.availability in ("unknown", "no_public_api") or not res.provider.docs:

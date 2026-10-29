@@ -79,7 +79,9 @@ def validate_spec(spec: dict) -> list[str]:
     quality = spec["quality"]
     status = spec["status"]
 
-    if resolution["decision"] != "resolved":
+    # "catalogue" is a resolved provider whose docs FIND located from the toolkit index
+    # (PLAN §13.8); it is a build decision, not an unresolved one.
+    if resolution["decision"] not in ("resolved", "catalogue"):
         issues.append("resolution.decision: a spec is only built for a resolved provider")
 
     if auth["primary"] is not None and auth["primary"] not in auth["methods"]:

@@ -79,6 +79,16 @@ class WebTests(unittest.TestCase):
         self.assertEqual(self.client.get(f"/g/{job_id}/agent.json").json()["provider"]["id"], "github")
         self.assertEqual(self.client.get(f"/g/{job_id}/agent.md").status_code, 200)
 
+    def test_catalogue_name_queues_a_job_instead_of_refusing(self) -> None:
+        # PLAN §13.8: a toolkit-catalogue name used to die here with PROVIDER_UNKNOWN; the job's
+        # first stage is now FIND, so it gets a job like any curated provider.
+        response = self.client.post("/api/guides", json={"input": "airtable"})
+        self.assertEqual(response.status_code, 202)
+        job_id = response.json()["job_id"]
+        job = self.client.get(f"/api/guides/{job_id}").json()
+        self.assertEqual(job["status"], "queued")
+        self.assertEqual(job["provider"]["id"], "airtable")
+
     def test_ambiguous_guide_requires_a_pick(self) -> None:
         response = self.client.post("/api/guides", json={"input": "tally"})
         self.assertEqual(response.status_code, 409)

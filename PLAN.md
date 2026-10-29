@@ -1,6 +1,6 @@
 # OAuth / API-key setup guide generator — plan
 
-**Status: DEPLOYED 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests at P6 / 187 now). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started. **2026-10-29: §13 approved (gates A–E) and its FIND layer built — catalogue routing, the ranked discovery ladder, the provider-entry store with human confirm, and a swappable search fallback.** Evening 2026-10-29: the Serper key verified live and the search rung rewritten (site: query, first-party only, reserved pages); a 30-provider audit puts the FIND stage at 9/30 canonical pages (24/30 usable) against 6/30 (14/30) on the free rungs alone — §13.7, `tools/find_audit.py`. **REDEPLOYED 2026-10-29** with that build (smoke 6/6 loopback and 6/6 public; `linear` now routes from the catalogue on the live site) — §13.8.
+**Status: DEPLOYED 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests at P6 / 196 now). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started. **2026-10-29: §13 approved (gates A–E) and its FIND layer built — catalogue routing, the ranked discovery ladder, the provider-entry store with human confirm, and a swappable search fallback.** Evening 2026-10-29: the Serper key verified live and the search rung rewritten (site: query, first-party only, reserved pages); a 30-provider audit puts the FIND stage at 9/30 canonical pages (24/30 usable) against 6/30 (14/30) on the free rungs alone — §13.7, `tools/find_audit.py`. **REDEPLOYED 2026-10-29** with that build (smoke 6/6 loopback and 6/6 public; `linear` now routes from the catalogue on the live site) — §13.8.
 Date: 2026-10-29 (rev 22). Home: `~/AgentWork/integration-guide-gen/` · private repo `rrake5212/integration-guide-gen`
 
 One-line product: a developer submits **an app name or a website/domain** they want OAuth with
@@ -989,7 +989,7 @@ links because their portals are JS apps. A single web search on the 12 hardest p
 right host with a valid auth page in 8/12 and the exact canonical page in 3/12. So no signal is
 reliable per call; the entry has to be.
 
-Code (`guidegen/`, 187 tests green, golden set VALID):
+Code (`guidegen/`, 196 tests green, golden set VALID):
 
 | module | job |
 |---|---|
@@ -1018,9 +1018,9 @@ $1.00/1k → 12.5M @ $0.30/1k (50→300 qps), credits valid 6 months; **Brave** 
 $5 free monthly (~1,000 requests), 50 req/s. One query per unresolved provider, cached forever
 afterwards, so the whole first batch costs cents.
 
-**Not wired yet:** the generation pipeline still reads `provider.docs` only. Feeding `surfaces.json`
-into `research.py` (so a catalogue-only provider can actually produce a guide) is the next step, and
-it needs the provider object to be constructible from a catalogue entry + surface.
+**Wired 2026-10-29 — see §13.9.** `guidegen/bridge.py` builds the provider object from a catalogue
+entry + a located surface; `pipeline.build_spec` and `guidegen.build` use it, and `/api/guides` now
+enqueues a catalogue name instead of refusing it.
 
 ### 13.7 Search key live + the 30-provider audit (2026-10-29)
 
@@ -1091,3 +1091,41 @@ code read: `POST /api/guides {"input":"hubspot"}` returns `PROVIDER_UNKNOWN` at 
 catalogue-routed provider resolves for display and then cannot be generated. **Wiring `surfaces.json`
 into `research.py` is not an optimisation — it is the difference between the site routing 1,688 names
 and the site generating for 9.**
+
+### 13.9 The bridge, wired (2026-10-29)
+
+`guidegen/bridge.py` is the link §13.6 deferred and §13.8 measured the absence of:
+
+    catalogue entry -> stored surface (no network) | FIND (ladder + search, 1-2 queries)
+                    -> Provider whose docs is the located page -> research -> assemble
+
+Order of preference and cost:
+
+1. a surface already in `surfaces.json` — human-confirmed or previously auto-accepted, no network
+2. FIND — the free rungs, then search on the residual, then the result is recorded so the next
+   request for that name costs nothing (and `CachedSearch` covers a repeat inside 7 days)
+
+Called from both generation paths: `pipeline.build_spec` (web worker) and `guidegen.build` (CLI).
+`/api/guides` now enqueues a catalogue name instead of returning `PROVIDER_UNKNOWN`; the job's first
+stage is `find` ("Locating the setup docs") and the job budget went 180 s -> 300 s to cover it.
+The landing page renders a catalogue hit as "Matched from the toolkit index" with the generate
+button enabled.
+
+Two schema rules had to move, both of which had encoded "only curated providers get specs":
+`resolution.decision` and `resolution.matched_by` gained `catalogue` in
+`provider.spec.schema.json`, and `spec.py` no longer requires `decision == "resolved"`.
+
+Measured end to end the same day (`guidegen.build "hubspot"`, a name that used to die at resolve):
+
+    provider   HubSpot (hubspot)
+    docs       https://developers.hubspot.com/docs/apps/legacy-apps/authentication/working-with-oauth
+    status     partial · 6 steps · 8 facts, 3 verified · 1 source
+    warnings   TIME_UNKNOWN, FIELD_UNVERIFIED, PARTIAL_GUIDE
+
+That is the honest shape of a one-page provider: usable, partial, and marked. Curated rows carry 3-5
+docs URLs each; FIND yields exactly one page, so endpoint facts the page does not state stay
+`unknown` and availability drops from self-serve to unknown when the token URL is missing. The next
+quality step is FIND collecting sibling pages (docs home, token reference) — not more wiring.
+
+Gate E unchanged: `propose()` auto-accepts a resolved result so a guide can be built immediately,
+and the entry stays in `pending()` until a human confirms it. A human answer is never overwritten.

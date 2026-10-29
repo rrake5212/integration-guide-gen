@@ -82,7 +82,8 @@ function renderResolved(data) {
   const card = el('div', 'resolution-card');
   const top = el('div', 'resolution-top');
   const left = el('div');
-  left.append(el('p', 'kicker-small', 'Resolved'));
+  left.append(el('p', 'kicker-small',
+    data.decision === 'catalogue' ? 'Matched from the toolkit index' : 'Resolved'));
   left.append(el('h2', '', data.provider.name));
   left.append(el('p', 'mono', data.provider.id + ' · ' + data.confidence + ' confidence · ' + data.matched_by));
   top.append(left);
@@ -124,7 +125,7 @@ async function resolveQuery(query) {
       setBusy(false);
       return;
     }
-    if (data.decision === 'resolved') {
+    if (data.decision === 'resolved' || data.decision === 'catalogue') {
       renderResolved(data);
     } else if (data.decision === 'ask') {
       renderCandidates(data.candidates || [], query);

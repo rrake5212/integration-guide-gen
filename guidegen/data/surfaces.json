@@ -1,6 +1,6 @@
 {
  "version": 1,
- "updated_at": "2026-10-29T06:07:26+00:00",
+ "updated_at": "2026-10-29T12:26:20+00:00",
  "entries": {
   "asana": {
    "id": "asana",
@@ -234,6 +234,102 @@
    "find": null,
    "notes": [
     "curated seed"
+   ]
+  },
+  "hubspot": {
+   "id": "hubspot",
+   "name": "HubSpot",
+   "availability": "unknown",
+   "domains": [
+    "hubspot.com"
+   ],
+   "auth_families": [
+    "oauth2",
+    "api_key"
+   ],
+   "status": "resolved",
+   "accepted_by": "auto",
+   "accepted_at": "2026-10-29T12:26:20+00:00",
+   "surfaces": [
+    {
+     "kind": "oauth_app_registration",
+     "docs_url": "https://developers.hubspot.com/docs/apps/legacy-apps/authentication/working-with-oauth",
+     "console_url": null,
+     "discovery_url": null,
+     "title": "Working with OAuth - HubSpot docs",
+     "confidence": "high",
+     "score": 16,
+     "rung": "search"
+    }
+   ],
+   "proposals": [
+    {
+     "kind": "oauth_app_registration",
+     "docs_url": "https://developers.hubspot.com/docs/apps/legacy-apps/authentication/working-with-oauth",
+     "console_url": null,
+     "discovery_url": null,
+     "title": "Working with OAuth - HubSpot docs",
+     "confidence": "high",
+     "score": 16,
+     "rung": "search"
+    }
+   ],
+   "find": {
+    "query": "HubSpot",
+    "brand": "HubSpot",
+    "domains": [
+     "hubspot.com"
+    ],
+    "status": "resolved",
+    "search_provider": "serper",
+    "pages_fetched": 24,
+    "rungs": [
+     "llms",
+     "sitemap",
+     "nav",
+     "guess",
+     "search"
+    ],
+    "surfaces": [
+     {
+      "url": "https://developers.hubspot.com/docs/apps/legacy-apps/authentication/working-with-oauth",
+      "rung": "search",
+      "kind": "oauth_app_registration",
+      "score": 16,
+      "title": "Working with OAuth - HubSpot docs",
+      "verified": true,
+      "blocked": false,
+      "http_status": 200,
+      "confidence": "high",
+      "hits": [
+       "client[\\s_-]?id",
+       "client[\\s_-]?secret",
+       "redirect[\\s_-]?uri",
+       "create\\s+(an?\\s+)?(app|application|integration)",
+       "\\bscopes?\\b",
+       "oauth"
+      ],
+      "reasons": [
+       "+3 docs/developer host",
+       "+3 auth path",
+       "+3 auth title",
+       "+3 6 setup phrases",
+       "+2 first-party host",
+       "+2 auth link label"
+      ],
+      "doc_hash": "sha256:4319f978f31633c8fc76303fb1bed0cd2bf47c2b712b87e1d87b6f514e408453"
+     }
+    ],
+    "notes": [
+     "docs.hubspot.com: DNS_FAILED x9",
+     "developers.hubspot.com: DOCS_NOT_FOUND",
+     "developer.hubspot.com: DOCS_NOT_FOUND"
+    ]
+   },
+   "notes": [
+    "docs.hubspot.com: DNS_FAILED x9",
+    "developers.hubspot.com: DOCS_NOT_FOUND",
+    "developer.hubspot.com: DOCS_NOT_FOUND"
    ]
   },
   "linear": {

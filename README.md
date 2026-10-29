@@ -3,15 +3,16 @@
 Status: **LIVE since 2026-10-28, redeployed 2026-10-29 with the FIND layer — https://integration-guide.100.31.120.181.sslip.io** (P1–P6 built 2026-10-27;
 P7 deployed 2026-10-28; §13 redeployed 2026-10-29) — resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard,
 DeepInfra client, research + quoted extraction + assembly, time/steps/blockers, dual renderers, FastAPI
-web UI, verifier + golden set + error paths + debug/replay; 187 tests. Repo: private,
+web UI, verifier + golden set + error paths + debug/replay; 196 tests. Repo: private,
 `github.com/rrake5212/integration-guide-gen`. Deploy: `Dockerfile` +
 `docker-compose.yml` + `deploy/Caddyfile` + one-command `deploy/deploy.sh` (see `deploy/README.md`);
 running as the `guidegen` container behind Caddy on the Lightsail box. Remaining P7: private
 `/admin/jobs/<id>`, 7-day cache table + badge.
 FIND layer 2026-10-29: catalogue routing for 1,688 names, the ranked discovery ladder, the provider
 entry store, and Serper search behind a 7-day result cache + daily cap (`tools/find_audit.py`:
-9/30 canonical, 24/30 usable, vs 6/30 and 14/30 on the free rungs alone — PLAN §13.7). Next: wire
-`surfaces.json` into generation so a catalogue-only provider can produce a guide.
+9/30 canonical, 24/30 usable, vs 6/30 and 14/30 on the free rungs alone — PLAN §13.7).
+Wired into generation 2026-10-29 (`guidegen/bridge.py`): a catalogue name now runs FIND inside the job
+and builds a guide from the located page — PLAN §13.9.
 
 Given a free-text app name or website (`"tally.so"`, `"google sheets"`, `"tally"`, `"acme.com"`), resolve it to
 the OAuth provider that owns the app registration, and say what kind of setup is actually possible.
@@ -136,6 +137,9 @@ cache-hit-after-cap, expiry, empty-is-not-cached, env wiring). **177 total.**
 Same day, `tools/find_audit.py` (10 tests): the audit's own metric — the strict verdict that turns
 "a page was found" into "the canonical page was found" — plus URL normalisation (www/anchor/.md/
 index.html) and the parent-page-is-only-NEAR rule. **187 total.**
+Then the bridge (9 tests): a stored surface costs no network, FIND's output is recorded for the next
+request, a human-confirmed entry is never replaced, and a catalogue name queues a job instead of
+being refused. **196 total.**
 
 ## Verified 2026-10-27
 
@@ -176,8 +180,8 @@ Web end-to-end (2026-10-27): `POST /api/guides {"input":"github"}` → `job_1f3d
 Verifier: `python3 -m guidegen.verify --golden data/golden` → VALID for both golden specs; mutation tests
 catch missing values, missing steps, duplicate sources, bad hashes, fabricated quotes and secret leakage.
 
-Test run: `python3 -m unittest discover -s tests -v` → **187 tests, OK** (7 web tests skip without the venv;
-`.venv/bin/python -m unittest discover -s tests` runs all 187).
+Test run: `python3 -m unittest discover -s tests -v` → **196 tests, OK** (7 web tests skip without the venv;
+`.venv/bin/python -m unittest discover -s tests` runs all 196).
 
 ## Layout
 
@@ -290,7 +294,7 @@ Local, without Docker (same CMD the image runs):
 ## Next (from PLAN.md)
 
 P6 delivered: verifier + golden set, cross-format/secret checks, forced error paths, job timeout, and
-`debug`/`replay` (108 tests at P6, 187 now). P7 **deployed 2026-10-28** — image built on the box, container healthy, Caddy +
+`debug`/`replay` (108 tests at P6, 196 now). P7 **deployed 2026-10-28** — image built on the box, container healthy, Caddy +
 Let's Encrypt live at `integration-guide.100.31.120.181.sslip.io`, smoke 6/6 loopback and 6/6 public, one
 real GitHub guide end to end.
 

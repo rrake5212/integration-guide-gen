@@ -10,6 +10,7 @@ import uuid
 from dataclasses import dataclass
 
 from .assemble import assemble
+from .bridge import provider_for_catalogue
 from .env import load_env
 from .errors import GuideError
 from .llm import LLMClient
@@ -18,6 +19,7 @@ from .render_agent import render_agent_json, render_agent_md
 from .render_human import render_human
 from .research import ResearchResult, research
 from .resolve import Resolution, Resolver
+from .search import from_env
 
 
 @dataclass
@@ -57,9 +59,17 @@ def build_spec(raw: str, *, pick: str | None = None, max_chunks: int = 8,
     resolution = forced_resolution(resolver.registry, raw, pick) if pick else resolver.resolve(raw)
     if resolution.decision == "ask":
         raise GuideError("AMBIGUOUS_PROVIDER", detail=f"{len(resolution.alternatives)} candidates")
-    if resolution.decision != "resolved" or resolution.provider is None:
-        raise GuideError("PROVIDER_UNKNOWN", detail=f"no provider for {raw!r}")
     provider = resolution.provider
+    if provider is None and resolution.decision == "catalogue" and resolution.catalogue is not None:
+        # A catalogue name has no curated row: locate its setup docs (ladder + search) and use
+        # the located page as the provider's docs. PLAN §13.6's missing bridge.
+        provider = provider_for_catalogue(
+            resolution.catalogue,
+            searcher=from_env(),
+            on_progress=on_progress,
+        )
+    if resolution.decision not in ("resolved", "catalogue") or provider is None:
+        raise GuideError("PROVIDER_UNKNOWN", detail=f"no provider for {raw!r}")
     if provider.availability in ("unknown", "no_public_api"):
         raise GuideError("PROVIDER_UNKNOWN", detail=f"availability {provider.availability}")
 

@@ -83,8 +83,8 @@
         "input": { "type": "string", "minLength": 1 },
         "normalized": { "type": "string", "minLength": 1 },
         "kind": { "type": "string", "enum": ["domain", "text"] },
-        "decision": { "type": "string", "enum": ["resolved", "ask", "unknown"] },
-        "matched_by": { "type": "string", "enum": ["domain", "alias", "toolkit", "fuzzy", "discovery", "pick"] },
+        "decision": { "type": "string", "enum": ["resolved", "catalogue", "ask", "unknown"] },
+        "matched_by": { "type": "string", "enum": ["domain", "alias", "toolkit", "catalogue", "fuzzy", "discovery", "pick"] },
         "confidence": { "type": "string", "enum": ["high", "medium", "low", "none"] },
         "availability": { "type": "string", "enum": ["self_serve_oauth", "approval_gated", "api_key_only", "oidc_only", "no_public_api", "unknown"] },
         "alternatives": {

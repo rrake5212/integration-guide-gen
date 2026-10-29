@@ -18,6 +18,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .assemble import assemble
+from .bridge import provider_for_catalogue
 from .env import ROOT, load_env
 from .errors import GuideError, user_payload
 from .llm import LLMClient
@@ -75,11 +76,21 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"  {candidate.id:<12} {candidate.name} ({candidate.domain})")
             log("resolve", "ask", alternatives=[c.id for c in resolution.alternatives])
             return 2
-        if resolution.decision != "resolved" or resolution.provider is None:
+        provider = resolution.provider
+        if provider is None and resolution.decision == "catalogue" and resolution.catalogue is not None:
+            # Catalogue name with no curated row: locate the setup docs (ladder + search).
+            log("find", "start", entry=resolution.catalogue.slug)
+            try:
+                provider = provider_for_catalogue(resolution.catalogue)
+            except GuideError as exc:
+                print(user_payload(exc.code)["error"]["message"], file=sys.stderr)
+                log("find", "unknown", detail=exc.detail)
+                return 3
+            log("find", "done", provider=provider.id, docs=list(provider.docs))
+        if resolution.decision not in ("resolved", "catalogue") or provider is None:
             print("We couldn't match that. Try the app's website address instead.", file=sys.stderr)
             log("resolve", "unknown")
             return 3
-        provider = resolution.provider
         if provider.availability in ("unknown", "no_public_api"):
             message = "The docs don't state enough to write a setup guide."
             print(message, file=sys.stderr)
