@@ -6,6 +6,7 @@ import json
 import sys
 
 from .catalog import CatalogEntry, domain_candidates
+from .env import load_env
 from .errors import GuideError, user_payload
 from .find import MAX_PAGES, find, infer_domains
 from .probe import probe_domain
@@ -342,6 +343,7 @@ def _cmd_confirm(argv: list[str]) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
+    load_env()  # .env is the documented home for the optional search key
     if argv and argv[0] == "find":
         return _cmd_find(argv[1:])
     if argv and argv[0] == "batch":

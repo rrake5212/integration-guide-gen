@@ -132,6 +132,18 @@ class LadderTests(unittest.TestCase):
              searcher=searcher, max_pages=10)
         self.assertEqual(searcher.calls, 0)
 
+    def test_a_rejected_search_key_is_visible_not_silent(self) -> None:
+        class Broken:
+            name = "serper"
+            last_error = "serper HTTP 403"
+
+            def search(self, query: str, limit: int = 5):
+                return []
+
+        result = find("example", brand="Example", domains=["example.com"],
+                      fetcher=FakeFetcher({}), searcher=Broken(), max_pages=6)
+        self.assertTrue(any("403" in n for n in result.notes), result.notes)
+
     def test_no_signal_is_unknown_not_a_guess(self) -> None:
         result = find("example", brand="Example", domains=["example.com"],
                       fetcher=FakeFetcher({}), max_pages=8)

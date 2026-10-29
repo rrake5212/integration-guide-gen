@@ -432,7 +432,10 @@ class Finder:
         query = f"{brand} OAuth app authentication developer documentation client id redirect URI"
         results = self._search.search(query, limit=5)
         if not results:
-            self.notes.append(f"search ({self._search.name}) returned nothing")
+            error = getattr(self._search, "last_error", None)
+            self.notes.append(
+                f"search ({self._search.name}) returned nothing" + (f": {error}" if error else "")
+            )
             return
         ranked = []
         for row in results:
