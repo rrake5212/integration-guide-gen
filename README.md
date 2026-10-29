@@ -71,6 +71,23 @@ cp .env.example .env          # set DEEPINFRA_API_KEY; SERPER_API_KEY optional
 
 Open http://127.0.0.1:8765, type an app name, watch the job, read the three tabs.
 
+### From a zip or a fresh clone
+
+No key is needed to resolve, find docs, validate a spec, verify the golden set or replay a stored job:
+
+```
+python3 -m guidegen "tally.so"                      # resolve: provider + availability verdict
+python3 -m guidegen find "linear" --no-network      # route from the catalogue, no fetch
+python3 -m guidegen.spec data/golden/github/spec.json
+python3 -m guidegen.verify --golden data/golden
+```
+
+A key is needed for anything that reads docs and writes a guide — `guidegen.build`, and the site's
+generate button. Without one the job fails cleanly as `LLM_NOT_CONFIGURED` rather than hanging.
+
+Two things a zip does not contain, because they are gitignored: `data/jobs/` and `data/cache/`. The
+first is why the test suite is not green from a clean checkout — see Tests.
+
 ## Command line
 
 ```
@@ -189,7 +206,17 @@ fact may come from it; facts come from the provider's own docs and published dis
 .venv/bin/python -m unittest discover -s tests      # 201 tests
 ```
 
-Covering resolution and input validation, the spec schema and its semantic rules, quoted extraction
+**In a clean checkout or zip, 9 of the 201 error** — they read a stored job under
+`data/jobs/job_15d800aa7a/` (spec, guide, agent files, fetched docs) and that directory is gitignored,
+so it exists only where a build has actually run. The nine are `test_done_page_and_downloads`,
+`test_human_guide_contains_steps_sources_and_unknowns`, `test_google_guide_has_scopes_and_verification`,
+`test_a_spec_with_no_confirmed_auth_method_still_renders`, `test_doc_text_is_html_escaped`,
+`test_no_key_material_is_rendered`, `test_conflicting_sources_are_shown_in_the_guide`,
+`test_no_conflict_section_when_sources_agree` and `test_quote_provenance_against_stored_docs`. They pass
+in the development checkout and in the deployed image, where `data/jobs/` is synced. Pointing those
+fixtures at `data/golden/` is the fix.
+
+They cover resolution and input validation, the spec schema and its semantic rules, quoted extraction
 and assembly, time and blocker selection, both renderers, the web surface and its error paths, the
 verifier's mutation set, replay, catalogue routing, the FIND ladder and ranker, the search adapters,
 the entry store and the bridge.

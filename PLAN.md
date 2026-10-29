@@ -567,6 +567,8 @@ Next, in order:
 4. **Both auth methods per guide** — derive `methods` from the facts present rather than `availability`, so
    Stripe's keys and Prisma's service tokens can appear beside OAuth.
 5. **P7 remainder** — private `/admin/jobs/<id>`, 7-day page-hash cache table + badge. Then P8 (optional).
+6. **Test fixtures that survive a clone.** 9 of 201 read `data/jobs/job_15d800aa7a/`, which is
+   gitignored, so a downloaded zip fails them; point those fixtures at `data/golden/` instead.
 
 Operational notes: redeploy with `deploy/deploy.sh`; logs with `sudo docker compose logs -f app` in
 `/home/ubuntu/guidegen` or `sudo journalctl -u caddy -f`; the DeepInfra and Serper keys live only in the

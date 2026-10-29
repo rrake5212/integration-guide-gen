@@ -15,7 +15,7 @@ on `100.31.120.181.sslip.io`); GuideGen is a second site block, not a replacemen
 | Instance | Lightsail `journey-builder-mcp`, us-east-1a, Ubuntu 24.04, micro_3_0 (1 GB RAM) |
 | IP | 100.31.120.181 (public IPv4 included in the Lightsail flat rate) |
 | Hostname | `integration-guide.100.31.120.181.sslip.io` — sslip.io resolves it to the IP, so no DNS record |
-| Ports | 443 open (Lightsail firewall + ufw). 8765 is **not** opened publicly |
+| Ports | **80 and 443** open (Lightsail firewall + ufw). 80 exists only so `http://` redirects to `https://`; 8765 is **not** opened publicly |
 | RAM | shared with journey-builder-mcp (~60 MB) — the container is capped at 512 MB |
 | Key material | `.env` stays on the box, never synced from the laptop |
 
@@ -52,6 +52,12 @@ the 409 refusal on `/api/guides`, and clean `JOB_NOT_FOUND`. `--with-job` additi
 runs one real GitHub guide end to end (~60 s, ≈$0.01 DeepInfra) and asserts the three
 downloads plus SSE frames.
 
+The public host must also redirect, which the smoke test does not check:
+
+    curl -s -o /dev/null -w '%{http_code} %{redirect_url}\n' http://<host>/     # 308 https://…
+
+A timeout there means ufw is 443-only — see Troubleshooting.
+
 Test suite inside the built image, with no volume and no network:
 
     ssh ... "cd ~/guidegen && sudo docker run --rm guidegen:local python -m unittest discover -s tests"
@@ -62,6 +68,10 @@ Test suite inside the built image, with no volume and no network:
 is synced, so the golden specs exist on the box as well as in the image. What does not work is
 reaching the golden set from inside the *running* container: the `./runtime:/app/data` mount
 replaces `/app/data`, so use `docker run --rm` (above) for in-container verification.
+
+The suite reads fixtures under `data/jobs/`. That directory is gitignored, but `deploy.sh` does not
+exclude it from the rsync, so it exists on the box and inside the image. A clean clone or a downloaded
+zip does not have it, and 9 tests error there — README, Tests.
 
 ## Operate
 
@@ -85,7 +95,8 @@ source. There is no registry — keep a copy of the last-good tree (`rsync` it a
 | `502` from Caddy, container `unhealthy` | `docker compose logs app`; usually a missing `.env` var or an import error — the image's `CMD` exits and `restart: unless-stopped` loops |
 | `permission denied` writing `/app/data/guidegen.db` | bind-mount ownership: `sudo chown -R 10001:10001 ~/guidegen/runtime` |
 | SSE progress bar freezes until the end | something is buffering the stream: check the `@sse` branch still has `flush_interval -1` and no `encode` |
-| cert not issued on first request | Let's Encrypt needs :80 reachable; check `sudo journalctl -u caddy -n 50`, and that sslip.io resolves to 100.31.120.181 |
+| cert not issued on first request | Caddy issues via TLS-ALPN-01 on :443, so :80 is not required for issuance. Check `sudo journalctl -u caddy -n 50` and that sslip.io resolves to 100.31.120.181 |
+| bare hostname hangs in a browser | `http://` must answer to redirect. Caddy listens on :80 by itself, but ufw was opened 443-only at first — `sudo ufw allow 80/tcp`, then `curl -s -o /dev/null -w '%{http_code} %{redirect_url}\n' http://<host>/` should print `308 https://…` |
 | `caddy validate` fails on reload | the site block and the existing journey-builder block are both in the validated config — a parse error anywhere takes reload down, so fix before `reload` |
 | box goes unresponsive during build | 1 GB RAM: the swapfile from `bootstrap.sh` is what keeps journey-builder alive; build with `--no-cache` off a quiet box if needed |
 
