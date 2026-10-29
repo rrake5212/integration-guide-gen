@@ -117,7 +117,13 @@ def fetch_document(url: str, timeout: float = FETCH_TIMEOUT) -> Document:
 
     raw = body.decode("utf-8", "replace")
     title_match = re.search(r"(?is)<title[^>]*>(.*?)</title>", raw)
-    title = html.unescape(re.sub(r"\s+", " ", title_match.group(1)).strip()) if title_match else final_url
+    if title_match:
+        title = html.unescape(re.sub(r"\s+", " ", title_match.group(1)).strip())
+    else:
+        # Markdown docs (.md, llms-style pages) have no <title>; the H1 is the title, and
+        # falling back to the URL makes every ranker decision blind to it.
+        heading = re.search(r"(?m)^#\s+(.+)$", raw)
+        title = heading.group(1).strip() if heading else final_url
     return Document(
         url=final_url,
         title=title,

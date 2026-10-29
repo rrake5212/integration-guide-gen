@@ -17,6 +17,7 @@ from __future__ import annotations
 import difflib
 from dataclasses import dataclass, field
 
+from .catalog import CatalogEntry
 from .input import assert_public_host, parse_query
 from .registry import Provider, Registry
 
@@ -60,10 +61,11 @@ class Resolution:
     availability: str
     alternatives: list[Candidate] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
+    catalogue: CatalogEntry | None = None
 
     @property
     def exit_code(self) -> int:
-        return {"resolved": 0, "ask": 2, "unknown": 3}[self.decision]
+        return {"resolved": 0, "catalogue": 0, "ask": 2, "unknown": 3}[self.decision]
 
     def to_dict(self) -> dict:
         return {
@@ -76,6 +78,7 @@ class Resolution:
             "provider": self.provider.to_dict() if self.provider else None,
             "alternatives": [c.to_dict() for c in self.alternatives],
             "oauth_availability": self.availability,
+            "catalogue": self.catalogue.to_dict() if self.catalogue else None,
             "notes": list(self.notes),
         }
 
@@ -191,12 +194,24 @@ class Resolver:
 
         # 2. exact toolkit name -> slug prefix -> provider
         slug = self.registry.toolkit_slug(text)
+        entry = self.registry.catalog(text) if slug else None
         if slug:
             provider = self.registry.provider_for_slug(slug)
             if provider:
                 return Resolution(
                     raw, text, "text", "resolved", provider, "toolkit", "medium",
                     provider.availability, [], [f"matched toolkit {slug}"],
+                )
+            if entry is not None:
+                # Gate A: the catalogue routes the name even with no curated row. It supplies
+                # existence, canonical name and auth families — never facts for the guide.
+                return Resolution(
+                    raw, text, "text", "catalogue", None, "catalogue", "medium", entry.availability, [],
+                    [
+                        f"routed from the toolkit index: {entry.name} supports {entry.label}",
+                        "no curated provider entry yet; the FIND stage locates its setup docs",
+                    ],
+                    catalogue=entry,
                 )
 
         # 3. fuzzy

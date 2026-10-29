@@ -3,7 +3,7 @@
 Status: **LIVE since 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io** (P1–P6 built 2026-10-27;
 P7 deployed 2026-10-28) — resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard,
 DeepInfra client, research + quoted extraction + assembly, time/steps/blockers, dual renderers, FastAPI
-web UI, verifier + golden set + error paths + debug/replay; 125 tests. Repo: private,
+web UI, verifier + golden set + error paths + debug/replay; 161 tests. Repo: private,
 `github.com/rrake5212/integration-guide-gen`. Deploy: `Dockerfile` +
 `docker-compose.yml` + `deploy/Caddyfile` + one-command `deploy/deploy.sh` (see `deploy/README.md`);
 running as the `guidegen` container behind Caddy on the Lightsail box. Remaining P7: private
@@ -70,6 +70,34 @@ Jobs are SQLite-backed and run on two worker threads; job ids are unlisted UUIDs
 `GUIDEGEN_JOB_TIMEOUT_SECONDS` (default 180) fails with `JOB_TIMEOUT`. The 7-day cache badge is not wired yet
 (P7).
 
+## Finding the auth surface (FIND layer, 2026-10-29)
+
+Reliable discovery is not one crawler; it is a ranked ladder plus a durable entry that a human can
+freeze. Every candidate is verified by content, not by a 200 status.
+
+```
+python3 -m guidegen find "linear"                 # catalogue route -> ladder -> ranked surfaces
+python3 -m guidegen find "zendesk" --save         # store the proposal in guidegen/data/surfaces.json
+python3 -m guidegen review --limit 20             # what still needs a human
+python3 -m guidegen confirm linear 1              # freeze proposal #1 as the answer
+python3 -m guidegen find "hubspot" --no-network    # route + would-fetch, no requests
+```
+
+Search is optional and used only for the residual (after llms.txt, sitemap, nav, path guesses and
+well-known all fail). It sits behind a `SearchProvider` protocol, so the vendor is a config choice:
+
+```
+SEARCH_PROVIDER=serper  SERPER_API_KEY=...    # 2,500 free queries; 50k pack $1.00/1k
+SEARCH_PROVIDER=brave   BRAVE_API_KEY=...     # $5.00/1k requests, $5 free monthly
+# no key -> NullSearch; the free rungs stand alone
+```
+
+`guidegen/data/surfaces.json` is the durable answer: `surfaces[]` (accepted), `proposals[]` (machine),
+`status`, `accepted_by` (`human`/`auto`), `accepted_at`, and the finder's own `find{}` record. A human
+confirm is never overwritten by a later auto result. Two credible surfaces of different kinds
+(`connect_oauth` vs `app_marketplace`) come back as `needs_review` with both — the same rule as the name
+resolver: stop and ask, never guess.
+
 ## Tests
 
 ```
@@ -88,7 +116,14 @@ consistency, scopes/verification, no key material, HTML escaping. 7 web tests: a
 resolve outcomes, queued job, done page + downloads, missing job, job timeout (skipped on system Python; run with
 `.venv/bin/python`). 8 verifier tests: golden assertions, quote provenance, missing value/step, duplicate source,
 bad hash, secret leakage, fabricated quote. 8 error-path tests: docs 403/429, invalid model JSON, refusal field,
-refusal text, ambiguous name, blocked host, unknown provider. 2 replay tests. **108 total.**
+refusal text, ambiguous name, blocked host, unknown provider. 2 replay tests. **108 at P6.**
+2026-10-29 added 36: catalogue routing and domain inference (parse_auth, availability, title-gated
+inference, first-party labels), the FIND ranker (docs vs marketing, generic-overview rejection, blocked
+product surfaces, keyword-only pages are not usable, surface kinds), the ladder (llms stop, two-surface
+ambiguity, search only on the residual and never when the ladder won, unknown is not a guess,
+well-known alone is needs_review), the search adapters (Serper/Brave parsing, key handling, env factory,
+failure degradation), and the entry store (auto-accept, human confirm, human answers are never
+overwritten, file shape). **161 total.**
 
 ## Verified 2026-10-27
 
@@ -243,7 +278,7 @@ Local, without Docker (same CMD the image runs):
 ## Next (from PLAN.md)
 
 P6 delivered: verifier + golden set, cross-format/secret checks, forced error paths, job timeout, and
-`debug`/`replay` (108 tests at P6, 125 now). P7 **deployed 2026-10-28** — image built on the box, container healthy, Caddy +
+`debug`/`replay` (108 tests at P6, 161 now). P7 **deployed 2026-10-28** — image built on the box, container healthy, Caddy +
 Let's Encrypt live at `integration-guide.100.31.120.181.sslip.io`, smoke 6/6 loopback and 6/6 public, one
 real GitHub guide end to end.
 
@@ -264,13 +299,17 @@ real GitHub guide end to end.
 - Assembly picks ONE auth method set from `availability`: a `self_serve_oauth` provider gets an OAuth guide and
   the `auth.api_key.*` facts are never requested. Providers that genuinely offer both (Stripe keys vs Connect
   OAuth, Prisma service tokens vs OAuth) therefore show only the OAuth path.
-- **Routing is curation-gated (biggest gap, proposal in PLAN §13).** A name resolves only if it is one of the
-  9 curated rows; the 1,688-entry Composio snapshot is used solely as a name→curated bridge, so its `auth`
-  column is never read. `linear`, `hubspot`, `airtable`, `asana`, `zendesk`, `salesforce` all return `unknown`
-  even though the index says they support OAuth 2.0 — and 41 of the 1,688 entries map to a curated provider (2.4%).
+- **Routing is curation-gated — FIXED 2026-10-29.** `catalog.py` routes any of the 1,688 catalogue
+  names to a canonical name + auth families, offline (gate A), and `find.py` locates the docs. `linear`,
+  `hubspot`, `airtable`, `asana`, `zendesk`, `salesforce` no longer return "unknown because uncurated".
+  What remains is coverage: a provider whose portal is JS-rendered and whose index has no usable
+  llms/sitemap needs the search fallback, and no search key is configured yet.
 - **The discovery probe is a coin flip.** Measured 2026-10-29: `airtable.com` and `prisma.io` publish
   `.well-known` metadata (resolved, `oidc_only`); `stripe.com`, `linear.app`, `hubspot.com`, `asana.com`,
-  `zendesk.com` publish none (unknown). A bare name never reaches the probe at all.
+  `zendesk.com` publish none. The probe is now corroboration only, never the ladder's only bet.
+- **`surfaces.json` is not wired into generation yet.** The web pipeline still reads `provider.docs`;
+  a catalogue-only provider can be found but not yet guided. Next step is constructing a provider from
+  a catalogue entry + confirmed surface and feeding it to `research.py`.
 
 Remaining in P7: private `/admin/jobs/<id>`, 7-day page-hash cache table + badge.
 P8 optional: MCP wrapper + the calibration run that replaces the `low` time confidence.

@@ -1,0 +1,420 @@
+{
+ "version": 1,
+ "updated_at": "2026-10-29T06:00:07+00:00",
+ "entries": {
+  "github": {
+   "id": "github",
+   "name": "GitHub",
+   "availability": "self_serve_oauth",
+   "domains": [
+    "github.com"
+   ],
+   "auth_families": [],
+   "status": "resolved",
+   "accepted_by": "human",
+   "accepted_at": null,
+   "surfaces": [
+    {
+     "kind": "oauth_app_registration",
+     "docs_url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+     "console_url": "https://github.com/settings/developers",
+     "discovery_url": null,
+     "title": "GitHub docs",
+     "confidence": "high",
+     "score": 0,
+     "rung": "curated"
+    }
+   ],
+   "proposals": [],
+   "find": null,
+   "notes": [
+    "curated seed"
+   ]
+  },
+  "google": {
+   "id": "google",
+   "name": "Google",
+   "availability": "self_serve_oauth",
+   "domains": [
+    "google.com",
+    "google.co.in",
+    "youtube.com"
+   ],
+   "auth_families": [],
+   "status": "resolved",
+   "accepted_by": "human",
+   "accepted_at": null,
+   "surfaces": [
+    {
+     "kind": "oauth_app_registration",
+     "docs_url": "https://developers.google.com/identity/protocols/oauth2/web-server",
+     "console_url": "https://console.cloud.google.com/apis/credentials",
+     "discovery_url": "https://accounts.google.com/.well-known/openid-configuration",
+     "title": "Google docs",
+     "confidence": "high",
+     "score": 0,
+     "rung": "curated"
+    }
+   ],
+   "proposals": [],
+   "find": null,
+   "notes": [
+    "curated seed"
+   ]
+  },
+  "linear": {
+   "id": "linear",
+   "name": "Linear",
+   "availability": "unknown",
+   "domains": [
+    "linear.app"
+   ],
+   "auth_families": [
+    "oauth2",
+    "api_key"
+   ],
+   "status": "resolved",
+   "accepted_by": "auto",
+   "accepted_at": "2026-10-29T06:00:07+00:00",
+   "surfaces": [
+    {
+     "kind": "oauth_app_registration",
+     "docs_url": "https://linear.app/developers/oauth-2-0-authentication.md",
+     "console_url": null,
+     "discovery_url": null,
+     "title": "OAuth 2.0 authentication",
+     "confidence": "high",
+     "score": 12,
+     "rung": "llms"
+    }
+   ],
+   "proposals": [
+    {
+     "kind": "oauth_app_registration",
+     "docs_url": "https://linear.app/developers/oauth-2-0-authentication.md",
+     "console_url": null,
+     "discovery_url": null,
+     "title": "OAuth 2.0 authentication",
+     "confidence": "high",
+     "score": 12,
+     "rung": "llms"
+    }
+   ],
+   "find": {
+    "query": "linear",
+    "brand": "Linear",
+    "domains": [
+     "linear.app"
+    ],
+    "status": "resolved",
+    "search_provider": "null",
+    "pages_fetched": 5,
+    "rungs": [
+     "llms"
+    ],
+    "surfaces": [
+     {
+      "url": "https://linear.app/developers/oauth-2-0-authentication.md",
+      "rung": "llms",
+      "kind": "oauth_app_registration",
+      "score": 12,
+      "title": "OAuth 2.0 authentication",
+      "verified": true,
+      "blocked": false,
+      "http_status": 200,
+      "confidence": "high",
+      "hits": [
+       "client[\\s_-]?id",
+       "client[\\s_-]?secret",
+       "redirect[\\s_-]?uri",
+       "authorization\\s+code",
+       "\\bscopes?\\b",
+       "api[\\s_-]?key",
+       "oauth"
+      ],
+      "reasons": [
+       "+3 auth path",
+       "+3 auth title",
+       "+3 7 setup phrases",
+       "+1 console/settings path described",
+       "+2 first-party host"
+      ],
+      "doc_hash": "sha256:dc33c663f22c356ae20f91796e902f196eb5d215a18134f62422488c61f03352"
+     },
+     {
+      "url": "https://linear.app/developers/oauth-app-manifests.md",
+      "rung": "llms",
+      "kind": "oauth_app_registration",
+      "score": 10,
+      "title": "OAuth application manifests",
+      "verified": false,
+      "blocked": false,
+      "http_status": 200,
+      "confidence": "none",
+      "hits": [
+       "redirect[\\s_-]?uri",
+       "oauth"
+      ],
+      "reasons": [
+       "+3 auth path",
+       "+3 auth title",
+       "+1 2 setup phrases",
+       "+1 console/settings path described",
+       "+2 first-party host"
+      ],
+      "doc_hash": "sha256:5050c94cbc1b64306e43bb1240affb45300424410cac456f0cc5db694f5f3558"
+     },
+     {
+      "url": "https://linear.app/developers/file-storage-authentication.md",
+      "rung": "llms",
+      "kind": "oauth_app_registration",
+      "score": 8,
+      "title": "File storage authentication",
+      "verified": false,
+      "blocked": false,
+      "http_status": 200,
+      "confidence": "none",
+      "hits": [
+       "api[\\s_-]?key"
+      ],
+      "reasons": [
+       "+3 auth path",
+       "+3 auth title",
+       "+2 first-party host"
+      ],
+      "doc_hash": "sha256:ad181047791b78d016ccf791c3ad88c06917302cf13e433ea949299b0a883c09"
+     },
+     {
+      "url": "https://linear.app/developers/oauth-actor-authorization.md",
+      "rung": "llms",
+      "kind": "oauth_app_registration",
+      "score": 8,
+      "title": "OAuth actor authorization",
+      "verified": false,
+      "blocked": false,
+      "http_status": 200,
+      "confidence": "none",
+      "hits": [
+       "oauth"
+      ],
+      "reasons": [
+       "+3 auth path",
+       "+3 auth title",
+       "+2 first-party host"
+      ],
+      "doc_hash": "sha256:09caf0c28055e556c336be8069adb6db6b645d108f6341e634de4108efc9c37e"
+     }
+    ],
+    "notes": []
+   },
+   "notes": []
+  },
+  "meta": {
+   "id": "meta",
+   "name": "Meta",
+   "availability": "approval_gated",
+   "domains": [
+    "meta.com",
+    "facebook.com",
+    "whatsapp.com",
+    "instagram.com"
+   ],
+   "auth_families": [],
+   "status": "resolved",
+   "accepted_by": "human",
+   "accepted_at": null,
+   "surfaces": [
+    {
+     "kind": "oauth_app_registration",
+     "docs_url": "https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow",
+     "console_url": "https://developers.facebook.com/apps",
+     "discovery_url": null,
+     "title": "Meta docs",
+     "confidence": "high",
+     "score": 0,
+     "rung": "curated"
+    }
+   ],
+   "proposals": [],
+   "find": null,
+   "notes": [
+    "curated seed"
+   ]
+  },
+  "notion": {
+   "id": "notion",
+   "name": "Notion",
+   "availability": "self_serve_oauth",
+   "domains": [
+    "notion.so",
+    "notion.com"
+   ],
+   "auth_families": [],
+   "status": "resolved",
+   "accepted_by": "human",
+   "accepted_at": null,
+   "surfaces": [
+    {
+     "kind": "oauth_app_registration",
+     "docs_url": "https://developers.notion.com/guides/get-started/authorization",
+     "console_url": "https://www.notion.so/my-integrations",
+     "discovery_url": null,
+     "title": "Notion docs",
+     "confidence": "high",
+     "score": 0,
+     "rung": "curated"
+    }
+   ],
+   "proposals": [],
+   "find": null,
+   "notes": [
+    "curated seed"
+   ]
+  },
+  "prisma": {
+   "id": "prisma",
+   "name": "Prisma",
+   "availability": "self_serve_oauth",
+   "domains": [
+    "prisma.io"
+   ],
+   "auth_families": [],
+   "status": "resolved",
+   "accepted_by": "human",
+   "accepted_at": null,
+   "surfaces": [
+    {
+     "kind": "oauth_app_registration",
+     "docs_url": "https://www.prisma.io/docs/rest-api/authentication",
+     "console_url": "https://console.prisma.io",
+     "discovery_url": "https://auth.prisma.io/.well-known/oauth-authorization-server",
+     "title": "Prisma docs",
+     "confidence": "high",
+     "score": 0,
+     "rung": "curated"
+    }
+   ],
+   "proposals": [],
+   "find": null,
+   "notes": [
+    "curated seed"
+   ]
+  },
+  "slack": {
+   "id": "slack",
+   "name": "Slack",
+   "availability": "self_serve_oauth",
+   "domains": [
+    "slack.com"
+   ],
+   "auth_families": [],
+   "status": "resolved",
+   "accepted_by": "human",
+   "accepted_at": null,
+   "surfaces": [
+    {
+     "kind": "oauth_app_registration",
+     "docs_url": "https://api.slack.com/authentication/oauth-v2",
+     "console_url": "https://api.slack.com/apps",
+     "discovery_url": null,
+     "title": "Slack docs",
+     "confidence": "high",
+     "score": 0,
+     "rung": "curated"
+    }
+   ],
+   "proposals": [],
+   "find": null,
+   "notes": [
+    "curated seed"
+   ]
+  },
+  "stripe": {
+   "id": "stripe",
+   "name": "Stripe",
+   "availability": "self_serve_oauth",
+   "domains": [
+    "stripe.com"
+   ],
+   "auth_families": [],
+   "status": "resolved",
+   "accepted_by": "human",
+   "accepted_at": null,
+   "surfaces": [
+    {
+     "kind": "oauth_app_registration",
+     "docs_url": "https://docs.stripe.com/connect/oauth-reference",
+     "console_url": "https://dashboard.stripe.com/settings/applications",
+     "discovery_url": null,
+     "title": "Stripe docs",
+     "confidence": "high",
+     "score": 0,
+     "rung": "curated"
+    }
+   ],
+   "proposals": [],
+   "find": null,
+   "notes": [
+    "curated seed"
+   ]
+  },
+  "tally": {
+   "id": "tally",
+   "name": "Tally",
+   "availability": "api_key_only",
+   "domains": [
+    "tally.so"
+   ],
+   "auth_families": [],
+   "status": "resolved",
+   "accepted_by": "human",
+   "accepted_at": null,
+   "surfaces": [
+    {
+     "kind": "oauth_app_registration",
+     "docs_url": "https://developers.tally.so/api-reference/introduction",
+     "console_url": "https://tally.so/settings/api",
+     "discovery_url": null,
+     "title": "Tally docs",
+     "confidence": "high",
+     "score": 0,
+     "rung": "curated"
+    }
+   ],
+   "proposals": [],
+   "find": null,
+   "notes": [
+    "curated seed"
+   ]
+  },
+  "tally-erp": {
+   "id": "tally-erp",
+   "name": "Tally ERP / TallyPrime",
+   "availability": "unknown",
+   "domains": [
+    "tallysolutions.com"
+   ],
+   "auth_families": [],
+   "status": "resolved",
+   "accepted_by": "human",
+   "accepted_at": null,
+   "surfaces": [
+    {
+     "kind": "oauth_app_registration",
+     "docs_url": "https://tallysolutions.com/",
+     "console_url": null,
+     "discovery_url": null,
+     "title": "Tally ERP / TallyPrime docs",
+     "confidence": "high",
+     "score": 0,
+     "rung": "curated"
+    }
+   ],
+   "proposals": [],
+   "find": null,
+   "notes": [
+    "curated seed"
+   ]
+  }
+ }
+}

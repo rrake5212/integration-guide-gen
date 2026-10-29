@@ -63,9 +63,13 @@ class ResolutionTests(unittest.TestCase):
         self.assertEqual(res.matched_by, "fuzzy")
         self.assertIn(res.confidence, {"medium", "low"})
 
-    def test_unrelated_name_is_unknown(self) -> None:
+    def test_a_big_provider_without_a_curated_row_now_routes(self) -> None:
+        # Was "unknown" before gate A. Salesforce is in the 1,688-row index and was one of
+        # the measured routing failures (2026-10-29), so this is the regression that matters.
         res = self.resolver.resolve("salesforce")
-        self.assertEqual(res.decision, "unknown")
+        self.assertEqual(res.decision, "catalogue")
+        assert res.catalogue is not None
+        self.assertEqual(res.catalogue.slug, "SALESFORCE")
 
     def test_prisma_name_resolves_from_the_curated_registry(self) -> None:
         res = self.resolver.resolve("prisma")
@@ -87,13 +91,22 @@ class ResolutionTests(unittest.TestCase):
         self.assertEqual(res.matched_by, "alias")
         self.assertEqual(self.resolver.resolve("stripe.com").provider.id, "stripe")
 
-    def test_known_app_without_a_provider_entry_says_so(self) -> None:
-        # Airtable is in the toolkit index but is not a curated provider. "Nothing is close"
-        # was misleading: the index knows it, and the missing thing is a provider entry.
+    def test_known_app_without_a_provider_entry_is_routed_from_the_catalogue(self) -> None:
+        # Gate A (2026-10-29): the toolkit index is the router. Airtable has no curated row
+        # but is in the index, so it is a FIRST-CLASS resolution — existence + auth families —
+        # not "unknown". Facts still come from Airtable's own docs (FIND does that next).
         res = self.resolver.resolve("airtable")
+        self.assertEqual(res.decision, "catalogue")
+        self.assertIsNotNone(res.catalogue)
+        assert res.catalogue is not None
+        self.assertEqual(res.catalogue.slug, "AIRTABLE")
+        self.assertIn("oauth2", res.catalogue.auth_families)
+        self.assertEqual(res.availability, "self_serve_oauth")
+        self.assertTrue(any("toolkit index" in n for n in res.notes), res.notes)
+
+    def test_a_name_in_neither_source_stays_unknown(self) -> None:
+        res = self.resolver.resolve("zzzz-not-a-real-product")
         self.assertEqual(res.decision, "unknown")
-        self.assertTrue(any("toolkit index lists AIRTABLE" in n for n in res.notes), res.notes)
-        self.assertTrue(any("provider entry" in n for n in res.notes))
 
     def test_registry_loaded(self) -> None:
         registry = Registry()

@@ -1,7 +1,7 @@
 # OAuth / API-key setup guide generator — plan
 
-**Status: DEPLOYED 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests at P6 / 121 now). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started.**
-Date: 2026-10-29 (rev 21). Home: `~/AgentWork/integration-guide-gen/` · private repo `rrake5212/integration-guide-gen`
+**Status: DEPLOYED 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests at P6 / 161 now). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started. **2026-10-29: §13 approved (gates A–E) and its FIND layer built — catalogue routing, the ranked discovery ladder, the provider-entry store with human confirm, and a swappable search fallback.**
+Date: 2026-10-29 (rev 22). Home: `~/AgentWork/integration-guide-gen/` · private repo `rrake5212/integration-guide-gen`
 
 One-line product: a developer submits **an app name or a website/domain** they want OAuth with
 ("Google", "tally.so", "Notion", "acme.com"), and the agent resolves it to the real provider, then generates
@@ -872,13 +872,18 @@ Operational notes: redeploy with `deploy/deploy.sh`; logs with `sudo docker comp
 `/home/ubuntu/guidegen` or `sudo journalctl -u caddy -f`; the DeepInfra key lives only in the box's
 `.env` (and the laptop's) — it is never synced.
 
-## 13. Proposed — routing redesign: the reference index as the router, docs-discovery as the ladder
+## 13. Routing redesign — the reference index as the router, docs-discovery as the ladder
 
-**Status: Proposed — NOT approved.** Nothing below is built. It records the architectural finding from
-the Stripe/Prisma/HubSpot/Asana/Linear/Stripe investigations on 2026-10-28/29 and the three decisions
-(§13.0) that gate any execution.
+**Status: APPROVED 2026-10-29 (gates A–E answered); FIND layer BUILT 2026-10-29 — see §13.6.**
+It records the architectural finding from the Stripe/Prisma/HubSpot/Asana/Linear investigations on
+2026-10-28/29, the decisions that gated execution, and what the build actually does.
 
-### 13.0 Decision gates (answer before any work)
+**Gate answers (2026-10-29):** A — yes, route names from the local Composio snapshot. B — yes, add a
+search call, but only for the residual and behind the ranker. C — no, the snapshot's auth scheme is
+enough; no Composio live API. D — search behind a small swappable interface; Serper or Brave.
+E — yes, a human confirms the first batch (proposals are proposals; a confirm freezes the answer).
+
+### 13.0 Decision gates (answered 2026-10-29)
 
 | # | Decision | Options | Consequence |
 |---|---|---|---|
@@ -969,6 +974,49 @@ deterministically and does not route Stripe, HubSpot or Zendesk.
   llms.txt fixtures (Linear-shaped, Stripe-shaped, 404); a resolve test that `supported` never renders as
   a guide without a located docs page.
 
-### 13.5 Out of scope for this proposal
+### 13.5 Out of scope for this batch
 
 Custom domains, the cache table, `/admin/jobs`, calibration — unchanged and still tracked above.
+
+### 13.6 Built 2026-10-29 — what the FIND layer actually does
+
+Measured first, then built. A 30-provider benchmark of the shallow free ladder (llms.txt → sitemap →
+nav → well-known → path guesses) found *some* page for 16/30 but the right page for only **6/30**;
+10 were help articles, marketing pages or a different product surface (Stripe's wallet OAuth, Twilio's
+Authy push auth, Intercom's help centre, Notion's overview). One level of nav depth recovered 5/16 of
+the misses and only 2 of those were correct — Airtable and Slack returned *zero* server-rendered nav
+links because their portals are JS apps. A single web search on the 12 hardest providers reached the
+right host with a valid auth page in 8/12 and the exact canonical page in 3/12. So no signal is
+reliable per call; the entry has to be.
+
+Code (`guidegen/`, 161 tests green, golden set VALID):
+
+| module | job |
+|---|---|
+| `catalog.py` | Gate A router: any of the 1,688 catalogue names → canonical name + auth families, offline. Domain inference is separate and verified against the host's own title. |
+| `find.py` | The ladder + **ranker**. A page is usable only with 200 + ≥3 distinct setup phrases + `ok` surface kind; help/blog/marketing/overview paths and other product surfaces are blocked outright. Two credible surfaces of different kinds = `needs_review`, never a silent pick. |
+| `surfaces.py` | The provider entry: `surfaces[]`, `proposals[]`, `status`, `accepted_by`, `accepted_at`, `find{}`. A human confirm freezes the answer; a later auto result may add proposals but can never overwrite it. Persisted to `guidegen/data/surfaces.json`. |
+| `search.py` | Gate B/D fallback behind a `SearchProvider` protocol: `SerperSearch`, `BraveSearch`, `NullSearch`. Runs only on the residual, after the ranker, and only one query. No key → null provider, and the free rungs stand alone. |
+
+CLI:
+
+    python3 -m guidegen find "<name>" [--json] [--no-network] [--no-search] [--save]
+    python3 -m guidegen review [--limit N]
+    python3 -m guidegen confirm <entry-id> <n>
+
+The resolver gained a first-class `catalogue` decision, so `airtable`/`linear`/`salesforce` are no
+longer "unknown because uncurated" — they resolve to existence + auth families, and FIND locates the
+docs. Live checks the same day: `linear` → `linear.app/developers/oauth-2-0-authentication.md`
+in 5 pages; `zendesk` → `developer.zendesk.com/documentation/authentication/` in 9; `stripe` →
+the curated Connect reference in 1; `hubspot` → honest `unknown` with no false candidates (its portal
+is JS-rendered and no search key is configured yet); `tally` still asks between forms and ERP.
+
+Search pricing checked on the vendors' pages 2026-10-29: **Serper** 2,500 free queries, packs 50k @
+$1.00/1k → 12.5M @ $0.30/1k (50→300 qps), credits valid 6 months; **Brave** $5.00/1k requests with
+$5 free monthly (~1,000 requests), 50 req/s. One query per unresolved provider, cached forever
+afterwards, so the whole first batch costs cents.
+
+**Not wired yet:** the generation pipeline still reads `provider.docs` only. Feeding `surfaces.json`
+into `research.py` (so a catalogue-only provider can actually produce a guide) is the next step, and
+it needs the provider object to be constructible from a catalogue entry + surface.
+

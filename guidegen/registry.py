@@ -14,6 +14,8 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+from .catalog import CatalogEntry, parse_auth
+
 DATA_DIR = Path(__file__).parent / "data"
 
 
@@ -84,9 +86,27 @@ class Registry:
                 self.by_alias.setdefault(key, set()).add(provider.id)
 
         self.toolkit_by_name: dict[str, str] = {}
+        self.catalog_by_key: dict[str, CatalogEntry] = {}
         for tk in self.toolkits:
             self.toolkit_by_name.setdefault(tk["name"].lower().strip(), tk["slug"])
             self.toolkit_by_name.setdefault(tk["slug"].lower().strip(), tk["slug"])
+            entry = CatalogEntry(
+                slug=tk["slug"],
+                name=tk["name"],
+                auth_families=parse_auth(tk.get("auth")),
+                tools=int(tk.get("tools") or 0),
+                triggers=int(tk.get("triggers") or 0),
+                managed=tk.get("managed"),
+            )
+            for key in (tk["name"], tk["slug"]):
+                raw = str(key).lower().strip()
+                self.catalog_by_key.setdefault(raw, entry)
+                self.catalog_by_key.setdefault(" ".join(raw.replace("_", " ").split()), entry)
+
+    def catalog(self, text: str) -> CatalogEntry | None:
+        """Any product name or slug in the snapshot -> its catalogue record (gate A)."""
+        raw = text.lower().strip()
+        return self.catalog_by_key.get(raw) or self.catalog_by_key.get(" ".join(raw.replace("_", " ").split()))
 
     def provider_for_slug(self, slug: str) -> Provider | None:
         """Map a toolkit slug to its OAuth provider by longest registered prefix."""
