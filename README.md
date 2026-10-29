@@ -78,6 +78,7 @@ freeze. Every candidate is verified by content, not by a 200 status.
 ```
 python3 -m guidegen find "linear"                 # catalogue route -> ladder -> ranked surfaces
 python3 -m guidegen find "zendesk" --save         # store the proposal in guidegen/data/surfaces.json
+python3 -m guidegen batch "asana" "notion"            # or --file names.txt: find + save, one line each
 python3 -m guidegen review --limit 20             # what still needs a human
 python3 -m guidegen confirm linear 1              # freeze proposal #1 as the answer
 python3 -m guidegen find "hubspot" --no-network    # route + would-fetch, no requests
@@ -94,9 +95,10 @@ SEARCH_PROVIDER=brave   BRAVE_API_KEY=...     # $5.00/1k requests, $5 free month
 
 `guidegen/data/surfaces.json` is the durable answer: `surfaces[]` (accepted), `proposals[]` (machine),
 `status`, `accepted_by` (`human`/`auto`), `accepted_at`, and the finder's own `find{}` record. A human
-confirm is never overwritten by a later auto result. Two credible surfaces of different kinds
-(`connect_oauth` vs `app_marketplace`) come back as `needs_review` with both — the same rule as the name
-resolver: stop and ask, never guess.
+confirm is never overwritten by a later auto result. **An auto-resolved entry is usable but still sits
+in `review`** until a person confirms it — usable is not ground truth (gate E). Two credible surfaces of
+different kinds (`connect_oauth` vs `app_marketplace`) come back as `needs_review` with both — the same
+rule as the name resolver: stop and ask, never guess.
 
 ## Tests
 

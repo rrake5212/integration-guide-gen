@@ -1001,6 +1001,7 @@ Code (`guidegen/`, 161 tests green, golden set VALID):
 CLI:
 
     python3 -m guidegen find "<name>" [--json] [--no-network] [--no-search] [--save]
+    python3 -m guidegen batch <name>... [--file names.txt] [--max-pages N]
     python3 -m guidegen review [--limit N]
     python3 -m guidegen confirm <entry-id> <n>
 

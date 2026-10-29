@@ -182,8 +182,17 @@ class SurfaceStore:
         return best[1] if best else None
 
     def pending(self, limit: int | None = None) -> list[Entry]:
-        rows = [e for e in self._entries.values() if e.status in ("needs_review", "unknown")]
-        rows.sort(key=lambda e: (e.status != "needs_review", e.name.lower()))
+        """Entries still awaiting a human: unresolved ones AND every machine-accepted one.
+
+        Gate E: an auto-resolved entry is usable, but it is not ground truth until a person
+        confirms it. Counting only needs_review/unknown would hide exactly the batch we are
+        supposed to review.
+        """
+        rows = [
+            e for e in self._entries.values()
+            if e.status in ("needs_review", "unknown") or e.accepted_by == "auto"
+        ]
+        rows.sort(key=lambda e: (e.accepted_by == "auto", e.status != "needs_review", e.name.lower()))
         return rows[:limit] if limit else rows
 
     # ------------------------------------------------------------------ mutation

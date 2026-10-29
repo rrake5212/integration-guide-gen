@@ -72,6 +72,14 @@ class StoreTests(unittest.TestCase):
         self.assertEqual(stored.docs_url, "https://docs.acme.com/marketplace/oauth")
         self.assertEqual(stored.accepted_by, "human")
 
+    def test_auto_accepted_entries_still_wait_for_a_human(self) -> None:
+        # Gate E: usable is not the same as confirmed.
+        self.store.propose(result("resolved", [cand("https://developer.acme.com/docs/oauth")]),
+                           entry_id="acme", name="Acme", domains=["acme.com"])
+        self.assertEqual([e.id for e in self.store.pending()], ["acme"])
+        self.store.confirm("acme", 0)
+        self.assertEqual(self.store.pending(), [])
+
     def test_status_and_notes_are_recorded(self) -> None:
         entry = self.store.propose(result("unknown", []), entry_id="ghost", name="Ghost")
         self.assertEqual(entry.status, "unknown")

@@ -1,7 +1,181 @@
 {
  "version": 1,
- "updated_at": "2026-10-29T06:00:07+00:00",
+ "updated_at": "2026-10-29T06:07:26+00:00",
  "entries": {
+  "asana": {
+   "id": "asana",
+   "name": "Asana",
+   "availability": "unknown",
+   "domains": [
+    "asana.app",
+    "asana.com"
+   ],
+   "auth_families": [
+    "oauth2"
+   ],
+   "status": "resolved",
+   "accepted_by": "auto",
+   "accepted_at": "2026-10-29T06:07:25+00:00",
+   "surfaces": [
+    {
+     "kind": "oauth_app_registration",
+     "docs_url": "https://developers.asana.com/docs/getting-started-with-asana-oauth.md",
+     "console_url": null,
+     "discovery_url": null,
+     "title": "OAuth Code Samples / Libraries",
+     "confidence": "high",
+     "score": 15,
+     "rung": "llms"
+    }
+   ],
+   "proposals": [
+    {
+     "kind": "oauth_app_registration",
+     "docs_url": "https://developers.asana.com/docs/getting-started-with-asana-oauth.md",
+     "console_url": null,
+     "discovery_url": null,
+     "title": "OAuth Code Samples / Libraries",
+     "confidence": "high",
+     "score": 15,
+     "rung": "llms"
+    },
+    {
+     "kind": "oauth_app_registration",
+     "docs_url": "https://developers.asana.com/docs/oauth.md",
+     "console_url": null,
+     "discovery_url": null,
+     "title": "OAuth",
+     "confidence": "high",
+     "score": 15,
+     "rung": "llms"
+    }
+   ],
+   "find": {
+    "query": "asana",
+    "brand": "Asana",
+    "domains": [
+     "asana.com",
+     "asana.app"
+    ],
+    "status": "resolved",
+    "search_provider": "null",
+    "pages_fetched": 7,
+    "rungs": [
+     "llms"
+    ],
+    "surfaces": [
+     {
+      "url": "https://developers.asana.com/docs/getting-started-with-asana-oauth.md",
+      "rung": "llms",
+      "kind": "oauth_app_registration",
+      "score": 15,
+      "title": "OAuth Code Samples / Libraries",
+      "verified": true,
+      "blocked": false,
+      "http_status": 200,
+      "confidence": "high",
+      "hits": [
+       "redirect[\\s_-]?uri",
+       "authorization\\s+code",
+       "\\bscopes?\\b",
+       "oauth"
+      ],
+      "reasons": [
+       "+3 docs/developer host",
+       "+3 auth path",
+       "+3 auth title",
+       "+3 4 setup phrases",
+       "+1 console/settings path described",
+       "+2 first-party host"
+      ],
+      "doc_hash": "sha256:69f12ea5b8e7bb9e94c0c59b046fedecdc2284be65760bf0af499a14ea0c486f"
+     },
+     {
+      "url": "https://developers.asana.com/docs/oauth.md",
+      "rung": "llms",
+      "kind": "oauth_app_registration",
+      "score": 15,
+      "title": "OAuth",
+      "verified": true,
+      "blocked": false,
+      "http_status": 200,
+      "confidence": "high",
+      "hits": [
+       "client[\\s_-]?id",
+       "client[\\s_-]?secret",
+       "redirect[\\s_-]?uri",
+       "app(lication)?\\s+registration",
+       "authorization\\s+code",
+       "\\bscopes?\\b",
+       "oauth"
+      ],
+      "reasons": [
+       "+3 docs/developer host",
+       "+3 auth path",
+       "+3 auth title",
+       "+3 7 setup phrases",
+       "+1 console/settings path described",
+       "+2 first-party host"
+      ],
+      "doc_hash": "sha256:87bcc155ac33b029fababd6ee1cec62368c933ada18bf87d329f601feac678c9"
+     },
+     {
+      "url": "https://developers.asana.com/docs/authentication.md",
+      "rung": "llms",
+      "kind": "oauth_app_registration",
+      "score": 13,
+      "title": "Authentication",
+      "verified": false,
+      "blocked": false,
+      "http_status": 200,
+      "confidence": "none",
+      "hits": [
+       "\\bscopes?\\b",
+       "oauth"
+      ],
+      "reasons": [
+       "+3 docs/developer host",
+       "+3 auth path",
+       "+3 auth title",
+       "+1 2 setup phrases",
+       "+1 console/settings path described",
+       "+2 first-party host"
+      ],
+      "doc_hash": "sha256:506a5ebf8121a8a0d483fba2c6decede17d095b53ce2e87bcd43e3262fc98892"
+     },
+     {
+      "url": "https://developers.asana.com/docs/personal-access-token.md",
+      "rung": "llms",
+      "kind": "api_key_settings",
+      "score": 13,
+      "title": "Personal access token",
+      "verified": false,
+      "blocked": false,
+      "http_status": 200,
+      "confidence": "none",
+      "hits": [
+       "api[\\s_-]?key",
+       "oauth"
+      ],
+      "reasons": [
+       "+3 docs/developer host",
+       "+3 auth path",
+       "+3 auth title",
+       "+1 2 setup phrases",
+       "+1 console/settings path described",
+       "+2 first-party host"
+      ],
+      "doc_hash": "sha256:393cacb2b13ccb7eef8523d69aee21837c0ad5431fb086fa81b6048e5eeee9a4"
+     }
+    ],
+    "notes": [
+     "docs.asana.com: DOCS_NOT_FOUND"
+    ]
+   },
+   "notes": [
+    "docs.asana.com: DOCS_NOT_FOUND"
+   ]
+  },
   "github": {
    "id": "github",
    "name": "GitHub",
@@ -246,10 +420,13 @@
    "name": "Notion",
    "availability": "self_serve_oauth",
    "domains": [
-    "notion.so",
-    "notion.com"
+    "notion.com",
+    "notion.so"
    ],
-   "auth_families": [],
+   "auth_families": [
+    "oauth2",
+    "api_key"
+   ],
    "status": "resolved",
    "accepted_by": "human",
    "accepted_at": null,
@@ -265,11 +442,64 @@
      "rung": "curated"
     }
    ],
-   "proposals": [],
-   "find": null,
-   "notes": [
-    "curated seed"
-   ]
+   "proposals": [
+    {
+     "kind": "oauth_app_registration",
+     "docs_url": "https://developers.notion.com/guides/get-started/authorization",
+     "console_url": null,
+     "discovery_url": null,
+     "title": "Authorization - Notion Docs",
+     "confidence": "high",
+     "score": 14,
+     "rung": "curated"
+    }
+   ],
+   "find": {
+    "query": "notion",
+    "brand": "Notion",
+    "domains": [
+     "notion.so",
+     "notion.com"
+    ],
+    "status": "resolved",
+    "search_provider": "null",
+    "pages_fetched": 1,
+    "rungs": [
+     "curated"
+    ],
+    "surfaces": [
+     {
+      "url": "https://developers.notion.com/guides/get-started/authorization",
+      "rung": "curated",
+      "kind": "oauth_app_registration",
+      "score": 14,
+      "title": "Authorization - Notion Docs",
+      "verified": true,
+      "blocked": false,
+      "http_status": 200,
+      "confidence": "high",
+      "hits": [
+       "client[\\s_-]?id",
+       "client[\\s_-]?secret",
+       "redirect[\\s_-]?uri",
+       "authorization\\s+code",
+       "\\bscopes?\\b",
+       "api[\\s_-]?key",
+       "oauth"
+      ],
+      "reasons": [
+       "+3 docs/developer host",
+       "+3 auth path",
+       "+3 auth title",
+       "+3 7 setup phrases",
+       "+2 first-party host"
+      ],
+      "doc_hash": "sha256:b919d37f01cac89f2e2cf6cda89246ec339b3a0caf486a1a9c4b8e1aff9feb1b"
+     }
+    ],
+    "notes": []
+   },
+   "notes": []
   },
   "prisma": {
    "id": "prisma",
