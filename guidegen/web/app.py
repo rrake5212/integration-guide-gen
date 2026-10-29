@@ -256,8 +256,9 @@ def _process_job(store: JobStore, job_id: str) -> None:
         log_event("error", exc.code, level="error", detail=exc.detail)
         store.update(job_id, status="failed", stage=exc.spec.stage, progress=100,
                      message=exc.spec.user_message, error_code=exc.code, error_message=exc.spec.user_message)
-    except Exception:  # noqa: BLE001 - any uncaught failure becomes a clean INTERNAL job state
-        log_event("error", "INTERNAL", level="error")
+    except Exception as exc:  # noqa: BLE001 - any uncaught failure becomes a clean INTERNAL job state
+        # the user sees a clean code; the job log keeps the class+message so the cause is findable
+        log_event("error", "INTERNAL", level="error", detail=f"{type(exc).__name__}: {exc}"[:300])
         store.update(job_id, status="failed", stage="job", progress=100,
                      message=error_spec("INTERNAL").user_message, error_code="INTERNAL",
                      error_message=error_spec("INTERNAL").user_message)

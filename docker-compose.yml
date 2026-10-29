@@ -25,7 +25,10 @@ services:
     environment:
       LLM_PROVIDER: "${LLM_PROVIDER:-deepinfra}"
       LLM_MODEL: "${LLM_MODEL:-deepseek-ai/DeepSeek-V4.1-Flash-1017}"
-      GUIDEGEN_JOB_TIMEOUT_SECONDS: "${GUIDEGEN_JOB_TIMEOUT_SECONDS:-180}"
+      GUIDEGEN_JOB_TIMEOUT_SECONDS: "${GUIDEGEN_JOB_TIMEOUT_SECONDS:-300}"
+      # the surface store must live on the mounted volume: the image tree is root-owned and
+      # read-only for uid 10001, so a write there raises PermissionError mid-job
+      GUIDEGEN_SURFACES: "/app/data/surfaces.json"
 
     ports:
       - "127.0.0.1:8765:8765"

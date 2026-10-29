@@ -3,9 +3,11 @@
 Two properties matter and both are tested here: a stored surface costs no network at all, and a
 FIND run records what it found so the next request for the same name is free.
 """
+import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from guidegen.bridge import availability_for, provider_from_surface, provider_for_catalogue
 from guidegen.catalog import CatalogEntry
@@ -100,6 +102,24 @@ class StoredSurfaceTests(unittest.TestCase):
                          "https://airtable.com/developers/web/guides/oauth")
 
 
+class SeedFallbackTests(unittest.TestCase):
+    def test_the_runtime_store_starts_from_the_packaged_seed_and_writes_to_the_volume(self) -> None:
+        # the container case: image tree read-only, volume empty on first run
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp) / "runtime" / "surfaces.json"
+            with patch("guidegen.surfaces.SURFACES_PATH", target):
+                store = SurfaceStore(providers={"providers": []})
+                self.assertIn("google", set(store.all()))      # served from the seed
+                store.save()
+            self.assertTrue(target.exists())
+            self.assertIn("google", json.loads(target.read_text())["entries"])
+
+    def test_an_explicit_path_never_inherits_the_seed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            store = SurfaceStore(path=Path(tmp) / "surfaces.json", providers={"providers": []})
+            self.assertEqual(set(store.all()), set())
+
+
 class FindPathTests(unittest.TestCase):
     def setUp(self) -> None:
         self.tmp = tempfile.TemporaryDirectory()
@@ -128,6 +148,22 @@ class FindPathTests(unittest.TestCase):
         self.assertEqual(stored.surfaces[0].docs_url, "https://developers.example.com/docs/oauth")
         self.assertEqual(stored.accepted_by, "auto")          # usable now, still in pending() for a human
         self.assertIn(stored, self.store.pending())
+
+    def test_a_read_only_store_degrades_to_a_note_instead_of_killing_the_job(self) -> None:
+        pages = {
+            "https://example.com/": doc("https://example.com/", "Example — build with our API", "home"),
+            "https://example.com/llms.txt": doc(
+                "https://example.com/llms.txt", "llms",
+                "- [OAuth 2.0 authentication](https://developers.example.com/docs/oauth)"),
+            "https://developers.example.com/docs/oauth": doc(
+                "https://developers.example.com/docs/oauth", "OAuth 2.0 authentication | Example", SETUP),
+        }
+        def refuse() -> None:
+            raise PermissionError(13, "Permission denied")
+        self.store.save = refuse  # the container case: the image tree is root-owned
+        provider = provider_for_catalogue(entry(), store=self.store, fetcher=FakeFetcher(pages), searcher=None)
+        self.assertEqual(provider.docs, ("https://developers.example.com/docs/oauth",))
+        self.assertIn("not persisted", provider.note or "")
 
     def test_nothing_found_is_a_clean_provider_unknown(self) -> None:
         fetcher = FakeFetcher({"https://example.com/": doc("https://example.com/", "Example", "home")})

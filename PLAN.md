@@ -1,6 +1,6 @@
 # OAuth / API-key setup guide generator — plan
 
-**Status: DEPLOYED 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests at P6 / 196 now). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started. **2026-10-29: §13 approved (gates A–E) and its FIND layer built — catalogue routing, the ranked discovery ladder, the provider-entry store with human confirm, and a swappable search fallback.** Evening 2026-10-29: the Serper key verified live and the search rung rewritten (site: query, first-party only, reserved pages); a 30-provider audit puts the FIND stage at 9/30 canonical pages (24/30 usable) against 6/30 (14/30) on the free rungs alone — §13.7, `tools/find_audit.py`. **REDEPLOYED 2026-10-29** with that build (smoke 6/6 loopback and 6/6 public; `linear` now routes from the catalogue on the live site) — §13.8.
+**Status: DEPLOYED 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests at P6 / 199 now). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started. **2026-10-29: §13 approved (gates A–E) and its FIND layer built — catalogue routing, the ranked discovery ladder, the provider-entry store with human confirm, and a swappable search fallback.** Evening 2026-10-29: the Serper key verified live and the search rung rewritten (site: query, first-party only, reserved pages); a 30-provider audit puts the FIND stage at 9/30 canonical pages (24/30 usable) against 6/30 (14/30) on the free rungs alone — §13.7, `tools/find_audit.py`. **REDEPLOYED 2026-10-29** with that build (smoke 6/6 loopback and 6/6 public; `linear` now routes from the catalogue on the live site) — §13.8.
 Date: 2026-10-29 (rev 22). Home: `~/AgentWork/integration-guide-gen/` · private repo `rrake5212/integration-guide-gen`
 
 One-line product: a developer submits **an app name or a website/domain** they want OAuth with
@@ -989,7 +989,7 @@ links because their portals are JS apps. A single web search on the 12 hardest p
 right host with a valid auth page in 8/12 and the exact canonical page in 3/12. So no signal is
 reliable per call; the entry has to be.
 
-Code (`guidegen/`, 196 tests green, golden set VALID):
+Code (`guidegen/`, 199 tests green, golden set VALID):
 
 | module | job |
 |---|---|
@@ -1129,3 +1129,13 @@ quality step is FIND collecting sibling pages (docs home, token reference) — n
 
 Gate E unchanged: `propose()` auto-accepts a resolved result so a guide can be built immediately,
 and the entry stays in `pending()` until a human confirms it. A human answer is never overwritten.
+
+**The first deploy of the bridge failed for exactly the wrong reason.** `discord` and `reddit` died
+with `INTERNAL` one second into the `find` stage while `hubspot` (whose surface was already recorded)
+worked. Cause: `SurfaceStore` wrote to `guidegen/data/surfaces.json` **inside the image**, which is
+root-owned — uid 10001 gets `PermissionError`, and the generic handler hides the traceback. Fixes:
+`GUIDEGEN_SURFACES=/app/data/surfaces.json` in compose (the mounted volume), the packaged file kept
+as a read-only SEED the runtime store loads on first run, `save()` failures degrading to a note in
+the provider instead of killing the job, and the job log now records `type(exc): message` on
+INTERNAL. Lesson: a persistence path inside the build context is read-only at runtime, and an
+`except Exception: INTERNAL` with no detail turns a one-line cause into a deploy cycle.

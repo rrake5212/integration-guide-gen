@@ -109,7 +109,11 @@ def provider_for_catalogue(
     )
     store.propose(result, entry_id=entry_id, name=entry.name, domains=domains,
                   auth_families=list(entry.auth_families))
-    store.save()
+    persist_note = ""
+    try:
+        store.save()
+    except OSError as exc:  # a read-only store degrades to "re-find every time", not a dead guide
+        persist_note = f"; surface not persisted ({exc.__class__.__name__})"
 
     best = result.best
     if best is None:
@@ -125,7 +129,7 @@ def provider_for_catalogue(
         score=best.score,
         rung=best.rung,
     )
-    note = f"docs located by FIND ({best.rung}); curated row pending"
+    note = f"docs located by FIND ({best.rung}); curated row pending{persist_note}"
     if result.status == "needs_review":
         note += " — two credible surfaces, the top-ranked one was used"
     return provider_from_surface(entry, surface, domains, note=note)

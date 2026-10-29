@@ -130,6 +130,12 @@ Same `deploy/deploy.sh`, no bootstrap. Two differences from the first run:
 2. The build carries the FIND layer, so this deploy is the first one where `POST /api/resolve` can
    answer from the 1,688-name catalogue instead of `unknown`.
 
+`.env` alone is not enough for the surface store: the image tree is root-owned and uid 10001 cannot
+write `guidegen/data/surfaces.json`. `docker-compose.yml` therefore sets
+`GUIDEGEN_SURFACES=/app/data/surfaces.json` (the mounted volume) and the packaged file stays a
+read-only seed the store loads on first run. Without it, every catalogue job dies at `find` with
+`INTERNAL` the moment FIND tries to record what it found.
+
 Verification actually observed:
 
     compose ps            guidegen | Up (healthy) | 127.0.0.1:8765->8765/tcp

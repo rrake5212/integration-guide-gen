@@ -20,7 +20,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 DATA_DIR = Path(__file__).parent / "data"
-SURFACES_PATH = DATA_DIR / "surfaces.json"
+# Read-only seed shipped in the image; the writable copy lives on the data volume in a container
+# (the image's own tree is root-owned, so writing there fails as uid 10001).
+SEED_PATH = DATA_DIR / "surfaces.json"
+SURFACES_PATH = Path(os.environ.get("GUIDEGEN_SURFACES") or SEED_PATH)
 
 STATUSES = ("resolved", "needs_review", "unknown", "stale")
 
@@ -134,6 +137,9 @@ def _curated_seed(providers: dict | None = None) -> dict[str, Entry]:
 
 class SurfaceStore:
     def __init__(self, path: Path | str | None = None, providers: dict | None = None) -> None:
+        # An explicit path means "this store is its own world" (tests, fixtures). Only the
+        # default/environment path falls back to the read-only seed shipped in the image.
+        self._allow_seed = path is None
         self.path = Path(path) if path else SURFACES_PATH
         self._entries: dict[str, Entry] = _curated_seed(providers)
         self._load_file()
@@ -141,10 +147,15 @@ class SurfaceStore:
 
     # ------------------------------------------------------------------ storage
     def _load_file(self) -> None:
-        if not self.path.exists():
-            return
+        source = self.path
+        if not source.exists():
+            # first run in a container: start from the packaged seed, write to the volume
+            if self._allow_seed and SEED_PATH.exists() and SEED_PATH != self.path:
+                source = SEED_PATH
+            else:
+                return
         try:
-            raw = json.loads(self.path.read_text(encoding="utf-8"))
+            raw = json.loads(source.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
             return
         for entry_id, row in (raw.get("entries") or {}).items():
