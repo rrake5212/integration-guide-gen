@@ -264,6 +264,13 @@ real GitHub guide end to end.
 - Assembly picks ONE auth method set from `availability`: a `self_serve_oauth` provider gets an OAuth guide and
   the `auth.api_key.*` facts are never requested. Providers that genuinely offer both (Stripe keys vs Connect
   OAuth, Prisma service tokens vs OAuth) therefore show only the OAuth path.
+- **Routing is curation-gated (biggest gap, proposal in PLAN §13).** A name resolves only if it is one of the
+  9 curated rows; the 1,688-entry Composio snapshot is used solely as a name→curated bridge, so its `auth`
+  column is never read. `linear`, `hubspot`, `airtable`, `asana`, `zendesk`, `salesforce` all return `unknown`
+  even though the index says they support OAuth 2.0 — and 41 of the 1,688 entries map to a curated provider (2.4%).
+- **The discovery probe is a coin flip.** Measured 2026-10-29: `airtable.com` and `prisma.io` publish
+  `.well-known` metadata (resolved, `oidc_only`); `stripe.com`, `linear.app`, `hubspot.com`, `asana.com`,
+  `zendesk.com` publish none (unknown). A bare name never reaches the probe at all.
 
 Remaining in P7: private `/admin/jobs/<id>`, 7-day page-hash cache table + badge.
 P8 optional: MCP wrapper + the calibration run that replaces the `low` time confidence.

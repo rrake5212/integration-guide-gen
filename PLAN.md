@@ -1,7 +1,7 @@
 # OAuth / API-key setup guide generator — plan
 
 **Status: DEPLOYED 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests at P6 / 121 now). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started.**
-Date: 2026-10-29 (rev 20). Home: `~/AgentWork/integration-guide-gen/` · private repo `rrake5212/integration-guide-gen`
+Date: 2026-10-29 (rev 21). Home: `~/AgentWork/integration-guide-gen/` · private repo `rrake5212/integration-guide-gen`
 
 One-line product: a developer submits **an app name or a website/domain** they want OAuth with
 ("Google", "tally.so", "Notion", "acme.com"), and the agent resolves it to the real provider, then generates
@@ -862,8 +862,113 @@ and the golden outputs, so it is recorded here as the next real design decision.
 4. **Audience.** Individual developer setting up their own account, or team/org setup (admin consent, shared
    workspace)? The steps diverge materially.
 
-**Next action:** the box is green — the site is live. Remaining P7: the private `/admin/jobs/<id>` view,
-then the 7-day page-hash cache table + badge. Then P8 (optional MCP wrapper + time-confidence calibration).
+**Next action:** two tracks, in this order.
+1. **Decide §13.0 gates A / B / C** — routing is the gap users actually hit (six named apps return
+   `unknown` today while the index already knows their auth families). No work starts until the three
+   rows are answered.
+2. **Remaining P7** — the private `/admin/jobs/<id>` view, then the 7-day page-hash cache table + badge.
+   Then P8 (optional MCP wrapper + time-confidence calibration).
 Operational notes: redeploy with `deploy/deploy.sh`; logs with `sudo docker compose logs -f app` in
 `/home/ubuntu/guidegen` or `sudo journalctl -u caddy -f`; the DeepInfra key lives only in the box's
 `.env` (and the laptop's) — it is never synced.
+
+## 13. Proposed — routing redesign: the reference index as the router, docs-discovery as the ladder
+
+**Status: Proposed — NOT approved.** Nothing below is built. It records the architectural finding from
+the Stripe/Prisma/HubSpot/Asana/Linear/Stripe investigations on 2026-10-28/29 and the three decisions
+(§13.0) that gate any execution.
+
+### 13.0 Decision gates (answer before any work)
+
+| # | Decision | Options | Consequence |
+|---|---|---|---|
+| A | Route names from the local Composio snapshot | **route from it (recommended)** · keep the 9-row table as the only source | Routing from the snapshot ends "unknown because uncurated": `airtable`, `hubspot`, `linear`, `asana`, `zendesk`, `salesforce` stop being dead ends. No key, no network — 1,688 rows are already in the repo. |
+| B | Which FIND rungs are in scope | **llms.txt + sitemap + nav links only (recommended)** · add a web-search call | llms/sitemap/nav costs nothing and keeps every source provider-authored; search covers the ones those miss (Stripe, HubSpot, Zendesk) but adds a key + a per-resolve cost and a third-party source in the provenance chain |
+| C | Call Composio's live API for per-toolkit auth fields | **no for now (recommended)** · yes, with the user's key | `get_auth_config_creation_fields(toolkit, scheme)` returns the exact credential fields per scheme (client_id, secret, scopes, and for Zendesk the subdomain). Richest routing data available, but it needs the key and explicit approval — the snapshot holds none of it |
+
+### 13.1 The finding
+
+The resolver as built has exactly two ways to succeed, and both are weak:
+
+- **The curated table.** 9 providers, hand-written (id, name, domains, aliases, slug prefixes,
+  availability, docs URLs, console URL, discovery URL). A name or domain can only resolve inside it.
+- **The discovery probe.** Domain-only, and it works only if the provider publishes
+  `/.well-known/openid-configuration` or `/.well-known/oauth-authorization-server` on the root or an
+  auth/login/accounts/id host.
+
+Measured this session, same code as the deployed site:
+
+    bare names in the toolkit index   linear, hubspot, airtable, asana, zendesk -> unknown
+    same products by domain           airtable.com -> resolved (oidc_only)
+                                      prisma.io    -> resolved (oidc_only, metadata on auth.prisma.io)
+                                      stripe.com, linear.app, hubspot.com, asana.com, zendesk.com -> unknown
+    coverage                          9 curated providers · 1,688 index entries · 41 entries map to one (2.4%)
+
+So the probe bet fails for 5 of 7 sample providers, and a bare name has no probe path at all. Meanwhile
+the routing answer for every one of the failures above is **already sitting in the local snapshot**:
+`Stripe — API_KEY, OAUTH2, 435 tools`, `HubSpot — OAUTH2, API_KEY, 295 tools`, `Prisma — OAUTH2,
+API_KEY`. The index was restricted to a single job — mapping a name to one of the nine curated rows —
+and its `auth` column was never read.
+
+That restriction came from the original instruction *"keep this composio doc as reference only — we need
+to build this for live apps"*. The instruction is about not taking **facts** from the catalogue, and it
+is right. It is not an argument for ignoring the catalogue's **coverage**; the two were conflated in the
+first build.
+
+### 13.2 What the reference can and cannot supply
+
+- Can: that an app exists, its canonical name and slug, and which auth families it supports
+  (`OAUTH2`, `API_KEY`, `S2S_OAUTH2`, …). That is routing data, and it is enough to stop returning
+  "unknown" for an app the index knows.
+- Cannot: endpoints, scopes, console steps, lifetimes. A guide must not be written from the catalogue —
+  every fact still comes from the provider's own docs, quoted, with `unknown` where the docs are silent.
+  Non-goal §10 ("Treating Composio's docs as a fact source") stays in force.
+
+### 13.3 The design
+
+  ROUTE    Composio snapshot: name -> canonical app + supported auth families. Free, local, no network.
+           Replaces "is it curated?" with "does the index know it, and what does it support?".
+  FIND     locate the registration/auth docs, in rung order, stopping at the first that yields a usable
+           auth page: (1) <domain>/llms.txt and docs.<domain>/llms.txt, (2) sitemap.xml filtered for
+           oauth/auth/api-key paths, (3) nav links titled OAuth / API keys / Authentication / Developers,
+           (4) [only if gate B says yes] a targeted web search, (5) .well-known metadata as a bonus
+           corroborating signal — never the only one.
+  EXTRACT  read those pages; every fact quoted from the provider's own docs (unchanged).
+  VERIFY   schema, provenance, cross-format, secret scan (unchanged).
+
+Provenance stays split and labelled: *"the catalogue says this app supports OAuth 2.0 and API keys; the
+setup below is quoted from `<docs page>`"*. The no-guess rule then applies where it belongs — to facts —
+instead of being used to reject apps the catalogue already knows.
+
+Measured on 2026-10-29, the FIND ladder is not hypothetical:
+
+    linear.app/llms.txt                200, has an "### Authentication" section linking
+                                       "OAuth 2.0 authentication", "OAuth application manifests"
+    prisma.io/docs/llms.txt            200, 8.4 KB
+    developers.asana.com/llms.txt      200, 78 KB
+    docs.stripe.com/llms.txt           200, 97 KB but ZERO lines mentioning OAuth
+    stripe.com/llms.txt                200, marketing only (its "Authentication" link is 3-D Secure)
+    developers.hubspot.com/llms.txt    404
+    developer.zendesk.com/llms.txt     404
+
+Which is exactly why it has to be a ladder and not one bet: llms.txt routes Linear and Prisma
+deterministically and does not route Stripe, HubSpot or Zendesk.
+
+### 13.4 What changes, concretely
+
+- `guidegen/registry.py` — index hits become first-class: a lookup returning `{slug, name, auth_families}`
+  for any of the 1,688 names, with no curated row required.
+- `guidegen/resolve.py` — new outcome for "index knows it, docs not yet located" (`supported`, not
+  `unknown`), so the UI can say "supports OAuth 2.0 + API keys; locating its setup docs" instead of
+  "not resolved".
+- `guidegen/discover.py` (new) — the FIND ladder, returning ranked candidate URLs + the reason each was
+  chosen, persisted into the job so the choice is auditable.
+- `guidegen/research.py` — accept discovered URLs when the provider row has none, instead of only
+  `provider.docs`.
+- Tests: index-routing cases for six currently-failing names; ladder unit tests against captured
+  llms.txt fixtures (Linear-shaped, Stripe-shaped, 404); a resolve test that `supported` never renders as
+  a guide without a located docs page.
+
+### 13.5 Out of scope for this proposal
+
+Custom domains, the cache table, `/admin/jobs`, calibration — unchanged and still tracked above.
