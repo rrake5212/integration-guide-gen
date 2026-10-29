@@ -93,6 +93,10 @@ def _auth(spec: dict) -> str:
         return "\n".join(lines)
 
     key = (auth.get("api_key") or {})
+    if not key:
+        # A provider whose docs never stated a method (FIND located one page and endpoints were
+        # missing) still has to render; the agent file already says the same thing.
+        return "_No auth method was confirmed from the docs. Read the provider's page before proceeding._"
     rows = [
         ("Create key at", f"`{value(key['where_to_create_url'])}`", source(key["where_to_create_url"])),
         ("Header", f"`{value(key['header_name'])}`", source(key["header_name"])),

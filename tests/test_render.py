@@ -29,6 +29,17 @@ class RenderTests(unittest.TestCase):
         self.assertIn("Do not invent", agent_md)
         self.assertIn(spec["auth"]["oauth"]["token_url"]["value"], agent_md)
 
+    def test_a_spec_with_no_confirmed_auth_method_still_renders(self) -> None:
+        # the discord case: FIND located one page, the page did not state endpoints, so neither
+        # oauth nor api_key survived — the guide must degrade, not raise KeyError
+        spec = copy.deepcopy(json.loads(SPECS[0].read_text()))
+        spec["auth"] = {"methods": [], "primary": None, "oauth": None, "api_key": None}
+        human, agent, agent_md = render_bundle(spec)
+        self.assertIn("No auth method was confirmed", human)
+        self.assertIn("No public auth method was confirmed", agent_md)
+        self.assertIsNone(agent["auth"]["oauth"])
+        self.assertEqual(agent["auth"]["methods"], [])
+
     def test_conflicting_sources_are_shown_in_the_guide(self) -> None:
         spec = json.loads(SPECS[0].read_text())
         spec = copy.deepcopy(spec)
