@@ -3,7 +3,7 @@
 Status: **LIVE since 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io** (P1–P6 built 2026-10-27;
 P7 deployed 2026-10-28) — resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard,
 DeepInfra client, research + quoted extraction + assembly, time/steps/blockers, dual renderers, FastAPI
-web UI, verifier + golden set + error paths + debug/replay; 177 tests. Repo: private,
+web UI, verifier + golden set + error paths + debug/replay; 187 tests. Repo: private,
 `github.com/rrake5212/integration-guide-gen`. Deploy: `Dockerfile` +
 `docker-compose.yml` + `deploy/Caddyfile` + one-command `deploy/deploy.sh` (see `deploy/README.md`);
 running as the `guidegen` container behind Caddy on the Lightsail box. Remaining P7: private
@@ -133,6 +133,9 @@ overwritten, file shape). **162 total.**
 2026-10-29 (search key live) added 15: the searchapi.io adapter, the site:-query rewrite with a
 first-party filter, the reserved page budget, and `CachedSearch` (7-day result cache, daily cap,
 cache-hit-after-cap, expiry, empty-is-not-cached, env wiring). **177 total.**
+Same day, `tools/find_audit.py` (10 tests): the audit's own metric — the strict verdict that turns
+"a page was found" into "the canonical page was found" — plus URL normalisation (www/anchor/.md/
+index.html) and the parent-page-is-only-NEAR rule. **187 total.**
 
 ## Verified 2026-10-27
 
@@ -173,8 +176,8 @@ Web end-to-end (2026-10-27): `POST /api/guides {"input":"github"}` → `job_1f3d
 Verifier: `python3 -m guidegen.verify --golden data/golden` → VALID for both golden specs; mutation tests
 catch missing values, missing steps, duplicate sources, bad hashes, fabricated quotes and secret leakage.
 
-Test run: `python3 -m unittest discover -s tests -v` → **177 tests, OK** (7 web tests skip without the venv;
-`.venv/bin/python -m unittest discover -s tests` runs all 177).
+Test run: `python3 -m unittest discover -s tests -v` → **187 tests, OK** (7 web tests skip without the venv;
+`.venv/bin/python -m unittest discover -s tests` runs all 187).
 
 ## Layout
 
@@ -287,7 +290,7 @@ Local, without Docker (same CMD the image runs):
 ## Next (from PLAN.md)
 
 P6 delivered: verifier + golden set, cross-format/secret checks, forced error paths, job timeout, and
-`debug`/`replay` (108 tests at P6, 177 now). P7 **deployed 2026-10-28** — image built on the box, container healthy, Caddy +
+`debug`/`replay` (108 tests at P6, 187 now). P7 **deployed 2026-10-28** — image built on the box, container healthy, Caddy +
 Let's Encrypt live at `integration-guide.100.31.120.181.sslip.io`, smoke 6/6 loopback and 6/6 public, one
 real GitHub guide end to end.
 

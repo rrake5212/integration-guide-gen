@@ -3,8 +3,8 @@
  "searcher": "null",
  "counts": {
   "MISS": 15,
-  "EXACT": 10,
-  "NEAR": 4,
+  "NEAR": 8,
+  "EXACT": 6,
   "WRONG": 1
  },
  "rows": [
@@ -84,7 +84,7 @@
     "developer.zendesk.com: DOCS_NOT_FOUND x2"
    ],
    "seconds": 15.4,
-   "verdict": "EXACT"
+   "verdict": "NEAR"
   },
   {
    "name": "Linear",
@@ -250,7 +250,7 @@
    "score": 14,
    "notes": [],
    "seconds": 23.4,
-   "verdict": "EXACT"
+   "verdict": "NEAR"
   },
   {
    "name": "Twilio",
@@ -369,7 +369,7 @@
    "score": 12,
    "notes": [],
    "seconds": 15.4,
-   "verdict": "EXACT"
+   "verdict": "NEAR"
   },
   {
    "name": "DocuSign",
@@ -732,7 +732,8 @@
    "score": 12,
    "notes": [],
    "seconds": 13.8,
-   "verdict": "EXACT"
+   "verdict": "NEAR"
   }
- ]
+ ],
+ "rescored_at": 1793269889.5732863
 }

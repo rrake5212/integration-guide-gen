@@ -108,16 +108,23 @@ def norm(url: str) -> tuple[str, str]:
 
 
 def verdict(winner: str | None, expected: str) -> str:
+    """Score one provider. Deliberately strict: a parent/listing page is NEAR, not EXACT.
+
+    EXACT is the canonical URL itself (modulo ``.md``, a trailing slash, ``/index.html``).
+    NEAR is any other first-party auth-ish path — a one-click parent, a sibling product's OAuth
+    page, or a different page of the same docs set. NEAR is NOT a pass: Stripe Apps OAuth and
+    Plaid Link OAuth both land here, and a human has to read the title to tell them from the
+    real thing (that is the ranker gap PLAN §13.7 names).
+    """
     if not winner:
         return "MISS"
     wh, wp = norm(winner)
     eh, ep = norm(expected)
-    same_host = wh == eh
-    if same_host and (wp == ep or (len(min(wp, ep, key=len)) > 8 and (wp.startswith(ep) or ep.startswith(wp)))):
+    if wh != eh:
+        return "WRONG"
+    if wp == ep or wp in (f"{ep}/index.html", f"{ep}/index"):
         return "EXACT"
-    if same_host and AUTHISH.search(wp):
-        return "NEAR"
-    return "WRONG"
+    return "NEAR" if AUTHISH.search(wp) else "WRONG"
 
 
 def probe(url: str) -> int:
@@ -164,7 +171,24 @@ def main() -> int:
     ap.add_argument("--max-pages", type=int, default=28)
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--out", default=None)
+    ap.add_argument("--rescore", default=None, help="re-derive verdicts in an existing JSON (no network, no spend)")
     args = ap.parse_args()
+
+    if args.rescore:
+        path = Path(args.rescore)
+        data = json.loads(path.read_text())
+        counts: dict[str, int] = {}
+        for row in data.get("rows") or []:
+            row["verdict"] = verdict(row.get("winner"), row["expected"])
+            counts[row["verdict"]] = counts.get(row["verdict"], 0) + 1
+        data["counts"] = counts
+        data["rescored_at"] = time.time()
+        path.write_text(json.dumps(data, indent=1))
+        n = sum(counts.values())
+        print(json.dumps(counts, indent=2))
+        print(f"exact {counts.get('EXACT', 0)}/{n}   exact+near {counts.get('EXACT', 0) + counts.get('NEAR', 0)}/{n}")
+        print("rescored", path)
+        return 0
 
     rows = GROUND_TRUTH
     if args.domains:
@@ -202,12 +226,12 @@ def main() -> int:
     for r in results:
         counts[r["verdict"]] = counts.get(r["verdict"], 0) + 1
     n = len(results)
-    search_wins = sum(1 for r in results if (r.get("rungs") or [])[-1:] == ["search"] and r["verdict"] in ("EXACT", "NEAR"))
+    spent = sum(1 for r in results if "search" in (r.get("rungs") or []))
     print("\n=== SUMMARY ===")
     print(json.dumps(counts, indent=2))
     print(f"exact          {counts.get('EXACT', 0)}/{n}  ({(counts.get('EXACT', 0) / n * 100) if n else 0:.0f}%)")
     print(f"exact+near     {counts.get('EXACT', 0) + counts.get('NEAR', 0)}/{n}")
-    print(f"search was the winning rung (exact/near): {search_wins}/{n}")
+    print(f"providers that spent a search query: {spent}/{n}")
     print(f"searcher: {searcher.name}   wall: {round(time.time() - t0, 1)}s")
 
     out = Path(args.out) if args.out else ROOT / "data" / "bench" / f"find-audit-{date.today()}{'-nosearch' if args.no_search else ''}.json"
