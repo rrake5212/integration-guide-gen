@@ -195,6 +195,31 @@
       "console": "https://console.prisma.io",
       "discovery": "https://auth.prisma.io/.well-known/oauth-authorization-server",
       "note": "OAuth app registration is self-serve (Console -> Integrations -> Published Applications, PKCE S256 for public clients). Publishing a partner integration and the provisioning endpoints need separate partner access."
+    },
+    {
+      "id": "stripe",
+      "name": "Stripe",
+      "domains": [
+        "stripe.com"
+      ],
+      "aliases": [
+        "stripe",
+        "stripe connect",
+        "stripe apps",
+        "stripe payments"
+      ],
+      "slug_prefixes": [
+        "STRIPE"
+      ],
+      "availability": "self_serve_oauth",
+      "docs": [
+        "https://docs.stripe.com/connect/oauth-reference",
+        "https://docs.stripe.com/connect/oauth",
+        "https://docs.stripe.com/stripe-apps/api-authentication/oauth"
+      ],
+      "console": "https://dashboard.stripe.com/settings/applications",
+      "discovery": null,
+      "note": "Two different setups share the name: Connect OAuth (connect.stripe.com/oauth/authorize + /oauth/token, client id ca_..., for acting on connected accounts) and Stripe Apps OAuth. Your own account's keys (sk_/rk_) are API keys, not OAuth. No .well-known discovery document is published, so a domain probe alone cannot classify it."
     }
   ]
 }

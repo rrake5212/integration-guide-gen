@@ -1,7 +1,7 @@
 # OAuth / API-key setup guide generator — plan
 
 **Status: DEPLOYED 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests at P6 / 121 now). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started.**
-Date: 2026-10-28 (rev 19). Home: `~/AgentWork/integration-guide-gen/` · private repo `rrake5212/integration-guide-gen`
+Date: 2026-10-29 (rev 20). Home: `~/AgentWork/integration-guide-gen/` · private repo `rrake5212/integration-guide-gen`
 
 One-line product: a developer submits **an app name or a website/domain** they want OAuth with
 ("Google", "tally.so", "Notion", "acme.com"), and the agent resolves it to the real provider, then generates
@@ -18,7 +18,7 @@ Scope notes carried from the corrections:
 | # | Gate | Options | Recommendation |
 |---|------|---------|----------------|
 | G0 | Ambiguous input policy | auto-pick the top match · stop and ask with 2–3 candidates | **RESOLVED 2026-10-27 — stop and ask on any tie.** `--pick <slug>` still forces a choice |
-| G1 | v0 provider set | Google + GitHub · plus Slack · plus Meta/WhatsApp · plus an API-key provider (Tally) | **RESOLVED 2026-10-27 — Google + GitHub first.** Slack / Meta / Tally follow in P7+; Prisma added 2026-10-28 (8 curated providers now) |
+| G1 | v0 provider set | Google + GitHub · plus Slack · plus Meta/WhatsApp · plus an API-key provider (Tally) | **RESOLVED 2026-10-27 — Google + GitHub first.** Slack / Meta / Tally follow in P7+; Prisma and Stripe added 2026-10-28/29 (9 curated providers now) |
 | G2 | Output formats | `guide.md` + `agent.json` · plus a compact `agent.md` | all three; `agent.md` is what a developer pastes into Claude Code/Cursor |
 | G3 | Live vs cached | re-fetch every call · live with a 7-day cache keyed on the fetched page hash | **RESOLVED 2026-10-27 — live re-fetch on request, 7-day cache keyed on the page hash** |
 | G4 | Role of the model | LLM extracts and writes prose, every fact quoted · LLM generates freely | extractor/writer only. Unsourced fields become `unknown` |
@@ -540,7 +540,7 @@ are the two resolution regression tests that must never regress.
 
 ### Delivered in P1 (2026-10-27)
 
-- `guidegen/registry.py` + `guidegen/data/providers.json` (7 curated providers at P1; 8 since 2026-10-28) and
+- `guidegen/registry.py` + `guidegen/data/providers.json` (7 curated providers at P1; 9 since 2026-10-29) and
   `guidegen/data/toolkits.json` (1,688 toolkit names/slugs, reference vocabulary only).
 - `guidegen/resolve.py` — domain → alias → toolkit → fuzzy → live OIDC probe; `resolved` / `ask` / `unknown`
   are first-class outcomes, and a tie always asks.
@@ -769,6 +769,39 @@ Result on the deployed site (job `job_5166b26584`): `prisma` and `prisma.io` bot
 docs state them conditionally ("PKCE mandatory for public clients, optional for confidential"), and
 the schema has one boolean per field, so flattening them would be exactly the inference the design
 forbids. A `pkce: required_for_public_clients` style value is the schema change that would capture it.
+
+### Delivered 2026-10-29 — Stripe, and why "unknown" was unhelpfully silent
+
+Same symptom recurred on `stripe`: `unknown` for the bare name, and no probe result for `stripe.com`
+(Stripe publishes no `.well-known` document at all, so the domain path correctly finds nothing).
+
+- **Stripe is the 9th curated provider** — `domains: stripe.com`, aliases incl. `stripe connect` /
+  `stripe apps` / `stripe payments`, docs = the Connect OAuth reference, the Connect OAuth guide and
+  the Apps OAuth page, console `dashboard.stripe.com/settings/applications`. Its `note` records the
+  trap: Connect OAuth and Marketplace/Apps OAuth are different endpoints for different products, and
+  the account's own `sk_`/`rk_` keys are API keys, not OAuth.
+- **`unknown` now names what the index knows.** When a name hits the toolkit index but has no curated
+  provider, the note says so ("the toolkit index lists AIRTABLE but no curated provider owns it yet;
+  this needs a provider entry … not a probe") instead of "nothing in the registry is close", which
+  was actively misleading.
+- **`ENDPOINT_CONFLICT` no longer blames a discovery document that does not exist.** The old message
+  claimed "the docs and the discovery document disagree; the discovery value was used" — for Stripe
+  the disagreement was between two docs pages, with no discovery involved. The message is now
+  source-neutral.
+- **The human guide renders the disagreement.** A new `## Sources that disagree` section lists every
+  conflicting value, so a reader is not told "sources disagree" with no way to see how. Stripe's
+  guide shows both sets: `connect.stripe.com/oauth/*` (Connect) vs `marketplace.stripe.com/oauth/v2/*`
+  + `api.stripe.com/v1/oauth/token` (Marketplace).
+
+Delivered on the deployed site as job `job_3290745744`: `stripe` resolves (alias, high), the job
+completes with 3 steps and both endpoint sets visible in the disagreement section.
+
+**Known limitation this exposed (not fixed): endpoint *sets* are still mutually exclusive.** Assembly
+picks one method set from `availability` — a `self_serve_oauth` provider gets the OAuth guide and the
+`auth.api_key.*` paths are never even requested, so Stripe's key-based setup (the common path) cannot
+appear alongside Connect OAuth, and Prisma's service tokens are invisible too. Rendering both would
+mean deriving `methods` from the facts present rather than from `availability`; that changes assembly
+and the golden outputs, so it is recorded here as the next real design decision.
 
 ## 9. Verification checklist
 

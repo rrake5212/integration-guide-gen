@@ -200,6 +200,22 @@ def render_human(spec: dict) -> str:
             lines.append(f"- **{warning['code']}** — {warning['message']}")
         lines.append("")
 
+    conflicts = [
+        note for note in (spec.get("notes") or [])
+        if note.endswith("(kept first)") or note.endswith("(discovery used)")
+    ]
+    if conflicts:
+        lines.extend([
+            "## Sources that disagree",
+            "",
+            "The guide uses the first value found. Every alternative is listed here — check which product surface "
+            "you are actually integrating before copying an endpoint.",
+            "",
+        ])
+        for conflict in conflicts:
+            lines.append(f"- {conflict}")
+        lines.append("")
+
     lines.extend(["## Sources", ""])
     for src in spec["sources"]:
         lines.append(f"- [{_md(src.get('title') or src['url'])}]({src['url']}) — fetched {src.get('fetched_at', '?')}, "

@@ -80,6 +80,21 @@ class ResolutionTests(unittest.TestCase):
         self.assertEqual(res.provider.id, "prisma")
         self.assertEqual(res.matched_by, "domain")
 
+    def test_stripe_resolves_as_a_curated_provider(self) -> None:
+        res = self.resolver.resolve("stripe")
+        self.assertEqual(res.decision, "resolved")
+        self.assertEqual(res.provider.id, "stripe")
+        self.assertEqual(res.matched_by, "alias")
+        self.assertEqual(self.resolver.resolve("stripe.com").provider.id, "stripe")
+
+    def test_known_app_without_a_provider_entry_says_so(self) -> None:
+        # Airtable is in the toolkit index but is not a curated provider. "Nothing is close"
+        # was misleading: the index knows it, and the missing thing is a provider entry.
+        res = self.resolver.resolve("airtable")
+        self.assertEqual(res.decision, "unknown")
+        self.assertTrue(any("toolkit index lists AIRTABLE" in n for n in res.notes), res.notes)
+        self.assertTrue(any("provider entry" in n for n in res.notes))
+
     def test_registry_loaded(self) -> None:
         registry = Registry()
         self.assertGreaterEqual(len(registry.providers), 7)
@@ -88,6 +103,7 @@ class ResolutionTests(unittest.TestCase):
         self.assertEqual(registry.provider_for_slug("WHATSAPP").id, "meta")
         self.assertEqual(registry.provider_for_slug("TALLY").id, "tally")
         self.assertEqual(registry.provider_for_slug("PRISMA").id, "prisma")
+        self.assertEqual(registry.provider_for_slug("STRIPE").id, "stripe")
 
 
 if __name__ == "__main__":

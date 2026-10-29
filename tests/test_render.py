@@ -29,6 +29,22 @@ class RenderTests(unittest.TestCase):
         self.assertIn("Do not invent", agent_md)
         self.assertIn(spec["auth"]["oauth"]["token_url"]["value"], agent_md)
 
+    def test_conflicting_sources_are_shown_in_the_guide(self) -> None:
+        spec = json.loads(SPECS[0].read_text())
+        spec = copy.deepcopy(spec)
+        spec["notes"] = list(spec.get("notes") or []) + [
+            "auth.oauth.authorization_url: 'https://connect.example.com/oauth/authorize' "
+            "vs 'https://marketplace.example.com/oauth/v2/authorize' (kept first)",
+        ]
+        human, _agent, _agent_md = render_bundle(spec)
+        self.assertIn("## Sources that disagree", human)
+        self.assertIn("marketplace.example.com", human)
+
+    def test_no_conflict_section_when_sources_agree(self) -> None:
+        spec = json.loads(SPECS[0].read_text())
+        human, _agent, _agent_md = render_bundle(spec)
+        self.assertNotIn("## Sources that disagree", human)
+
     def test_google_guide_has_scopes_and_verification(self) -> None:
         spec = json.loads(SPECS[1].read_text())
         human, agent, _ = render_bundle(spec)

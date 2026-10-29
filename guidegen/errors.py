@@ -135,7 +135,7 @@ ERRORS: dict[str, ErrorSpec] = {
 WARNINGS: dict[str, str] = {
     "TIME_UNKNOWN": "Setup time is an estimate: the docs don't state review timelines.",
     "FIELD_UNVERIFIED": "Some details weren't stated in the docs and are marked as such.",
-    "ENDPOINT_CONFLICT": "The docs and the discovery document disagree on an endpoint; the discovery value was used.",
+    "ENDPOINT_CONFLICT": "Sources disagree on an endpoint. The guide shows the first value found; the alternatives are under \"Sources that disagree\" — check which product surface you are integrating.",
     "PARTIAL_GUIDE": "This guide is partial — the sections marked 'not stated' could not be verified.",
 }
 

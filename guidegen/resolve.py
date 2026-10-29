@@ -211,9 +211,18 @@ class Resolver:
                 scored.append((best[0], provider, best[1]))
 
         if not scored:
+            notes = []
+            if slug:
+                # The index knows the product even though no curated provider owns it. Saying
+                # "nothing is close" here is actively misleading — the fix is a provider
+                # entry, not a probe, and the difference matters to whoever reads this.
+                notes.append(
+                    f"the toolkit index lists {slug} but no curated provider owns it yet; "
+                    f"this needs a provider entry (docs + console + availability), not a probe"
+                )
+            notes.append("nothing in the registry is close; pass a website/domain so it can be probed")
             return Resolution(
-                raw, text, "text", "unknown", None, None, "none", "unknown", [],
-                ["nothing in the registry is close; pass a website/domain so it can be probed"],
+                raw, text, "text", "unknown", None, None, "none", "unknown", [], notes,
             )
 
         scored.sort(key=lambda row: -row[0])
