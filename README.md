@@ -3,7 +3,7 @@
 A tool that turns an app name or website into a working setup guide for its OAuth or API-key
 integration — one guide a person follows, one machine brief an agent executes.
 
-**Live:** https://integration-guide.100.31.120.181.sslip.io · **Repo:** `rrake5212/integration-guide-gen` (private)
+**Live:** https://integration-guide.100.31.120.181.sslip.io · **Repo:** `rrake5212/integration-guide-gen` (public)
 
 ---
 
