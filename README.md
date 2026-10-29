@@ -315,7 +315,8 @@ real GitHub guide end to end.
   names to a canonical name + auth families, offline (gate A), and `find.py` locates the docs. `linear`,
   `hubspot`, `airtable`, `asana`, `zendesk`, `salesforce` no longer return "unknown because uncurated".
   What remains is coverage: a provider whose portal is JS-rendered and whose index has no usable
-  llms/sitemap needs the search fallback, and no search key is configured yet.
+  llms/sitemap needs the search fallback. That fallback is live since 2026-10-29 (Serper, cached,
+  daily-capped) and lifted the audit from 6/30 to 9/30 canonical pages — PLAN §13.7.
 - **The discovery probe is a coin flip.** Measured 2026-10-29: `airtable.com` and `prisma.io` publish
   `.well-known` metadata (resolved, `oidc_only`); `stripe.com`, `linear.app`, `hubspot.com`, `asana.com`,
   `zendesk.com` publish none. The probe is now corroboration only, never the ladder's only bet.

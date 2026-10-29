@@ -1010,7 +1010,8 @@ longer "unknown because uncurated" — they resolve to existence + auth families
 docs. Live checks the same day: `linear` → `linear.app/developers/oauth-2-0-authentication.md`
 in 5 pages; `zendesk` → `developer.zendesk.com/documentation/authentication/` in 9; `stripe` →
 the curated Connect reference in 1; `hubspot` → honest `unknown` with no false candidates (its portal
-is JS-rendered and no search key is configured yet); `tally` still asks between forms and ERP.
+is JS-rendered and there was no search key at that moment — superseded later the same day, §13.7:
+search now resolves it); `tally` still asks between forms and ERP.
 
 Search pricing checked on the vendors' pages 2026-10-29: **Serper** 2,500 free queries, packs 50k @
 $1.00/1k → 12.5M @ $0.30/1k (50→300 qps), credits valid 6 months; **Brave** $5.00/1k requests with
