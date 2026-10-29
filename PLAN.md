@@ -1,6 +1,6 @@
 # OAuth / API-key setup guide generator — plan
 
-**Status: DEPLOYED 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests at P6 / 201 now). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started. **2026-10-29: §13 approved (gates A–E) and its FIND layer built — catalogue routing, the ranked discovery ladder, the provider-entry store with human confirm, and a swappable search fallback.** Evening 2026-10-29: the Serper key verified live and the search rung rewritten (site: query, first-party only, reserved pages); a 30-provider audit puts the FIND stage at 9/30 canonical pages (24/30 usable) against 6/30 (14/30) on the free rungs alone — §13.7, `tools/find_audit.py`. **REDEPLOYED 2026-10-29** with that build (smoke 6/6 loopback and 6/6 public; `linear` now routes from the catalogue on the live site) — §13.8.
+**Status: DEPLOYED 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests at P6 / 201 now). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started. **2026-10-29: §13 approved (gates A–E) and its FIND layer built — catalogue routing, the ranked discovery ladder, the provider-entry store with human confirm, and a swappable search fallback.** Evening 2026-10-29: the Serper key verified live and the search rung rewritten (site: query, first-party only, reserved pages); a 30-provider audit puts the FIND stage at 9/30 canonical pages (24/30 usable) against 6/30 (14/30) on the free rungs alone — §13.7, `tools/find_audit.py`. **REDEPLOYED 2026-10-29** with that build (smoke 6/6 loopback and 6/6 public; `linear` now routes from the catalogue on the live site) — §13.8. **Same evening: the generation bridge landed and was deployed (§13.9) — catalogue names now build. Live: `discord` complete (4 steps, OAuth 2.0), `hubspot` partial (6 steps, single page), `reddit` unknown (docs on a third-party host). 201 tests.**
 Date: 2026-10-29 (rev 22). Home: `~/AgentWork/integration-guide-gen/` · private repo `rrake5212/integration-guide-gen`
 
 One-line product: a developer submits **an app name or a website/domain** they want OAuth with
@@ -300,7 +300,7 @@ GET  /api/health                liveness + queue depth
 **Jobs and storage.** SQLite, one `jobs` table holding input, provider, status, stage, progress, error, spec and
 rendered outputs; a separate `guides` cache table is still pending (P7).
 One worker process with a bounded queue, two worker threads (concurrency 2),
-`GUIDEGEN_JOB_TIMEOUT_SECONDS` (default 180), no resumable chunks yet. Job ids are UUID4;
+`GUIDEGEN_JOB_TIMEOUT_SECONDS` (default 300, raised for the FIND stage), no resumable chunks yet. Job ids are UUID4;
 results are unlisted (no public index) unless you ask for one.
 
 **Hosting.** Decided 2026-10-28: a Docker container on the existing Lightsail instance (100.31.120.181),
@@ -455,7 +455,7 @@ browser.
 | 11 | extract | refusal / content filter | "We stopped rather than guess: the guide service declined to read this page." | `LLM_REFUSED`, prompt hash |
 | 12 | assemble | no auth path or no endpoints | "The docs don't state enough to write a setup guide." | `SPEC_INCOMPLETE`, missing fields list |
 | 13 | verify | provenance/domain/cross-format fail | "The guide failed our accuracy check, so we didn't publish it." | `VERIFY_FAILED`, failing fields + quotes |
-| 14 | job | exceeds `GUIDEGEN_JOB_TIMEOUT_SECONDS` (default 180 s) | "This guide is taking longer than expected. Check back in a minute." | `JOB_TIMEOUT`, last completed stage |
+| 14 | job | exceeds `GUIDEGEN_JOB_TIMEOUT_SECONDS` (default 300 s) | "This guide is taking longer than expected. Check back in a minute." | `JOB_TIMEOUT`, last completed stage |
 | 15 | any | unhandled exception | "Something broke on our side. Send us the job id below." | `INTERNAL`, traceback |
 
 **Partial success is a first-class state.** `complete | partial | failed`. A field the docs don't state becomes
@@ -665,7 +665,7 @@ are the two resolution regression tests that must never regress.
   verify from the stored spec, no network or model spend. `build.py` and the web worker write `validation.json`
   and refuse to publish a spec that fails verification; web jobs also write `job.json`, `events.jsonl` and
   `docs/<n>.html`.
-- Job timeout: `GUIDEGEN_JOB_TIMEOUT_SECONDS` (default 180) is checked at every progress callback and marks the job
+- Job timeout: `GUIDEGEN_JOB_TIMEOUT_SECONDS` (default 300) is checked at every progress callback and marks the job
   `failed` with `JOB_TIMEOUT`.
 - Post-verifier web job `job_d6eac30c26`: complete in ~60 s · 76 facts (72 verified / 4 unknown) · 7 steps ·
   `validation.json` `ok: true`, zero issues; `events.jsonl` has stage/chunk timeline, `docs/` has 3 pages.

@@ -61,7 +61,8 @@ Web surface (FastAPI):
 ```
 GET  /                          landing
 POST /api/resolve               {input} -> resolved | ask + candidates | unknown
-POST /api/guides                {input, pick?} -> {job_id} (202) or 409 candidates
+POST /api/guides                {input, pick?} -> {job_id} (202), 409 candidates, 422 no auth surface
+                                catalogue names are accepted: the job's first stage is `find`
 GET  /api/guides/{job_id}       status, stage, progress, links
 GET  /api/guides/{job_id}/events SSE progress
 GET  /g/{job_id}                result page (Human guide | agent.json | agent.md)
@@ -72,7 +73,7 @@ GET  /api/health                queue depth + running jobs
 ```
 
 Jobs are SQLite-backed and run on two worker threads; job ids are unlisted UUIDs. A job exceeding
-`GUIDEGEN_JOB_TIMEOUT_SECONDS` (default 180) fails with `JOB_TIMEOUT`. The 7-day cache badge is not wired yet
+`GUIDEGEN_JOB_TIMEOUT_SECONDS` (default 300 — FIND runs inside the job) fails with `JOB_TIMEOUT`. The 7-day cache badge is not wired yet
 (P7).
 
 ## Finding the auth surface (FIND layer, 2026-10-29)
@@ -207,7 +208,12 @@ guidegen/
   build.py         python3 -m guidegen.build "<query>"
   render_human.py  provider.spec.json -> guide.md
   render_agent.py  provider.spec.json -> agent.json + agent.md
-  pipeline.py      shared resolve -> research -> assemble path with progress
+  catalog.py       toolkit catalogue router: any of 1,688 names -> canonical name + auth families (offline)
+  find.py          the ranked docs ladder (llms / sitemap / nav / guesses) + surface ranker + page budget
+  search.py        swappable search fallback (serper / brave / searchapi) behind CachedSearch
+  surfaces.py      provider entry store: surfaces, proposals, human confirm, freeze; seed + runtime path
+  bridge.py        catalogue entry -> (stored surface | FIND) -> Provider, so a non-curated name can build
+  pipeline.py      shared resolve -> [find] -> research -> assemble path with progress
   verify.py        schema/provenance/cross-format/secret verifier + CLI
   debug.py         timeline + state for a job directory
   replay.py        deterministic re-render + verify from spec.json
@@ -222,12 +228,15 @@ guidegen/
   cli.py           python3 -m guidegen "..."
   data/
     providers.json 9 curated providers (google, github, slack, meta, tally, tally-erp, notion, prisma, stripe)
+    surfaces.json  what FIND located + what a human confirmed (read-only seed in the image; the
+                   writable copy is GUIDEGEN_SURFACES, i.e. /app/data/surfaces.json in the container)
     toolkits.json  1,688 toolkit names/slugs from docs.composio.dev — REFERENCE VOCABULARY ONLY
-tests/
-  test_resolve.py
-  test_errors.py
-  test_spec.py
-  fixtures/        build.py + example-oauth.spec.json + example-apikey.spec.json (synthetic)
+tests/             201 tests (test_resolve, errors, spec, pipeline, planning, render, web, verifier,
+                   error_paths, replay, find, search, surfaces, bridge, find_audit) + fixtures/
+tools/
+  find_benchmark.py  raw rung probe (no keys, no spend)
+  find_audit.py      30-provider audit against hand-checked canonical URLs; `--rescore` re-scores a
+                     stored run with no network and no spend
 scripts/
   probe_llm.py     provider probe: models -> no-key -> plain -> json_schema -> tool -> json_object
 data/
@@ -327,9 +336,23 @@ real GitHub guide end to end.
 - **The discovery probe is a coin flip.** Measured 2026-10-29: `airtable.com` and `prisma.io` publish
   `.well-known` metadata (resolved, `oidc_only`); `stripe.com`, `linear.app`, `hubspot.com`, `asana.com`,
   `zendesk.com` publish none. The probe is now corroboration only, never the ladder's only bet.
-- **`surfaces.json` is not wired into generation yet.** The web pipeline still reads `provider.docs`;
-  a catalogue-only provider can be found but not yet guided. Next step is constructing a provider from
-  a catalogue entry + confirmed surface and feeding it to `research.py`.
+- **Catalogue names generate — WIRED 2026-10-29 (PLAN §13.9).** `bridge.py` builds a Provider from a
+  catalogue entry plus the surface FIND located, so `/api/guides` no longer refuses a non-curated name.
+  Measured live the same day: `discord` complete (4 steps, OAuth 2.0, source
+  `docs.discord.com/developers/topics/oauth2.md`), `hubspot` partial (6 steps, one page, token URL not
+  stated), `reddit` unknown.
+- **Providers documented on a third-party host still fail.** `reddit` is the case: its OAuth docs live at
+  `github.com/reddit-archive/reddit/wiki/OAuth2` and `reddit.com/dev/api`; the finder only surfaced
+  `.well-known/oauth-authorization-server` (endpoints, no setup steps), and a GitHub wiki is blocked as
+  third-party. Needs an allowlist for a provider's official org repos, or sibling-page collection from
+  the located docs host.
+- **One located page is the whole source, so single-page providers give partial guides.** Curated rows
+  carry 3-5 docs URLs; FIND yields one. Collecting siblings (docs home, token reference) is the next
+  quality step.
+- **A stored auto-accepted surface is never refreshed**, so a ranker fix does not reach entries the
+  finder already recorded (discord's wrong Social-SDK entry had to be deleted by hand). Wanted:
+  `review --refresh-auto`, and auto entries older than N days re-find after a ranker change. Entries
+  marked `accepted_by: human` keep the freeze.
 
 Remaining in P7: private `/admin/jobs/<id>`, 7-day page-hash cache table + badge.
 P8 optional: MCP wrapper + the calibration run that replaces the `low` time confidence.

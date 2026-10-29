@@ -119,7 +119,7 @@ Verification actually observed:
     TLS                            Let's Encrypt, CN = the hostname, auto-renewed
     other site on the box          journey-builder-mcp still answering (401, its own auth)
 
-## What the second deploy did (2026-10-29)
+## What the 2026-10-29 deploys did (five of them, same day)
 
 Same `deploy/deploy.sh`, no bootstrap. Two differences from the first run:
 
@@ -135,6 +135,11 @@ write `guidegen/data/surfaces.json`. `docker-compose.yml` therefore sets
 `GUIDEGEN_SURFACES=/app/data/surfaces.json` (the mounted volume) and the packaged file stays a
 read-only seed the store loads on first run. Without it, every catalogue job dies at `find` with
 `INTERNAL` the moment FIND tries to record what it found.
+
+Three more deploys followed in the same evening for the generation bridge (PLAN §13.9) and two bugs it
+exposed — a `PermissionError` on the surface store and a `KeyError` in the human renderer with no auth
+method — plus a ranker tie-break. Each one ran the same script and the same smoke; the last three
+finished with `SMOKE OK` on both surfaces and `deployed:` on the public URL.
 
 Verification actually observed:
 
