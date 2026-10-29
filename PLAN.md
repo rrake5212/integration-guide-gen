@@ -1,6 +1,6 @@
 # OAuth / API-key setup guide generator — plan
 
-**Status: DEPLOYED 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started.**
+**Status: DEPLOYED 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests at P6 / 121 now). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started.**
 Date: 2026-10-28 (rev 19). Home: `~/AgentWork/integration-guide-gen/` · private repo `rrake5212/integration-guide-gen`
 
 One-line product: a developer submits **an app name or a website/domain** they want OAuth with
@@ -507,7 +507,7 @@ validation.json       schema/provenance/cross-format/secret results
 ambiguous name, blocked host and job timeout each return the exact code and user message; partial guides render
 the warnings banner instead of failing. Quote mismatch is deliberately covered as “drop to `unknown` +
 `FIELD_UNVERIFIED`”, not as a fatal error, so one bad quote cannot take down an otherwise useful guide.
-`tests/test_errors.py` enforces that no user message leaks internals. **108 tests total** (2026-10-27).
+`tests/test_errors.py` enforces that no user message leaks internals. **108 tests total** (2026-10-27; **121** after the 2026-10-28 resolver work).
 
 ## 7. v0 providers and resolution tests
 
@@ -670,7 +670,7 @@ are the two resolution regression tests that must never regress.
 - Post-verifier web job `job_d6eac30c26`: complete in ~60 s · 76 facts (72 verified / 4 unknown) · 7 steps ·
   `validation.json` `ok: true`, zero issues; `events.jsonl` has stage/chunk timeline, `docs/` has 3 pages.
 - `tests/test_verifier.py` (8), `tests/test_error_paths.py` (8), `tests/test_replay.py` (2), plus a web timeout
-  test. **108 tests.**
+  test. **108 tests** at P6 (121 since 2026-10-28).
 
 ### Delivered in P7 (2026-10-28) — deploy stack, not yet on the box
 
