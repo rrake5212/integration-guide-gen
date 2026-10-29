@@ -1,7 +1,7 @@
 # Integration setup guide generator
 
-Status: **LIVE since 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io** (P1–P6 built 2026-10-27;
-P7 deployed 2026-10-28) — resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard,
+Status: **LIVE since 2026-10-28, redeployed 2026-10-29 with the FIND layer — https://integration-guide.100.31.120.181.sslip.io** (P1–P6 built 2026-10-27;
+P7 deployed 2026-10-28; §13 redeployed 2026-10-29) — resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard,
 DeepInfra client, research + quoted extraction + assembly, time/steps/blockers, dual renderers, FastAPI
 web UI, verifier + golden set + error paths + debug/replay; 187 tests. Repo: private,
 `github.com/rrake5212/integration-guide-gen`. Deploy: `Dockerfile` +

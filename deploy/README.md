@@ -119,6 +119,32 @@ Verification actually observed:
     TLS                            Let's Encrypt, CN = the hostname, auto-renewed
     other site on the box          journey-builder-mcp still answering (401, its own auth)
 
+## What the second deploy did (2026-10-29)
+
+Same `deploy/deploy.sh`, no bootstrap. Two differences from the first run:
+
+1. **The search key was added to the box's `.env`, not copied from the laptop's** — the file is never
+   synced, so the two new lines were appended over ssh stdin (`SEARCH_PROVIDER=serper`,
+   `SERPER_API_KEY=…`), `chmod 600` kept, backup at `~/guidegen/.env.bak-2026-10-29`. Values never
+   appeared in a command line, a log or this repo.
+2. The build carries the FIND layer, so this deploy is the first one where `POST /api/resolve` can
+   answer from the 1,688-name catalogue instead of `unknown`.
+
+Verification actually observed:
+
+    compose ps            guidegen | Up (healthy) | 127.0.0.1:8765->8765/tcp
+    smoke (loopback)      6/6 PASS
+    smoke (public https)  6/6 PASS
+    resolve "linear"      decision=catalogue (was unknown on the 2026-10-28 build)
+    from_env() in-container  serper, daily cap 200 (no call made)
+    find hubspot in-box   resolved in 24 pages, 1 query, canonical HubSpot OAuth page
+    ledger                runtime/cache/search-budget.json {"used": 1}
+
+Known gap this deploy exposes rather than fixes: `/api/guides` still refuses a catalogue-routed
+provider (`PROVIDER_UNKNOWN`, stage `resolve`) because it needs a curated `Provider` object — see
+PLAN §13.6/§13.8. The site routes 1,688 names but generates for 9 until `surfaces.json` is wired into
+`research.py`.
+
 ## Renaming the public hostname
 
 sslip.io resolves any label prefix in front of the IP, so a rename needs no DNS record —

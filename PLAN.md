@@ -1,6 +1,6 @@
 # OAuth / API-key setup guide generator — plan
 
-**Status: DEPLOYED 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests at P6 / 187 now). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started. **2026-10-29: §13 approved (gates A–E) and its FIND layer built — catalogue routing, the ranked discovery ladder, the provider-entry store with human confirm, and a swappable search fallback.** Evening 2026-10-29: the Serper key verified live and the search rung rewritten (site: query, first-party only, reserved pages); a 30-provider audit puts the FIND stage at 9/30 canonical pages (24/30 usable) against 6/30 (14/30) on the free rungs alone — §13.7, `tools/find_audit.py`.
+**Status: DEPLOYED 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests at P6 / 187 now). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started. **2026-10-29: §13 approved (gates A–E) and its FIND layer built — catalogue routing, the ranked discovery ladder, the provider-entry store with human confirm, and a swappable search fallback.** Evening 2026-10-29: the Serper key verified live and the search rung rewritten (site: query, first-party only, reserved pages); a 30-provider audit puts the FIND stage at 9/30 canonical pages (24/30 usable) against 6/30 (14/30) on the free rungs alone — §13.7, `tools/find_audit.py`. **REDEPLOYED 2026-10-29** with that build (smoke 6/6 loopback and 6/6 public; `linear` now routes from the catalogue on the live site) — §13.8.
 Date: 2026-10-29 (rev 22). Home: `~/AgentWork/integration-guide-gen/` · private repo `rrake5212/integration-guide-gen`
 
 One-line product: a developer submits **an app name or a website/domain** they want OAuth with
@@ -1069,3 +1069,25 @@ The verdict rule is itself tested (`tests/test_find_audit.py`, 10 tests): a pare
 NEAR, not EXACT, and `--rescore <file>` re-derives verdicts from a stored run with no network and no
 spend — that is how the first pass's looser numbers (13/30) were corrected to 9/30 without paying for
 a second audit.
+
+### 13.8 Deployed 2026-10-29 — and the gap the deployment proves
+
+`deploy/deploy.sh` ran against the box at 2026-10-29 (~23:2x UTC): source rsynced, image rebuilt
+(`guidegen:local`), container recreated healthy on `127.0.0.1:8765`, Caddy reloaded, smoke **6/6 on
+loopback and 6/6 public**. The search key was appended to the box's `.env` over stdin (never in argv,
+never printed; `chmod 600`; backup at `.env.bak-2026-10-29`) because `.env` is deliberately never
+synced from the laptop.
+
+Observed after the deploy, not inferred:
+
+    POST /api/resolve "linear"      -> decision=catalogue  (was `unknown` before this build)
+    from_env() in the container     -> provider: serper, daily cap 200   [no call, no spend]
+    guidegen find hubspot (in-box)  -> resolved, 24 pages, 1 query, canonical HubSpot OAuth page
+    ledger                          -> data/cache/search-budget.json {"used": 1}, 1 cached query
+
+The same run also measured the wiring gap from §13.6 on the LIVE surface, which is sharper than the
+code read: `POST /api/guides {"input":"hubspot"}` returns `PROVIDER_UNKNOWN` at stage `resolve`.
+`web/app.py` still demands `decision == "resolved"` with a curated `Provider` object, so a
+catalogue-routed provider resolves for display and then cannot be generated. **Wiring `surfaces.json`
+into `research.py` is not an optimisation — it is the difference between the site routing 1,688 names
+and the site generating for 9.**
