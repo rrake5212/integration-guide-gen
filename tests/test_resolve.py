@@ -53,7 +53,7 @@ class ResolutionTests(unittest.TestCase):
         self.assertIsNone(res.provider)
         self.assertEqual(res.availability, "unknown")
         self.assertEqual(res.exit_code, 3)
-        self.assertTrue(any("no OIDC discovery" in n for n in res.notes))
+        self.assertTrue(any("no OIDC/OAuth discovery" in n for n in res.notes))
 
     # 7
     def test_typo_resolves_by_fuzzy_with_medium_confidence(self) -> None:
@@ -67,6 +67,19 @@ class ResolutionTests(unittest.TestCase):
         res = self.resolver.resolve("salesforce")
         self.assertEqual(res.decision, "unknown")
 
+    def test_prisma_name_resolves_from_the_curated_registry(self) -> None:
+        res = self.resolver.resolve("prisma")
+        self.assertEqual(res.decision, "resolved")
+        self.assertEqual(res.provider.id, "prisma")
+        self.assertEqual(res.matched_by, "alias")
+        self.assertEqual(res.availability, "self_serve_oauth")
+
+    def test_prisma_domain_resolves_without_probing(self) -> None:
+        res = self.resolver.resolve("prisma.io")
+        self.assertEqual(res.decision, "resolved")
+        self.assertEqual(res.provider.id, "prisma")
+        self.assertEqual(res.matched_by, "domain")
+
     def test_registry_loaded(self) -> None:
         registry = Registry()
         self.assertGreaterEqual(len(registry.providers), 7)
@@ -74,6 +87,7 @@ class ResolutionTests(unittest.TestCase):
         self.assertEqual(registry.provider_for_slug("GOOGLESHEETS").id, "google")
         self.assertEqual(registry.provider_for_slug("WHATSAPP").id, "meta")
         self.assertEqual(registry.provider_for_slug("TALLY").id, "tally")
+        self.assertEqual(registry.provider_for_slug("PRISMA").id, "prisma")
 
 
 if __name__ == "__main__":

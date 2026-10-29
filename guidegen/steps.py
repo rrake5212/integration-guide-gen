@@ -30,8 +30,21 @@ unless it is a console configuration action. Every step needs a verbatim quote f
 step.
 """
 
-STEP_WORDS = ("create", "register", "configure", "set up", "setup", "credential", "client id", "client secret",
-              "redirect", "install", "enable", "console", "add", "copy", "generate")
+# Stems, not whole words: docs write "Creating an OAuth Application", and "create" is not a
+# substring of "creating" — matching whole words silently dropped the only steps section on
+# Prisma's page and left the extractor looking at the runtime OAuth flow instead.
+STEP_STEMS = ("creat", "regist", "configur", "credential", "client id", "client secret",
+              "redirect", "install", "enabl", "console", "setup", "set up", "applica",
+              "get started", "quickstart", "authenticat", "permission", "scope")
+
+# Console actions, i.e. evidence that a section describes something a person clicks through.
+ACTION_WORDS = ("click", "navigate", "select", "choose", "copy", "paste", "fill", "enter", "open", "go to")
+
+# The runtime OAuth flow is explicitly out of scope for steps (the prompt says so), and several
+# of its headings contain step-ish words ("redirect"), so they are scored out rather than kept.
+RUNTIME_MARKERS = ("authorization flow", "exchange the code", "redirect users to authorize",
+                   "token refresh", "use the access token", "receive the authorization code",
+                   "make your first request", "get new access token")
 
 
 @dataclass
@@ -57,16 +70,43 @@ def _bullets_heavy(body: str) -> bool:
     return bullets / len(lines) > 0.55
 
 
+def _section_score(section) -> int:
+    heading = (section.heading or "").strip().lower()
+    body = section.body
+    score = 0
+    if any(stem in heading for stem in STEP_STEMS):
+        score += 3
+    if any(marker in heading for marker in RUNTIME_MARKERS):
+        score -= 5
+    score += min(4, sum(body.lower().count(word) for word in ACTION_WORDS))
+    if _bullets_heavy(body):
+        # A bulleted section is a console step list, not navigation — this is what Prisma's
+        # "Creating an OAuth Application" section looks like, and it used to be thrown away.
+        score += 1
+    if any(marker in body[:200].lower() for marker in RUNTIME_MARKERS):
+        score -= 2
+    return score
+
+
 def _step_text(document: Document) -> str:
-    parts = []
+    """The sections most likely to hold console steps, in document order, bounded in size."""
+    keep = []
     for section in split_sections(document.text):
-        heading = (section.heading or "").lower()
-        if not heading or not any(word in heading for word in STEP_WORDS):
+        heading = (section.heading or "").strip()
+        if not heading or len(section.body) < 60:
             continue
-        if len(section.body) < 80 or _bullets_heavy(section.body):
-            continue
-        parts.append(f"{'#' * section.level} {section.heading}\n{section.body}")
-    return "\n\n".join(parts)[:12000] if parts else document.text[:8000]
+        if _section_score(section) > 0:
+            keep.append(section)
+
+    parts: list[str] = []
+    total = 0
+    for section in keep:
+        block = f"{'#' * section.level} {section.heading}\n{section.body}"
+        if total + len(block) > 12000:
+            break
+        parts.append(block)
+        total += len(block)
+    return "\n\n".join(parts) if parts else document.text[:12000]
 
 
 def _score(document: Document) -> int:
@@ -84,7 +124,7 @@ def extract_steps(client, provider_name: str, docs: list[Document], max_calls: i
 
     for document in sorted(docs, key=_score, reverse=True)[:max_calls]:
         text = _step_text(document)
-        chunks = chunk_text(text, max_chars=8000, overlap=300)[:1]
+        chunks = chunk_text(text, max_chars=8000, overlap=300)[:2]
         for chunk in chunks:
             if calls >= max_calls:
                 break

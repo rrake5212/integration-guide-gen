@@ -1,7 +1,7 @@
 # OAuth / API-key setup guide generator — plan
 
 **Status: DEPLOYED 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started.**
-Date: 2026-10-28 (rev 18). Home: `~/AgentWork/integration-guide-gen/` · private repo `rrake5212/integration-guide-gen`
+Date: 2026-10-28 (rev 19). Home: `~/AgentWork/integration-guide-gen/` · private repo `rrake5212/integration-guide-gen`
 
 One-line product: a developer submits **an app name or a website/domain** they want OAuth with
 ("Google", "tally.so", "Notion", "acme.com"), and the agent resolves it to the real provider, then generates
@@ -18,7 +18,7 @@ Scope notes carried from the corrections:
 | # | Gate | Options | Recommendation |
 |---|------|---------|----------------|
 | G0 | Ambiguous input policy | auto-pick the top match · stop and ask with 2–3 candidates | **RESOLVED 2026-10-27 — stop and ask on any tie.** `--pick <slug>` still forces a choice |
-| G1 | v0 provider set | Google + GitHub · plus Slack · plus Meta/WhatsApp · plus an API-key provider (Tally) | **RESOLVED 2026-10-27 — Google + GitHub first.** Slack / Meta / Tally follow in P7+ |
+| G1 | v0 provider set | Google + GitHub · plus Slack · plus Meta/WhatsApp · plus an API-key provider (Tally) | **RESOLVED 2026-10-27 — Google + GitHub first.** Slack / Meta / Tally follow in P7+; Prisma added 2026-10-28 (8 curated providers now) |
 | G2 | Output formats | `guide.md` + `agent.json` · plus a compact `agent.md` | all three; `agent.md` is what a developer pastes into Claude Code/Cursor |
 | G3 | Live vs cached | re-fetch every call · live with a 7-day cache keyed on the fetched page hash | **RESOLVED 2026-10-27 — live re-fetch on request, 7-day cache keyed on the page hash** |
 | G4 | Role of the model | LLM extracts and writes prose, every fact quoted · LLM generates freely | extractor/writer only. Unsourced fields become `unknown` |
@@ -111,7 +111,10 @@ The developer types whatever they call it; the agent has to find the real thing 
 2. **Exact alias / slug** match (`google sheets` → `GOOGLESHEETS`, `github` → `GITHUB`).
 3. **Fuzzy name match** (token overlap on name + slug). If more than one credible hit, stop (G0).
 4. **Live discovery** for an unknown domain: fetch the site, look for `/docs`, `/developers`, `/api`, and
-   `/.well-known/openid-configuration`. A discovery document is proof the provider runs OIDC.
+   `/.well-known/openid-configuration` **and** `/.well-known/oauth-authorization-server` (RFC 8414),
+   on the site root and on `auth.`/`login.`/`accounts.`/`id.` hosts. Either document is proof the provider
+   runs OAuth/OIDC; the metadata host is often not the marketing site (Prisma publishes only the RFC 8414
+   document, and only on `auth.prisma.io`).
 5. **Web search** restricted to official domains as the last resort; never accept a third-party tutorial as
    the identity of the provider.
 
@@ -537,11 +540,11 @@ are the two resolution regression tests that must never regress.
 
 ### Delivered in P1 (2026-10-27)
 
-- `guidegen/registry.py` + `guidegen/data/providers.json` (7 curated providers) and
+- `guidegen/registry.py` + `guidegen/data/providers.json` (7 curated providers at P1; 8 since 2026-10-28) and
   `guidegen/data/toolkits.json` (1,688 toolkit names/slugs, reference vocabulary only).
 - `guidegen/resolve.py` — domain → alias → toolkit → fuzzy → live OIDC probe; `resolved` / `ask` / `unknown`
   are first-class outcomes, and a tie always asks.
-- `guidegen/probe.py` — stdlib OIDC discovery + homepage reachability.
+- `guidegen/probe.py` — stdlib discovery probe (both well-known documents, root + auth hosts) + homepage reachability.
 - `guidegen/cli.py` — `python3 -m guidegen "<input>" [--json] [--no-network] [--pick <id>]`, exit 0/2/3/4.
 - `tests/test_resolve.py` — 9 tests, all passing (`python3 -m unittest discover -s tests -v`).
 - `guidegen/errors.py` — 32-code error taxonomy + 4 warning codes, each with a stage, HTTP status, safe user
@@ -731,6 +734,41 @@ Verified on the box, real output:
   8 blockers, 4 tables, 3 tabs, zero console errors
 - the other site on the box is untouched: `journey-builder-mcp` still answers (401, its own auth)
 - box after deploy: 911 MB RAM total, 513 MB used, 397 MB available, swap present
+
+### Delivered 2026-10-28 — resolver recall (Prisma)
+
+Reported symptom: typing `prisma` then `prisma.io` both returned `unknown`. Two independent causes,
+both fixed and covered by tests (121 total).
+
+- **Name inputs could only ever resolve inside the curated registry.** The toolkit index does know
+  `PRISMA` (22 tools, `OAUTH2, API_KEY`), but `provider_for_slug("PRISMA")` was `None` because the
+  index is a vocabulary bridge to curated providers, not a provider source. Prisma is now the 8th
+  curated entry (`domains: prisma.io`, aliases incl. `prisma orm` / `prisma postgres` / `prisma
+  data platform`, docs = the three REST API pages, console `console.prisma.io`, discovery
+  `https://auth.prisma.io/.well-known/oauth-authorization-server`).
+- **The probe only knew one discovery document, at the site root.** Prisma publishes RFC 8414
+  metadata at `auth.prisma.io/.well-known/oauth-authorization-server` (200) while
+  `prisma.io/.well-known/openid-configuration` 308s to HTML. The probe now tries
+  `openid-configuration` and `oauth-authorization-server` on the root and on
+  `auth.`/`login.`/`accounts.`/`id.`, under a 6 s wall-clock budget, SSRF-checking every candidate
+  and skipping hosts that do not resolve. This is a **class** fix: any provider using RFC 8414
+  metadata or a separate auth host used to come back `unknown`.
+- **Step extraction discarded the only section with steps.** `_step_text` matched whole words against
+  headings, so "Creating an OAuth Application" missed `create`, and it dropped bullet-heavy
+  sections — the two filters together sent only the runtime-OAuth-flow section to the model, which
+  the prompt tells it to exclude. Selection is now stem-based and scores sections by heading stems,
+  console action verbs and bullet density, while scoring the runtime flow out.
+- **Short fact sections were dropped.** `select_sections` required a 250-character body, which threw
+  away `PKCE Support`, `Available Scopes` and `Token Lifetimes` — the densest facts on the page. A
+  keyword heading now exempts a section from the length floor.
+
+Result on the deployed site (job `job_5166b26584`): `prisma` and `prisma.io` both resolve
+(`alias` / `domain`, high confidence), the job completes with **7 setup steps**, both scopes
+(`workspace:admin` sensitive, `offline_access`), 8 blockers, and 3 fields still `unknown`:
+`pkce`, `client_secret_required`, `refresh_token`. That last part is honest rather than fixed — the
+docs state them conditionally ("PKCE mandatory for public clients, optional for confidential"), and
+the schema has one boolean per field, so flattening them would be exactly the inference the design
+forbids. A `pkce: required_for_public_clients` style value is the schema change that would capture it.
 
 ## 9. Verification checklist
 

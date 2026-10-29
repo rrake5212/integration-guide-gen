@@ -129,6 +129,13 @@ class Resolver:
         assert_public_host(host)
         info = self.probe(host) or {}
         if info.get("discovery"):
+            metadata = info.get("metadata") or "oidc"
+            label = (
+                "OIDC discovery"
+                if metadata == "oidc"
+                else "OAuth 2.0 authorization-server metadata (RFC 8414)"
+            )
+            discovery_host = info.get("metadata_host") or host
             synthetic = Provider(
                 id=host,
                 name=host,
@@ -138,9 +145,9 @@ class Resolver:
                 availability="oidc_only",
                 docs=(),
                 discovery=info.get("discovery_url"),
-                note="OIDC discovery found; self-serve client registration is not verified.",
+                note=f"{label} at {discovery_host}; self-serve client registration is not verified.",
             )
-            notes.append("OIDC discovery found; client registration still needs verifying")
+            notes.append(f"{label} found at {discovery_host}; client registration still needs verifying")
             return Resolution(
                 raw, host, "domain", "resolved", synthetic, "discovery", "medium",
                 "oidc_only", [], notes,
@@ -148,9 +155,13 @@ class Resolver:
 
         status = info.get("homepage_status")
         if status:
-            notes.append(f"site reachable (HTTP {status}) but no OIDC discovery at /.well-known/openid-configuration")
+            notes.append(
+                f"site reachable (HTTP {status}) but no OIDC/OAuth discovery at "
+                f"/.well-known/openid-configuration or /.well-known/oauth-authorization-server "
+                f"(root or auth/login/accounts/id host)"
+            )
         else:
-            notes.append("site not reachable and no OIDC discovery")
+            notes.append("site not reachable and no OIDC/OAuth discovery")
         notes.append("no public OAuth/OIDC surface proven; treat as unknown until docs confirm")
         return Resolution(raw, host, "domain", "unknown", None, None, "none", "unknown", [], notes)
 

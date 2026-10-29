@@ -42,6 +42,68 @@ class FakeClient:
         return LLMResult(data=self.data, model=self.model, ms=5, usage={"total_tokens": 10}, attempts=1)
 
 
+PRISMA_SHAPED_TEXT = (
+    "## Authentication\n"
+    "The REST API supports service tokens and OAuth 2.0.\n"
+    "### Creating an OAuth Application\n"
+    "- Navigate to Prisma Console and log in\n"
+    "- Click the Integrations tab in the left sidebar\n"
+    "- Under \"Published Applications\", click New Application\n"
+    "- Fill in your application details:\n"
+    "- Name: Your application name\n"
+    "- Copy your Client ID and Client Secret immediately\n"
+    "### OAuth Authorization Flow\n"
+    "#### 1. Redirect users to authorize\n"
+    "Send the user to the authorization endpoint with a client_id and redirect_uri.\n"
+    "#### 2. Exchange the code at the token URL\n"
+    "POST the code to the token endpoint and read access_token from the response.\n"
+)
+
+
+class RecordingClient:
+    """Captures the <docs> block the model was given."""
+
+    model = "fake-model"
+
+    def __init__(self, data: dict) -> None:
+        self.data = data
+        self.prompts: list[str] = []
+
+    def chat_json(self, messages, schema, schema_name, max_tokens=3000, temperature=0.0) -> LLMResult:
+        self.prompts.append(messages[-1]["content"])
+        return LLMResult(data=self.data, model=self.model, ms=5, usage={"total_tokens": 10}, attempts=1)
+
+
+class StepSelectionTests(unittest.TestCase):
+    """Regression for the Prisma page shape: the console section must win over the runtime flow."""
+
+    def _doc(self) -> Document:
+        return Document(url=DOC_URL, title="REST API Authentication", text=PRISMA_SHAPED_TEXT,
+                        raw=PRISMA_SHAPED_TEXT, fetched_at="2026-10-28T00:00:00+00:00",
+                        http_status=200, sha256="b" * 64)
+
+    def test_bulleted_console_section_is_sent_to_the_model(self) -> None:
+        client = RecordingClient({"steps": []})
+        extract_steps(client, "Prisma", [self._doc()])
+        self.assertTrue(client.prompts, "no call was made")
+        sent = client.prompts[0]
+        self.assertIn("Published Applications", sent)
+        self.assertIn("Creating an OAuth Application", sent)
+
+    def test_runtime_oauth_flow_is_not_sent(self) -> None:
+        client = RecordingClient({"steps": []})
+        extract_steps(client, "Prisma", [self._doc()])
+        sent = client.prompts[0]
+        self.assertNotIn("Redirect users to authorize", sent)
+        self.assertNotIn("Exchange the code at the token URL", sent)
+
+    def test_stem_heading_matches_the_gerund_form(self) -> None:
+        # "Creating an OAuth Application" used to miss a whole-word check for "create"
+        client = RecordingClient({"steps": []})
+        extract_steps(client, "Prisma", [self._doc()])
+        self.assertIn("Creating an OAuth Application", client.prompts[0])
+
+
 class EffortTests(unittest.TestCase):
     def test_provider_base_and_drivers(self) -> None:
         provider = Registry().provider("github")

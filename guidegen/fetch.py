@@ -250,10 +250,17 @@ def select_sections(text: str, keywords: tuple[str, ...] = AUTH_KEYWORDS) -> lis
         if heading.startswith("http"):
             continue
         body = section.body
-        if len(body) < 250 or _nav_heavy(body):
-            continue
         head_hit = any(word in heading.lower() for word in keywords)
         body_hit = any(word in body[:400].lower() for word in keywords)
+        # Short sections are often the most fact-dense of all — "Token Lifetimes" is 79 chars
+        # and states both lifetimes; "Available Scopes" is a 148-char table. The length floor
+        # only guards against boilerplate, so a keyword HEADING exempts a section from it.
+        # (It used to drop exactly those sections, which is why Prisma's PKCE/refresh/secret
+        # facts came back unknown while the docs stated them.)
+        if len(body) < 250 and not head_hit:
+            continue
+        if _nav_heavy(body):
+            continue
         if head_hit or body_hit:
             candidates.append((index, section, head_hit))
 

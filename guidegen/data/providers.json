@@ -169,6 +169,32 @@
       ],
       "console": "https://www.notion.so/my-integrations",
       "discovery": null
+    },
+    {
+      "id": "prisma",
+      "name": "Prisma",
+      "domains": [
+        "prisma.io"
+      ],
+      "aliases": [
+        "prisma",
+        "prisma orm",
+        "prisma postgres",
+        "prisma data platform",
+        "prisma console"
+      ],
+      "slug_prefixes": [
+        "PRISMA"
+      ],
+      "availability": "self_serve_oauth",
+      "docs": [
+        "https://www.prisma.io/docs/rest-api/authentication",
+        "https://www.prisma.io/docs/rest-api/api-clients",
+        "https://www.prisma.io/docs/rest-api/partner-integration"
+      ],
+      "console": "https://console.prisma.io",
+      "discovery": "https://auth.prisma.io/.well-known/oauth-authorization-server",
+      "note": "OAuth app registration is self-serve (Console -> Integrations -> Published Applications, PKCE S256 for public clients). Publishing a partner integration and the provisioning endpoints need separate partner access."
     }
   ]
 }

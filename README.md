@@ -138,7 +138,7 @@ Test run: `python3 -m unittest discover -s tests -v` → **108 tests, OK** (7 we
 guidegen/
   registry.py      providers + toolkit-name indexes (data/ is loaded here)
   resolve.py       normalisation -> domain / alias / toolkit / fuzzy / probe; ask and unknown are outcomes
-  probe.py         live OIDC discovery + homepage reachability (stdlib, read-only)
+  probe.py         live OAuth/OIDC discovery (both well-known docs, root + auth hosts) + homepage (stdlib, read-only)
   errors.py        32 error codes + 4 warnings; user message / operator hint split
   input.py         query validation + SSRF host classification (host_status)
   spec.py          structural + semantic validation of a provider spec
@@ -167,7 +167,7 @@ guidegen/
     steps_only.schema.json      extractor output for ordered setup steps
   cli.py           python3 -m guidegen "..."
   data/
-    providers.json 7 curated providers (google, github, slack, meta, tally, tally-erp, notion)
+    providers.json 8 curated providers (google, github, slack, meta, tally, tally-erp, notion, prisma)
     toolkits.json  1,688 toolkit names/slugs from docs.composio.dev — REFERENCE VOCABULARY ONLY
 tests/
   test_resolve.py
@@ -190,7 +190,7 @@ quality, and validates the result against `provider.spec.schema.json`.
 ## Rules encoded in P1
 
 - A tie always stops and asks. Bare `tally` returns Tally (forms) and Tally ERP; it never guesses.
-- A domain that is not in the registry is probed, not assumed: OIDC discovery → `oidc_only`, otherwise
+- A domain that is not in the registry is probed, not assumed: discovery metadata (OIDC or RFC 8414, root or auth host) → `oidc_only`, otherwise
   `unknown` (a reachable homepage is not proof of an OAuth surface).
 - Resolution records why: `matched_by`, `confidence`, and `alternatives` are all in the JSON output.
 
@@ -258,6 +258,9 @@ real GitHub guide end to end.
 - No rate limiting or token budget — deliberate for a testing-only site; add before widening access.
 - Three human reads (OAuth provider, API-key provider, review-heavy provider) still pending; the golden
   GitHub and Google guides are the stand-ins.
+- `auth.oauth.pkce` / `client_secret_required` / `refresh_token` are single booleans, so providers that state
+  them conditionally ("PKCE mandatory for public clients, optional for confidential" — Prisma) report `unknown`
+  rather than an inference. A conditional value (`required_for_public_clients`) is the schema change that fixes it.
 
 Remaining in P7: private `/admin/jobs/<id>`, 7-day page-hash cache table + badge.
 P8 optional: MCP wrapper + the calibration run that replaces the `low` time confidence.
