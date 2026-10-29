@@ -1,0 +1,737 @@
+{
+ "ran_at": 1793267140.790936,
+ "searcher": "serper",
+ "counts": {
+  "NEAR": 11,
+  "EXACT": 13,
+  "MISS": 4,
+  "WRONG": 2
+ },
+ "rows": [
+  {
+   "name": "Stripe",
+   "domain": "stripe.com",
+   "expected": "https://docs.stripe.com/connect/oauth-reference",
+   "status": "resolved",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav",
+    "guess",
+    "search"
+   ],
+   "pages": 29,
+   "search": "serper",
+   "winner": "https://docs.stripe.com/stripe-apps/api-authentication/oauth",
+   "title": "OAuth 2.0 | Stripe Documentation",
+   "kind": "oauth_app_registration",
+   "score": 17,
+   "notes": [
+    "page budget exhausted (28); later rungs were skipped",
+    "developers.stripe.com: DNS_FAILED x3",
+    "developer.stripe.com: DNS_FAILED x3"
+   ],
+   "seconds": 52.0,
+   "verdict": "NEAR"
+  },
+  {
+   "name": "HubSpot",
+   "domain": "hubspot.com",
+   "expected": "https://developers.hubspot.com/docs/apps/legacy-apps/authentication/working-with-oauth",
+   "status": "resolved",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav",
+    "guess",
+    "search"
+   ],
+   "pages": 26,
+   "search": "serper",
+   "winner": "https://developers.hubspot.com/docs/apps/developer-platform/build-apps/authentication/overview",
+   "title": "Authentication overview - HubSpot docs",
+   "kind": "oauth_app_registration",
+   "score": 13,
+   "notes": [
+    "docs.hubspot.com: DNS_FAILED x9",
+    "developers.hubspot.com: DOCS_UNPARSEABLE x2",
+    "developers.hubspot.com: DOCS_NOT_FOUND",
+    "developer.hubspot.com: DOCS_NOT_FOUND"
+   ],
+   "seconds": 92.6,
+   "verdict": "NEAR"
+  },
+  {
+   "name": "Zendesk",
+   "domain": "zendesk.com",
+   "expected": "https://developer.zendesk.com/documentation/authentication/creating-and-using-oauth-tokens-with-the-api/",
+   "status": "resolved",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav"
+   ],
+   "pages": 9,
+   "search": "serper",
+   "winner": "https://developer.zendesk.com/documentation/authentication/",
+   "title": "Authentication | Zendesk Developer Docs",
+   "kind": "oauth_app_registration",
+   "score": 14,
+   "notes": [
+    "docs.zendesk.com: DOCS_UNPARSEABLE x2",
+    "developers.zendesk.com: DOCS_NOT_FOUND x2",
+    "developer.zendesk.com: DOCS_NOT_FOUND x2"
+   ],
+   "seconds": 14.9,
+   "verdict": "EXACT"
+  },
+  {
+   "name": "Linear",
+   "domain": "linear.app",
+   "expected": "https://linear.app/developers/oauth-2-0-authentication",
+   "status": "resolved",
+   "rungs": [
+    "llms"
+   ],
+   "pages": 5,
+   "search": "serper",
+   "winner": "https://linear.app/developers/oauth-2-0-authentication.md",
+   "title": "OAuth 2.0 authentication",
+   "kind": "oauth_app_registration",
+   "score": 12,
+   "notes": [],
+   "seconds": 4.7,
+   "verdict": "EXACT"
+  },
+  {
+   "name": "Asana",
+   "domain": "asana.com",
+   "expected": "https://developers.asana.com/docs/oauth",
+   "status": "resolved",
+   "rungs": [
+    "llms"
+   ],
+   "pages": 7,
+   "search": "serper",
+   "winner": "https://developers.asana.com/docs/getting-started-with-asana-oauth.md",
+   "title": "OAuth Code Samples / Libraries",
+   "kind": "oauth_app_registration",
+   "score": 15,
+   "notes": [
+    "docs.asana.com: DOCS_NOT_FOUND"
+   ],
+   "seconds": 8.1,
+   "verdict": "NEAR"
+  },
+  {
+   "name": "Airtable",
+   "domain": "airtable.com",
+   "expected": "https://airtable.com/developers/web/guides/oauth",
+   "status": "needs_review",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav",
+    "guess",
+    "search",
+    "wellknown"
+   ],
+   "pages": 25,
+   "search": "serper",
+   "winner": "https://support.airtable.com/articles/9934989703-creating-personal-access-tokens",
+   "title": "Creating personal access tokens | Airtable Help Center",
+   "kind": "api_key_settings",
+   "score": 7,
+   "notes": [
+    "docs.airtable.com: DNS_FAILED x9",
+    "developers.airtable.com: DNS_FAILED x3",
+    "developer.airtable.com: DNS_FAILED x3",
+    "airtable.com: DOCS_NOT_FOUND x2"
+   ],
+   "seconds": 35.8,
+   "verdict": "NEAR"
+  },
+  {
+   "name": "Salesforce",
+   "domain": "salesforce.com",
+   "expected": "https://developer.salesforce.com/docs/platform/api-rest/guide/intro-oauth-and-connected-apps.html",
+   "status": "resolved",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav",
+    "guess",
+    "search"
+   ],
+   "pages": 30,
+   "search": "serper",
+   "winner": "https://developer.salesforce.com/docs/platform/mobile-sdk/guide/oauth-remote-access-terminology.html",
+   "title": "OAuth Terminology | Authentication, Security, and Identity in Mobile Apps | Mobile SDK Development Guide | Salesforce De",
+   "kind": "oauth_app_registration",
+   "score": 14,
+   "notes": [
+    "developers.salesforce.com: DOCS_FORBIDDEN x3",
+    "docs.salesforce.com: DOCS_NOT_FOUND x3",
+    "www.salesforce.com: DOCS_UNPARSEABLE x2"
+   ],
+   "seconds": 66.4,
+   "verdict": "NEAR"
+  },
+  {
+   "name": "Notion",
+   "domain": "notion.so",
+   "expected": "https://developers.notion.com/guides/get-started/authorization",
+   "status": "resolved",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav",
+    "guess",
+    "wellknown"
+   ],
+   "pages": 28,
+   "search": "serper",
+   "winner": "https://developers.notion.com/guides/get-started/authorization",
+   "title": "Authorization - Notion Docs",
+   "kind": "oauth_app_registration",
+   "score": 16,
+   "notes": [
+    "page budget exhausted (28); later rungs were skipped",
+    "docs.notion.so: DNS_FAILED x9",
+    "developer.notion.so: DNS_FAILED x3",
+    "notion.so: DOCS_NOT_FOUND"
+   ],
+   "seconds": 71.1,
+   "verdict": "EXACT"
+  },
+  {
+   "name": "Slack",
+   "domain": "slack.com",
+   "expected": "https://docs.slack.dev/authentication/installing-with-oauth/",
+   "status": "resolved",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav",
+    "guess",
+    "search"
+   ],
+   "pages": 21,
+   "search": "serper",
+   "winner": "https://docs.slack.dev/authentication/installing-with-oauth/",
+   "title": "Installing via OAuth authorization code flow | Slack Developer Docs",
+   "kind": "oauth_app_registration",
+   "score": 16,
+   "notes": [
+    "docs.slack.com: DOCS_NOT_FOUND x6",
+    "developer.slack.com: DOCS_FORBIDDEN",
+    "developers.slack.com: DOCS_FORBIDDEN",
+    "docs.slack.com: DOCS_FORBIDDEN"
+   ],
+   "seconds": 28.3,
+   "verdict": "EXACT"
+  },
+  {
+   "name": "Shopify",
+   "domain": "shopify.com",
+   "expected": "https://shopify.dev/docs/apps/build/authentication-authorization/authenticate-standalone-apps",
+   "status": "resolved",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav"
+   ],
+   "pages": 10,
+   "search": "serper",
+   "winner": "https://shopify.dev/docs/apps/build/authentication-authorization",
+   "title": "About app authentication",
+   "kind": "oauth_app_registration",
+   "score": 14,
+   "notes": [
+    "shopify.com: DOCS_UNPARSEABLE"
+   ],
+   "seconds": 40.0,
+   "verdict": "EXACT"
+  },
+  {
+   "name": "Twilio",
+   "domain": "twilio.com",
+   "expected": "https://www.twilio.com/docs/iam/oauth-apps/overview",
+   "status": "needs_review",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav",
+    "guess",
+    "search"
+   ],
+   "pages": 32,
+   "search": "serper",
+   "winner": "https://www.twilio.com/docs/iam/oauth-apps/overview",
+   "title": "OAuth apps | Twilio",
+   "kind": "oauth_app_registration",
+   "score": 12,
+   "notes": [
+    "docs.twilio.com: DOCS_NOT_FOUND x4",
+    "developers.twilio.com: DOCS_NOT_FOUND",
+    "two credible surfaces found (connect_oauth, oauth_app_registration); pick the one being integrated instead of merging them"
+   ],
+   "seconds": 56.3,
+   "verdict": "EXACT"
+  },
+  {
+   "name": "Atlassian",
+   "domain": "atlassian.com",
+   "expected": "https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps/",
+   "status": "resolved",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav",
+    "guess",
+    "search"
+   ],
+   "pages": 27,
+   "search": "serper",
+   "winner": "https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/",
+   "title": "OAuth 2.0 (3LO) apps",
+   "kind": "oauth_app_registration",
+   "score": 17,
+   "notes": [
+    "docs.atlassian.com: DOCS_NOT_FOUND x8",
+    "developers.atlassian.com: DOCS_NOT_FOUND",
+    "developer.atlassian.com: DOCS_NOT_FOUND"
+   ],
+   "seconds": 38.1,
+   "verdict": "NEAR"
+  },
+  {
+   "name": "monday.com",
+   "domain": "monday.com",
+   "expected": "https://developer.monday.com/apps/docs/oauth",
+   "status": "needs_review",
+   "rungs": [
+    "llms"
+   ],
+   "pages": 8,
+   "search": "serper",
+   "winner": "https://developer.monday.com/api-reference/docs/control-mcp-access-with-oauth-app.md",
+   "title": "Control MCP access with your own OAuth app",
+   "kind": "oauth_app_registration",
+   "score": 14,
+   "notes": [
+    "two credible surfaces found (connect_oauth, oauth_app_registration); pick the one being integrated instead of merging them"
+   ],
+   "seconds": 10.1,
+   "verdict": "NEAR"
+  },
+  {
+   "name": "ClickUp",
+   "domain": "clickup.com",
+   "expected": "https://developer.clickup.com/docs/authentication",
+   "status": "resolved",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav",
+    "guess",
+    "wellknown"
+   ],
+   "pages": 28,
+   "search": "serper",
+   "winner": "https://developer.clickup.com/docs/authentication.md",
+   "title": "Authentication",
+   "kind": "oauth_app_registration",
+   "score": 15,
+   "notes": [
+    "page budget exhausted (28); later rungs were skipped",
+    "docs.clickup.com: DOCS_NOT_FOUND x8",
+    "docs.clickup.com: DOCS_FORBIDDEN",
+    "clickup.com: DOCS_FORBIDDEN"
+   ],
+   "seconds": 21.1,
+   "verdict": "EXACT"
+  },
+  {
+   "name": "Intercom",
+   "domain": "intercom.com",
+   "expected": "https://developers.intercom.com/docs/build-an-integration/learn-more/authentication/setting-up-oauth",
+   "status": "resolved",
+   "rungs": [
+    "llms"
+   ],
+   "pages": 7,
+   "search": "serper",
+   "winner": "https://developers.intercom.com/docs/build-an-integration/learn-more/authentication.md",
+   "title": "Authentication",
+   "kind": "oauth_app_registration",
+   "score": 12,
+   "notes": [],
+   "seconds": 9.7,
+   "verdict": "EXACT"
+  },
+  {
+   "name": "DocuSign",
+   "domain": "docusign.com",
+   "expected": "https://developers.docusign.com/platform/auth/authcode/",
+   "status": "unknown",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav",
+    "guess",
+    "search",
+    "wellknown"
+   ],
+   "pages": 28,
+   "search": "serper",
+   "winner": null,
+   "title": null,
+   "kind": null,
+   "score": null,
+   "notes": [
+    "page budget exhausted (28); later rungs were skipped",
+    "docs.docusign.com: DNS_FAILED x9",
+    "docusign.com: DOCS_NOT_FOUND x3",
+    "developers.docusign.com: DOCS_NOT_FOUND x2"
+   ],
+   "seconds": 41.6,
+   "verdict": "MISS"
+  },
+  {
+   "name": "QuickBooks",
+   "domain": "intuit.com",
+   "expected": "https://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization",
+   "status": "unknown",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav",
+    "guess",
+    "search",
+    "wellknown"
+   ],
+   "pages": 28,
+   "search": "serper",
+   "winner": null,
+   "title": null,
+   "kind": null,
+   "score": null,
+   "notes": [
+    "page budget exhausted (28); later rungs were skipped",
+    "docs.intuit.com: DNS_FAILED x9",
+    "developer.intuit.com: DOCS_NOT_FOUND x5",
+    "developers.intuit.com: DOCS_NOT_FOUND x3"
+   ],
+   "seconds": 61.6,
+   "verdict": "MISS"
+  },
+  {
+   "name": "Xero",
+   "domain": "xero.com",
+   "expected": "https://developer.xero.com/documentation/guides/oauth2/overview/",
+   "status": "resolved",
+   "rungs": [
+    "llms",
+    "sitemap"
+   ],
+   "pages": 9,
+   "search": "serper",
+   "winner": "https://developer.xero.com/faq/oauth2",
+   "title": "OAuth 2.0 FAQs \u2014 Xero Developer",
+   "kind": "oauth_app_registration",
+   "score": 14,
+   "notes": [
+    "docs.xero.com: DNS_FAILED x2",
+    "developers.xero.com: DNS_FAILED x2",
+    "developer.xero.com: DOCS_NOT_FOUND"
+   ],
+   "seconds": 3.4,
+   "verdict": "NEAR"
+  },
+  {
+   "name": "Mailchimp",
+   "domain": "mailchimp.com",
+   "expected": "https://mailchimp.com/developer/marketing/build/start-developing/set-up-an-oauth-app",
+   "status": "resolved",
+   "rungs": [
+    "llms"
+   ],
+   "pages": 3,
+   "search": "serper",
+   "winner": "https://mailchimp.com/developer/marketing/build/start-developing/set-up-an-oauth-app",
+   "title": "Set up an OAuth app | Mailchimp | Developer",
+   "kind": "oauth_app_registration",
+   "score": 12,
+   "notes": [],
+   "seconds": 6.3,
+   "verdict": "EXACT"
+  },
+  {
+   "name": "Dropbox",
+   "domain": "dropbox.com",
+   "expected": "https://docs.dropboxapi.com/dropbox-api/docs/oauth",
+   "status": "resolved",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav",
+    "guess",
+    "search"
+   ],
+   "pages": 24,
+   "search": "serper",
+   "winner": "https://docs.dropboxapi.com/dropbox-api/docs/oauth",
+   "title": "OAuth | Dropbox API Documentation",
+   "kind": "oauth_app_registration",
+   "score": 15,
+   "notes": [
+    "docs.dropbox.com: DNS_FAILED x9",
+    "developers.dropbox.com: DOCS_NOT_FOUND x2"
+   ],
+   "seconds": 51.8,
+   "verdict": "EXACT"
+  },
+  {
+   "name": "Box",
+   "domain": "box.com",
+   "expected": "https://developer.box.com/guides/authentication/oauth2",
+   "status": "needs_review",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav",
+    "guess",
+    "wellknown"
+   ],
+   "pages": 28,
+   "search": "serper",
+   "winner": "https://developer.box.com/guides/api-calls/permissions-and-errors/scopes",
+   "title": "Box API scopes - Box Dev Docs",
+   "kind": "unknown",
+   "score": 15,
+   "notes": [
+    "page budget exhausted (28); later rungs were skipped",
+    "box.com: DOCS_FORBIDDEN",
+    "two credible surfaces found (oauth_app_registration, unknown); pick the one being integrated instead of merging them"
+   ],
+   "seconds": 47.4,
+   "verdict": "WRONG"
+  },
+  {
+   "name": "Tally",
+   "domain": "tally.so",
+   "expected": "https://tally.so/help/api",
+   "status": "unknown",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav",
+    "guess",
+    "search",
+    "wellknown"
+   ],
+   "pages": 28,
+   "search": "serper",
+   "winner": null,
+   "title": null,
+   "kind": null,
+   "score": null,
+   "notes": [
+    "page budget exhausted (28); later rungs were skipped",
+    "docs.tally.so: DNS_FAILED x9",
+    "developer.tally.so: DNS_FAILED x3",
+    "tally.so: DOCS_NOT_FOUND x2"
+   ],
+   "seconds": 36.1,
+   "verdict": "MISS"
+  },
+  {
+   "name": "Calendly",
+   "domain": "calendly.com",
+   "expected": "https://developer.calendly.com/docs/authentication/creating-an-oauth-app",
+   "status": "resolved",
+   "rungs": [
+    "llms"
+   ],
+   "pages": 6,
+   "search": "serper",
+   "winner": "https://developer.calendly.com/docs/authentication/creating-an-oauth-app.md",
+   "title": "Creating an OAuth app",
+   "kind": "oauth_app_registration",
+   "score": 14,
+   "notes": [],
+   "seconds": 6.5,
+   "verdict": "EXACT"
+  },
+  {
+   "name": "Typeform",
+   "domain": "typeform.com",
+   "expected": "https://www.typeform.com/developers/get-started/applications/",
+   "status": "resolved",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav",
+    "guess",
+    "search"
+   ],
+   "pages": 29,
+   "search": "serper",
+   "winner": "https://www.typeform.com/developers/get-started/scopes/",
+   "title": "OAuth 2.0 scopes for your applications",
+   "kind": "oauth_app_registration",
+   "score": 13,
+   "notes": [
+    "page budget exhausted (28); later rungs were skipped"
+   ],
+   "seconds": 54.5,
+   "verdict": "WRONG"
+  },
+  {
+   "name": "Pipedrive",
+   "domain": "pipedrive.com",
+   "expected": "https://developers.pipedrive.com/docs/api/v1/Oauth",
+   "status": "resolved",
+   "rungs": [
+    "llms",
+    "sitemap"
+   ],
+   "pages": 9,
+   "search": "serper",
+   "winner": "https://developers.pipedrive.com/docs/api/v1/Oauth",
+   "title": "Pipedrive API v1 Dev References (Oauth) - Learn - Test - Try Now",
+   "kind": "oauth_app_registration",
+   "score": 14,
+   "notes": [
+    "docs.pipedrive.com: DOCS_UNPARSEABLE x2",
+    "developers.pipedrive.com: DOCS_UNPARSEABLE"
+   ],
+   "seconds": 63.2,
+   "verdict": "EXACT"
+  },
+  {
+   "name": "Zoho",
+   "domain": "zoho.com",
+   "expected": "https://www.zoho.com/developer/oauth/introduction.html",
+   "status": "resolved",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav",
+    "guess",
+    "search"
+   ],
+   "pages": 23,
+   "search": "serper",
+   "winner": "https://www.zoho.com/crm/developer/docs/api/v8/oauth-overview.html",
+   "title": "OAuth 2.0 Authentication | Zoho CRM API | V8",
+   "kind": "oauth_app_registration",
+   "score": 12,
+   "notes": [
+    "docs.zoho.com: DOCS_NOT_FOUND x8",
+    "developers.zoho.com: DOCS_UNPARSEABLE x2",
+    "developer.zoho.com: DOCS_UNPARSEABLE x2"
+   ],
+   "seconds": 26.3,
+   "verdict": "NEAR"
+  },
+  {
+   "name": "Freshdesk",
+   "domain": "freshdesk.com",
+   "expected": "https://developers.freshworks.com/docs/tutorials/intermediate/request-method/setup-oauth/",
+   "status": "unknown",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav",
+    "guess",
+    "search",
+    "wellknown"
+   ],
+   "pages": 28,
+   "search": "serper",
+   "winner": null,
+   "title": null,
+   "kind": null,
+   "score": null,
+   "notes": [
+    "page budget exhausted (28); later rungs were skipped",
+    "docs.freshdesk.com: DOCS_UNPARSEABLE x9",
+    "freshdesk.com: DOCS_NOT_FOUND x3",
+    "developers.freshdesk.com: DOCS_NOT_FOUND x2"
+   ],
+   "seconds": 21.9,
+   "verdict": "MISS"
+  },
+  {
+   "name": "Klaviyo",
+   "domain": "klaviyo.com",
+   "expected": "https://developers.klaviyo.com/en/docs/set_up_oauth",
+   "status": "needs_review",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav"
+   ],
+   "pages": 15,
+   "search": "serper",
+   "winner": "https://developers.klaviyo.com/en/docs/create_a_public_oauth_app",
+   "title": "Create a public OAuth app",
+   "kind": "oauth_app_registration",
+   "score": 14,
+   "notes": [
+    "developer.klaviyo.com: DNS_FAILED x3",
+    "developers.klaviyo.com: DOCS_NOT_FOUND x2",
+    "docs.klaviyo.com: DOCS_UNPARSEABLE",
+    "docs.klaviyo.com: DOCS_NOT_FOUND"
+   ],
+   "seconds": 35.5,
+   "verdict": "NEAR"
+  },
+  {
+   "name": "Figma",
+   "domain": "figma.com",
+   "expected": "https://developers.figma.com/docs/rest-api/authentication/",
+   "status": "resolved",
+   "rungs": [
+    "llms",
+    "sitemap",
+    "nav",
+    "guess",
+    "search"
+   ],
+   "pages": 28,
+   "search": "serper",
+   "winner": "https://developers.figma.com/docs/rest-api/oauth-apps/",
+   "title": "OAuth apps | Developer Docs",
+   "kind": "oauth_app_registration",
+   "score": 16,
+   "notes": [
+    "docs.figma.com: DNS_FAILED x9",
+    "developer.figma.com: DNS_FAILED x3",
+    "figma.com: DOCS_NOT_FOUND"
+   ],
+   "seconds": 22.9,
+   "verdict": "NEAR"
+  },
+  {
+   "name": "Plaid",
+   "domain": "plaid.com",
+   "expected": "https://plaid.com/docs/api/",
+   "status": "resolved",
+   "rungs": [
+    "llms"
+   ],
+   "pages": 5,
+   "search": "serper",
+   "winner": "https://plaid.com/docs/api/oauth/index.html.md",
+   "title": "https://plaid.com/docs/api/oauth/index.html.md",
+   "kind": "oauth_app_registration",
+   "score": 12,
+   "notes": [],
+   "seconds": 7.0,
+   "verdict": "EXACT"
+  }
+ ]
+}

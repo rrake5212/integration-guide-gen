@@ -144,6 +144,21 @@ class LadderTests(unittest.TestCase):
                       fetcher=FakeFetcher({}), searcher=Broken(), max_pages=6)
         self.assertTrue(any("403" in n for n in result.notes), result.notes)
 
+    def test_search_rejects_third_party_hosts(self) -> None:
+        class Searcher:
+            name = "fake"
+
+            def search(self, query: str, limit: int = 5):
+                return [
+                    SearchResult("Configuration guide", "https://developers.apideck.com/apis/crm/hubspot/configuration", ""),
+                    SearchResult("Setup OAuth", "https://www.reform.app/blog/setup-oauth-hubspot-api", ""),
+                ]
+
+        result = find("hubspot", brand="HubSpot", domains=["hubspot.com"],
+                      fetcher=FakeFetcher({}), searcher=Searcher(), max_pages=4)
+        self.assertEqual(result.surfaces, [])
+        self.assertEqual(result.status, "unknown")
+
     def test_no_signal_is_unknown_not_a_guess(self) -> None:
         result = find("example", brand="Example", domains=["example.com"],
                       fetcher=FakeFetcher({}), max_pages=8)

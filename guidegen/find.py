@@ -33,6 +33,7 @@ from .fetch import Document, fetch_document
 from .search import NullSearch, SearchProvider
 
 MAX_PAGES = 28
+SEARCH_RESERVE = 4  # search results get pages even when the free rungs spent the budget
 
 DOCS_HOST = re.compile(r"^(docs|developer|developers|api|platform|dev)\.", re.I)
 DEV_HOST = re.compile(r"develop|api\.|platform", re.I)
@@ -242,10 +243,12 @@ class Finder:
         self.rungs: list[str] = []
         self.errors: dict[str, int] = {}
         self._budget_noted = False
+        self._searching = False
 
     # ------------------------------------------------------------------ plumbing
     def _get(self, url: str) -> Document | None:
-        if self.pages >= self._max:
+        limit = self._max + (SEARCH_RESERVE if self._searching else 0)
+        if self.pages >= limit:
             if not self._budget_noted:
                 self.notes.append(f"page budget exhausted ({self._max}); later rungs were skipped")
                 self._budget_noted = True
@@ -425,29 +428,45 @@ class Finder:
                     ))
                     return
 
-    def search(self, brand: str, domains: list[str], catalogue: CatalogEntry | None) -> None:
+    def search(self, brand: str, domains: list[str], catalogue: CatalogEntry | None) -> None:  # noqa: ARG002
         if isinstance(self._search, NullSearch) or self._usable():
             return
         self.rungs.append("search")
-        query = f"{brand} OAuth app authentication developer documentation client id redirect URI"
-        results = self._search.search(query, limit=5)
-        if not results:
-            error = getattr(self._search, "last_error", None)
-            self.notes.append(
-                f"search ({self._search.name}) returned nothing" + (f": {error}" if error else "")
-            )
-            return
-        ranked = []
-        for row in results:
-            score, kind, _ = score_candidate(row.url, label=row.title, title=row.title, brand=brand)
-            if DOCS_HOST.match((urlsplit(row.url).hostname or "")) or DEV_HOST.search(row.url):
-                ranked.append((score, row))
-        if not ranked and catalogue is None:
-            ranked = [(score_candidate(r.url, title=r.title)[0], r) for r in results]
-        for _score, row in sorted(ranked, key=lambda x: -x[0])[:3]:
-            cand = self._consider(row.url, "search", label=row.title, brand=brand)
-            if cand and cand.usable and self._settled():
-                return
+        # A site: query hits developer docs far more often than a generic one (measured:
+        # generic returned blogs and community threads for HubSpot; site: returned the
+        # developer-platform authentication pages). The generic query is the fallback.
+        queries = [f"site:{domains[0]} oauth app authentication"] if domains else []
+        queries.append(f"{brand} OAuth app authentication developer documentation")
+        seen: set[str] = set()
+        self._searching = True  # results may spend the reserved pages
+        try:
+            for query in queries:
+                results = self._search.search(query, limit=6)
+                if not results:
+                    error = getattr(self._search, "last_error", None)
+                    self.notes.append(
+                        f"search ({self._search.name}) returned nothing" + (f": {error}" if error else "")
+                    )
+                    continue
+                ranked = []
+                for row in results:
+                    host = (urlsplit(row.url).hostname or "").lower()
+                    # Provider-authored only: a blog, an agency or a community thread must
+                    # never become the guide's source, however well it ranks.
+                    if not first_party(host, [brand, *domains]):
+                        continue
+                    score, _, _ = score_candidate(row.url, label=row.title, title=row.title, brand=brand)
+                    ranked.append((score, row))
+                for _score, row in sorted(ranked, key=lambda x: -x[0])[:3]:
+                    key = _norm(row.url)
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    cand = self._consider(row.url, "search", label=row.title, brand=brand)
+                    if cand and cand.usable and self._settled():
+                        return
+        finally:
+            self._searching = False
 
     # ---------------------------------------------------------------------- entry
     def run(self, query: str, *, brand: str, domains: list[str], entry: dict | None = None,

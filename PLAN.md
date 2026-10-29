@@ -1,6 +1,6 @@
 # OAuth / API-key setup guide generator — plan
 
-**Status: DEPLOYED 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests at P6 / 162 now). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started. **2026-10-29: §13 approved (gates A–E) and its FIND layer built — catalogue routing, the ranked discovery ladder, the provider-entry store with human confirm, and a swappable search fallback.**
+**Status: DEPLOYED 2026-10-28 — https://integration-guide.100.31.120.181.sslip.io.** P1–P6 delivered 2026-10-27 (resolver, error taxonomy, `provider.spec` schema + validator, input/SSRF guard, DeepInfra client, research + quoted extraction + assembly, time model, setup steps, curated blockers, dual renderers, live web UI, verifier + golden set + error paths + debug/replay, 108 tests at P6 / 177 now). P7 2026-10-28: deploy stack built AND run on the Lightsail box — image built on the box, container healthy, Caddy vhost live with Let's Encrypt, smoke green on loopback and public HTTPS including one real GitHub guide end to end. Remaining in P7: private `/admin/jobs/<id>` view and the 7-day cache table + badge. P8 not started. **2026-10-29: §13 approved (gates A–E) and its FIND layer built — catalogue routing, the ranked discovery ladder, the provider-entry store with human confirm, and a swappable search fallback.** Evening 2026-10-29: the Serper key verified live and the search rung rewritten (site: query, first-party only, reserved pages); a 30-provider audit puts the FIND stage at 9/30 canonical pages (24/30 usable) against 6/30 (14/30) on the free rungs alone — §13.7, `tools/find_audit.py`.
 Date: 2026-10-29 (rev 22). Home: `~/AgentWork/integration-guide-gen/` · private repo `rrake5212/integration-guide-gen`
 
 One-line product: a developer submits **an app name or a website/domain** they want OAuth with
@@ -989,7 +989,7 @@ links because their portals are JS apps. A single web search on the 12 hardest p
 right host with a valid auth page in 8/12 and the exact canonical page in 3/12. So no signal is
 reliable per call; the entry has to be.
 
-Code (`guidegen/`, 161 tests green, golden set VALID):
+Code (`guidegen/`, 177 tests green, golden set VALID):
 
 | module | job |
 |---|---|
@@ -1021,3 +1021,45 @@ afterwards, so the whole first batch costs cents.
 into `research.py` (so a catalogue-only provider can actually produce a guide) is the next step, and
 it needs the provider object to be constructible from a catalogue entry + surface.
 
+### 13.7 Search key live + the 30-provider audit (2026-10-29)
+
+The key that finally worked is a **Serper** key stored under the variable name
+`SEARCHAPI_API_KEY` — the name was the only thing wrong. Verified live: `POST
+https://google.serper.dev/search` -> 200 with the provider's own developer docs; the same value at
+searchapi.io -> 401 `Invalid API key`. `.env` now carries `SERPER_API_KEY` +
+`SEARCH_PROVIDER=serper`; the searchapi adapter stays as an option (`SEARCH_PROVIDER=searchapi`).
+
+The search rung was rewritten the same day after a manual probe: `site:<domain> oauth app
+authentication` first, the generic query second, and **first-party hosts only** — a blog, an agency or
+a community thread can never become the guide's source. Search results also get reserved pages
+(`SEARCH_RESERVE = 4`) so a ladder that spent its budget still reaches the fallback.
+
+**The audit** — `tools/find_audit.py`, 30 providers, ground truth = one hand-checked canonical setup
+page each (every ground-truth URL fetched and confirmed 200 + auth vocabulary before it could judge
+anything). Raw rows: `data/bench/find-audit-2026-10-29.json` (with search) and
+`find-audit-2026-10-29-nosearch.json` (free rungs only).
+
+| verdict | free rungs only | + serper search |
+|---|---|---|
+| canonical page (EXACT) | 6/30 | **9/30** |
+| canonical or one click away (EXACT+NEAR) | 14/30 | **24/30** |
+| wrong surface (WRONG) | 1/30 | 2/30 |
+| nothing usable (MISS) | 15/30 | **4/30** |
+
+Search flipped 10 providers from MISS/WRONG to a usable page (Slack, Twilio and Dropbox to the exact
+canonical page; Stripe, HubSpot, Airtable, Salesforce, Atlassian, Zoho and Figma to their OAuth area).
+15 of 30 providers spent a query at all; the rest were settled by the free rungs.
+
+What search did **not** fix: the four still unknown (DocuSign, QuickBooks, Tally, Freshdesk), and the
+wrong-surface class — Stripe **Apps** OAuth and Plaid **Link** OAuth are both an "oauth" page on the
+right host describing the wrong product. That is exactly the trap §13.1 named, and the ranker still
+has no product-scope signal. Next ranker change, not a search problem.
+
+**Spend guards.** 2,500 free queries is the entire budget until a card is added, so `from_env` now
+wraps whichever adapter it picks in `CachedSearch`: an identical query is free for 7 days
+(`data/cache/search/<hash>.json`) and a daily cap (`SEARCH_DAILY_BUDGET`, default 200) stops the
+process before a loop or a test run can eat the plan (`SEARCH_CACHE=off` bypasses both for
+debugging). Proven end to end — two `find tally.so` runs spent 2 queries then 0, ledger at
+`data/cache/search-budget.json`; both paths are gitignored. Spend before the guard landed: roughly
+30-45 of 2,500 (11 ground-truth lookups, 1 HubSpot, 2 smoke, up to 30 for the audit, 2 for the tally
+pair); the ledger only counts from the day it exists, so treat it as under-reporting history.
